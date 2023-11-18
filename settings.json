@@ -1,0 +1,18 @@
+{
+    "database": "",
+    "insideToken": "",
+    "token": "",
+    "clientSecret": "",
+    "clientId": "",
+    "guildId": "",
+    "defaultGame": {
+        "name": "season:blank",
+        "ended": true,
+        "cooldown": 60000,
+        "height": 80,
+        "width": 160
+    },
+    "main_domian": "pixelbattle.fun",
+    "api_domian": "https://api.pixelbattle.fun",
+    "owner": []
+}
