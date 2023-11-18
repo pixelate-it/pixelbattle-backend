@@ -8,7 +8,7 @@
   },
   "keywords": [],
   "author": "mirdukkkkk",
-  "license": "LGPL-3.0-only",
+  "license": "GNU-3.0",
   "dependencies": {
     "@fastify/cors": "^8.4.0",
     "@fastify/formbody": "^7.4.0",
