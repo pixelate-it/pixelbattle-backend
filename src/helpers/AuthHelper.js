@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { clientSecret, clientId, guildId, api_domian, token } = require('../../settings.json');
+const { clientSecret, clientId, guildId, api_domain, token } = require('../../settings.json');
 
 class AuthProcess {
     async authCodeGrant(code) {
@@ -12,7 +12,7 @@ class AuthProcess {
 					client_secret: clientSecret,
 					code,
 					grant_type: 'authorization_code',
-					redirect_uri: `${api_domian}/login`,
+					redirect_uri: `${api_domain}/login`,
 					scope: 'identify guilds.join',
                 }).toString(),
                 headers: {

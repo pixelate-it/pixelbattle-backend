@@ -12,7 +12,7 @@
         "height": 80,
         "width": 160
     },
-    "main_domian": "pixelbattle.fun",
-    "api_domian": "https://api.pixelbattle.fun",
+    "main_domain": "pixelbattle.fun",
+    "api_domain": "https://api.pixelbattle.fun",
     "owner": []
 }

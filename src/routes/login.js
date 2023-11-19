@@ -1,6 +1,6 @@
 const { generateToken } = require('../extra/Utils');
 const { user: userSchema } = require('../extra/Schemas');
-const { main_domian } = require('../../settings.json');
+const { main_domain } = require('../../settings.json');
 
 const AuthHelper = require('../helpers/AuthHelper');
 
@@ -69,6 +69,6 @@ module.exports = (database) => ({
         process.joinPixelateitServer();
 
         return response
-            .redirect(`https://${main_domian}/?token=${token}&id=${id}`);
+            .redirect(`https://${main_domain}/?token=${token}&id=${id}`);
     }
 });
