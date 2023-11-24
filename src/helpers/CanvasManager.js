@@ -1,3 +1,5 @@
+const { pixel: pixelSchema } = require('../extra/Schemas');
+
 class CanvasManager {
     #ready;
     #pixels;
@@ -44,7 +46,7 @@ class CanvasManager {
         if(!pixel) throw new Error(`Pixel with coordinates X${x} Y${y} does not exist`);
         if(!color) throw new Error('A pixel cannot be zero color');
 
-        ['color', 'author', 'tag'].map((arg) => (pixel[arg] = (arguments[1][arg] )));
+        Object.keys(pixelSchema).map((arg) => (pixel[arg] = arguments[1][arg]));
         return pixel;
     }
 }
