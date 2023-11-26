@@ -3,7 +3,7 @@ const { defaultGame } = require('../../settings.json');
 const { sendPixelPlaced } = require('../helpers/LoggingHelper');
 const hexRegExp = /^#[0-9A-F]{6}$/i;
 
-module.exports = (database, parameters) => ({
+module.exports = ({ database, parameters, canvas, game }) => ({
     method: 'PUT',
     path: '/pixels',
     schema: {
@@ -46,7 +46,7 @@ module.exports = (database, parameters) => ({
             .code(401)
             .send({ error: true, reason: reasons[7] });
 
-        if(JSON.parse(process.env.ended ?? defaultGame.ended)) return response
+        if(game.ended) return response
             .code(400)
             .send({ error: true, reason: reasons[2] });
         if(parameters.bans.includes(user.userID)) return response
@@ -73,9 +73,7 @@ module.exports = (database, parameters) => ({
             .code(400)
             .send({ error: true, reason: reasons[5] });
 
-        const pixel = await database
-            .collection('pixels')
-            .findOne({ x, y }, { projection: { _id: 1 } });
+        const pixel = canvas.select({ x, y });
         if(!pixel) return response
             .code(400)
             .send({ error: true, reason: reasons[6] });
@@ -105,20 +103,16 @@ module.exports = (database, parameters) => ({
                 }
             );
 
-        await database
-            .collection('pixels')
-            .updateOne(
-                { x, y }, 
-                { 
-                    $set: { 
-                        color,
-                        author: request.userSession.username,
-                        tag: adminCheck 
-                            ? null 
-                            : request.userSession.tag 
-                    } 
-                }
-            );
+        canvas.paint(
+            { x, y },
+            { 
+                color,
+                author: request.userSession.username,
+                tag: adminCheck 
+                    ? null 
+                    : request.userSession.tag 
+            }
+        );
 
         request.server.websocketServer.clients.forEach((client) =>
         client.readyState === 1 &&

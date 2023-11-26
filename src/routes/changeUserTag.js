@@ -1,6 +1,6 @@
 const { reasons } = require('../extra/Constants');
 
-module.exports = (database) => ({
+module.exports = ({ database }) => ({
     method: 'POST',
     path: '/users/:id/tag',
     schema: {

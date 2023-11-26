@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-module.exports = (_) => ({
+module.exports = () => ({
     method: 'GET',
     path: '/favicon.ico',
     schema: {},

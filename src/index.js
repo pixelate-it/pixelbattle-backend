@@ -16,20 +16,28 @@ const fs = require('fs');
 const fastify = require('fastify');
 const { MongoClient } = require('mongodb');
 const { reasons } = require('./extra/Constants');
+const CanvasManager = require('./helpers/CanvasManager');
 
 const parameters = {};
+const game = {
+    ended: JSON.parse(process.env.ended ?? settings.defaultGame.ended)
+};
 
 (async() => {
     const mongo = new MongoClient(
         settings.database
     );
-    const database = mongo.db('pixelbattle');
+    const database = mongo.db('pixelbattledev');
     await mongo.connect();
+
+    const canvas = new CanvasManager(database.collection('pixels'));
+    console.log('* [ROOT] Initializing the canvas');
+    await canvas.init();
 
     parameters.moderators = 
         await database
         .collection('moderators')
-        .find({}, { userID: 1 })
+        .find({}, { _id: 0, userID: 1 })
         .toArray()
         .then(
             arr =>
@@ -40,7 +48,7 @@ const parameters = {};
     parameters.bans = 
         await database
         .collection('bans')
-        .find({}, { userID: 1 })
+        .find({}, { _id: 0, userID: 1 })
         .toArray()
         .then(
             arr =>
@@ -78,7 +86,7 @@ const parameters = {};
         of fs.readdirSync(path.join(__dirname, 'routes'))
         .filter(file => file.endsWith('.js'))
     ) {
-        const route = require(`./routes/${file}`)(database, parameters);
+        const route = require(`./routes/${file}`)({ database, parameters, canvas, game });
         console.log(`* [${route.method}] ${route.path} - loaded`);
         app.route(route);
     }
@@ -91,4 +99,9 @@ const parameters = {};
 
         console.log(`* [ROOT] Server is now listening on ${address}`);
     });
+
+    if(!game.ended) global.sync = setInterval(async() => { 
+        await canvas.sendPixels()
+            .then(() => console.log('* [ROOT] Canvas synchronized with database'));
+    }, settings.syncEvery);
 })();

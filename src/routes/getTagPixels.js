@@ -1,4 +1,4 @@
-module.exports = (database) => ({
+module.exports = ({ canvas }) => ({
     method: 'GET',
     path: '/pixels/tag',
     schema: {},
@@ -9,18 +9,7 @@ module.exports = (database) => ({
         }
     },
     async handler(request, response) {
-        let pixels = await database
-            .collection('pixels')
-            .find(
-                {}, 
-                { 
-                    projection: {
-                        _id: 0,
-                        tag: 1
-                    } 
-                }
-            )
-            .toArray();
+        let pixels = canvas.pixels;
 
         let used = pixels.filter(x => x.tag !== null);
         let unused = pixels.filter(x => x.tag == null);
