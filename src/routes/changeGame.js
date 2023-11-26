@@ -1,7 +1,7 @@
-const { insideToken } = require('../../settings.json');
+const { insideToken, syncEvery } = require('../../settings.json');
 const { reasons } = require('../extra/Constants');
 
-module.exports = ({ game, canvas }) => ({
+module.exports = ({ database, game, canvas }) => ({
     method: 'POST',
     path: '/game/change',
     schema: {
@@ -33,14 +33,24 @@ module.exports = ({ game, canvas }) => ({
         switch(request.body.ended) {
             case true: {
                 clearInterval(global.sync);
+                request.server.websocketServer.clients.forEach((client) =>
+                    client.readyState === 1 &&
+                        client.send(JSON.stringify({
+                            op: 'ENDED',
+                            value: true
+                        })
+                    )
+                );
+                
                 await canvas.sendPixels();
+                break;
             }
 
             case false: {
                 global.sync = setInterval(async() => { 
                     await canvas.sendPixels()
                         .then(() => console.log('* [ROOT] Canvas synchronized with database'));
-                }, settings.syncEvery);
+                }, syncEvery);
 
                 request.server.websocketServer.clients.forEach((client) =>
                     client.readyState === 1 &&
@@ -50,9 +60,16 @@ module.exports = ({ game, canvas }) => ({
                         })
                     )
                 );
+                break;
             }
         }
 
+        await database
+            .collection('games')
+            .updateOne({ id: 0 }, { $set: { ended: request.body.ended } });
 
+        return response           
+            .code(202)
+            .send({ error: false, reason: 'Accepted' });
     }
 });

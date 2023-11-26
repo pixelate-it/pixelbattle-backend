@@ -19,9 +19,6 @@ const { reasons } = require('./extra/Constants');
 const CanvasManager = require('./helpers/CanvasManager');
 
 const parameters = {};
-const game = {
-    ended: JSON.parse(process.env.ended ?? settings.defaultGame.ended)
-};
 
 (async() => {
     const mongo = new MongoClient(
@@ -37,7 +34,7 @@ const game = {
     parameters.moderators = 
         await database
         .collection('moderators')
-        .find({}, { _id: 0, userID: 1 })
+        .find({}, { projection: { _id: 0, userID: 1 } })
         .toArray()
         .then(
             arr =>
@@ -48,7 +45,7 @@ const game = {
     parameters.bans = 
         await database
         .collection('bans')
-        .find({}, { _id: 0, userID: 1 })
+        .find({}, { projection: { _id: 0, userID: 1 } })
         .toArray()
         .then(
             arr =>
@@ -56,6 +53,11 @@ const game = {
                 _.userID
             )
         );
+
+    const game = 
+        await database
+        .collection('games')
+        .findOne({ id: 0 }, { projection: { _id: 0 } });
 
     const app = fastify();
 
