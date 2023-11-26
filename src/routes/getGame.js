@@ -1,8 +1,8 @@
 const { defaultGame } = require('../../settings.json');
 
-module.exports = (database) => ({
+module.exports = ({ game }) => ({
     method: 'GET',
-    path: '/info',
+    path: '/game',
     schema: {},
     config: {
         rateLimit: {
@@ -11,25 +11,18 @@ module.exports = (database) => ({
         }
     },
     async handler(request, response) {
-        const total = await database
-            .collection('users')
-            .countDocuments();
-
         const online = new Set();
         request.server.websocketServer.clients.forEach(v => online.add(v.request_ip));
 
         const schema = { 
             name: process.env.name ?? defaultGame.name,
             cooldown: Number(process.env.cooldown ?? defaultGame.cooldown),
-            ended: JSON.parse(process.env.ended ?? defaultGame.ended),
+            ended: game.ended,
             canvas: {
                 height: Number(process.env.height ?? defaultGame.height),
                 width: Number(process.env.width ?? defaultGame.width)
             },
-            players: { 
-                total, 
-                online: online.size 
-            } 
+            online: online.size
         };
 
         return response
