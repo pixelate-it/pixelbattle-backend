@@ -11,10 +11,7 @@ interface ApiInfo {
         width: number;
         height: number;
     };
-    players: {
-        total: number;
-        online: number;
-    }
+    online: number;
 }
 
 export const get: RouteOptions<Server, IncomingMessage, ServerResponse, { Querystring: { x: number; y: number }; }> = {
@@ -28,9 +25,6 @@ export const get: RouteOptions<Server, IncomingMessage, ServerResponse, { Querys
         }
     },
     async handler(request, response) {
-        const total = await request.server.database.users
-            .countDocuments();
-
         const online = new Set();
         request.server.websocketServer.clients.forEach(v => online.add(v));
 
@@ -42,10 +36,7 @@ export const get: RouteOptions<Server, IncomingMessage, ServerResponse, { Querys
                 height: config.game.height,
                 width: config.game.width
             },
-            players: {
-                total,
-                online: online.size
-            }
+            online: online.size
         }
 
         return response

@@ -61,6 +61,4 @@ interface Point {
     y: number;
 }
 
-
-
 module.exports = CanvasManager;
