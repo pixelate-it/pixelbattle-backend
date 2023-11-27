@@ -4,7 +4,7 @@ import { MongoUser } from "../../models/MongoUser";
 import { MongoPixel } from "../../models/MongoPixel";
 import { LoggingHelper } from "../../helpers/LoggingHelper";
 import { config } from "../../config";
-import { BannedError, CooldownError, EntityNotFoundError, GameEndedError, WrongTokenError } from "../../errors";
+import { TokenBannedError, UserCooldownError, EntityNotFoundError, EndedError, WrongTokenError } from "../../errors";
 import { genericSuccessResponse } from "../../types/ApiReponse";
 
 
@@ -46,18 +46,18 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
         }
 
         if (config.game.ended) {
-            throw new GameEndedError()
+            throw new EndedError()
         }
 
         if (request.user?.isBanned) {
-            throw new BannedError()
+            throw new TokenBannedError()
         }
 
         const now = performance.now()
         if (request.user.cooldown > now) {
             const time = Number(((request.user.cooldown - now) / 1000).toFixed(1))
 
-            throw new CooldownError(time)
+            throw new UserCooldownError(time)
         }
 
 

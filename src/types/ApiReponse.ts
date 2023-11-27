@@ -1,7 +1,7 @@
 export interface ApiErrorResponse<T = Record<string, unknown>> {
     error: true;
     message: string;
-    type: string;
+    reason: string;
     data?: T
 }
 

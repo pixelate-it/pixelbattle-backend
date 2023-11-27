@@ -28,12 +28,12 @@ export class NotAuthorizedError extends ApiError {
 }
 
 
-export class BannedError extends ApiError {
+export class TokenBannedError extends ApiError {
     public statusCode = 400;
     public message = "You are banned from PixelBattle";
 }
 
-export class CooldownError extends ApiError {
+export class UserCooldownError extends ApiError {
     public statusCode = 400;
     public message = "Wait a few seconds"
 
@@ -43,7 +43,7 @@ export class CooldownError extends ApiError {
     }
 }
 
-export class GameEndedError extends ApiError {
+export class EndedError extends ApiError {
     public statusCode = 400;
     public message = "Please wait for a new game"
 }

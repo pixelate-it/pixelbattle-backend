@@ -12,14 +12,13 @@ export const config = {
             redirectUri: process.env.DISCORD_BOT_REDIRECT!
         },
         guildId: process.env.DISCORD_GUILD_ID!,
-
     },
     game: {
         name: "Test",
         ended: false,
-        cooldown: 123,
+        cooldown: 300,
         height: 80,
-        width: 60,
+        width: 160,
     },
     frontend: process.env.FRONTEND_URL!
 }

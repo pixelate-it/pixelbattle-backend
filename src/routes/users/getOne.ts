@@ -39,6 +39,7 @@ export const getUser: RouteOptions<Server, IncomingMessage, ServerResponse, { Pa
 
         return response.send({
             ...user,
+            banned: user.isBanned,
             isMod: user.role === "MOD"
         })
 

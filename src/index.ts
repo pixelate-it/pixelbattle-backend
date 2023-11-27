@@ -13,7 +13,7 @@ import { errorHandler } from './plugins/errorHandler';
 
 async function init() {
     const app = fastify({
-        logger: true,
+        logger: process.env.NODE_ENV === "development",
     });
 
     [
@@ -33,7 +33,7 @@ async function init() {
     await app.register(database)
     await app.register(routes)
 
-    app.listen({ port: 9000, path: "0.0.0.0" }).then(console.log)
+    app.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 8080, path: "0.0.0.0" }).then(console.log)
 }
 
 init()

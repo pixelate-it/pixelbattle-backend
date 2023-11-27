@@ -6,11 +6,13 @@ export const errorHandler = fastifyPlugin(async (app) => {
     app.setSchemaErrorFormatter((errors, data) => {
         return new ValidationError([errors, data])
     })
+
+
     app.setErrorHandler<ApiError>(async (error, req, res) => {
         const payload: ApiErrorResponse = {
             error: true,
             message: error.message ?? "Internal error",
-            type: error.constructor.name,
+            reason: error.constructor.name.slice(0, -("Error".length)),
             data: error.data
         }
 

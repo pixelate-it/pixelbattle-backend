@@ -1,10 +1,11 @@
 {
   "name": "pixelbattle-backend",
-  "version": "3.1.0",
-  "description": "API https://pixelbattle.fun/",
+  "version": "3.1.1",
+  "description": "API for https://pixelbattle.fun/",
   "main": "./src/index.js",
   "scripts": {
-    "prod": "node ."
+    "prod": "ts-node src/index.ts",
+    "dev": "nodemon src/index.ts"
   },
   "keywords": [],
   "author": "mirdukkkkk",
@@ -22,7 +23,6 @@
     "fastify": "^4.24.3",
     "mongodb": "^6.2.0",
     "node-fetch": "^2.6.1",
-    "typescript": "^5.3.2",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
@@ -31,6 +31,8 @@
     "dotenv": "^16.3.1",
     "fastify-plugin": "^4.5.1",
     "nodemon": "^3.0.1",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.2"
+
   }
 }
