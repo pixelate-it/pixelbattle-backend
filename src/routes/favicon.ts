@@ -1,8 +1,9 @@
-const fs = require('fs');
+import { RouteOptions } from "fastify";
+import { readFile } from "fs/promises"
 
-module.exports = (_) => ({
+export const favicon: RouteOptions = {
     method: 'GET',
-    path: '/favicon.ico',
+    url: '/favicon.ico',
     schema: {},
     config: {
         rateLimit: {
@@ -14,6 +15,6 @@ module.exports = (_) => ({
         return response
             .header('Content-Type', 'image/x-icon')
             .code(200)
-            .send(await fs.readFileSync('./api/assets/favicon.ico'));
+            .send(await readFile('./api/assets/favicon.ico'));
     }
-});
+};

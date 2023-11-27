@@ -1,10 +1,12 @@
-module.exports = () => ({
+import { RouteOptions } from "fastify";
+
+export const root: RouteOptions = {
     method: 'GET',
-    path: '/',
+    url: '/',
     schema: {},
-    handler(request, response) {
+    handler: function (request, response) {
         return response
             .code(200)
             .send({ error: false, reason: 'PixelAPI v3 works! Good time for chill :D' });
     }
-});
+};

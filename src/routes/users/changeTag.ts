@@ -1,8 +1,18 @@
-const { reasons } = require('../extra/Constants');
+import { RouteOptions } from "fastify";
+import { IncomingMessage, Server, ServerResponse } from "http";
+import { MongoUser } from "../../models/MongoUser";
+import { genericSuccessResponse } from "../../types/ApiReponse";
 
-module.exports = (database) => ({
+
+
+interface Body {
+    token: string;
+    tag: string;
+}
+
+export const changeTag: RouteOptions<Server, IncomingMessage, ServerResponse, { Body: Body; Params: { id: string } }> = {
     method: 'POST',
-    path: '/users/:id/tag',
+    url: '/:id/tag',
     schema: {
         body: {
             type: 'object',
@@ -19,30 +29,8 @@ module.exports = (database) => ({
             timeWindow: '1s'
         }
     },
-    async preHandler(request, response, done) {
-        const user = await database
-            .collection('users')
-            .findOne(
-                { 
-                    token: request.body.token,
-                    userID: request.params.id
-                },
-                {
-                    projection: {
-                        _id: 1
-                    }
-                }
-            );
-
-        if(!user) return response
-            .code(404)
-            .send({ error: true, reason: reasons[7] });
-
-        done();
-    },
     async handler(request, response) {
-        await database
-            .collection('users')
+        await request.server.database.users
             .updateOne(
                 {
                     token: request.body.token,
@@ -57,6 +45,6 @@ module.exports = (database) => ({
 
         return response
             .code(200)
-            .send({ error: false, reason: reasons[1] });
+            .send(genericSuccessResponse);
     }
-});
+};
