@@ -1,21 +1,23 @@
-import fastify, { FastifyInstance } from "fastify";
 import fastifyCors from "@fastify/cors";
 import fastifyFormbody from "@fastify/formbody";
 import fastifyRateLimit from "@fastify/rate-limit";
 import fastifyUnderPressure from "@fastify/under-pressure";
 import fastifyWebsocket from "@fastify/websocket";
 import fp from "fastify-plugin"
-import { ApiErrorResponse } from "../types/ApiReponse";
 import { RateLimitError } from "../errors";
 
 export const plugins = fp(async (app) => {
-    await app.register(fastifyCors, { origin: "*", credentials: true })
+    await app.register(fastifyCors, { origin: true })
 
     await app.register(fastifyFormbody)
 
     await app.register(fastifyRateLimit, {
         keyGenerator(req) {
-            return req.ip ?? req.headers["cf-connecting-ip"]
+            const ip = Array.isArray(req.headers["cf-connecting-ip"]) 
+                ? req.headers["cf-connecting-ip"][0] 
+                : req.headers["cf-connecting-ip"] ?? req.ip;
+
+            return ip
         },
         hook: 'preParsing',
         global: true,

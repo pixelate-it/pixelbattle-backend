@@ -1,4 +1,7 @@
-const cache = new Map();
+
+
+
+const cache = new Map<string, boolean>();
 
 interface PixelInfo {
     userID: string;
@@ -10,8 +13,13 @@ interface PixelInfo {
 
 export class LoggingHelper {
     static sendPixelPlaced({ userID, color, x, y, tag }: PixelInfo) {
-        if(cache.has(`${userID}-${x}-${y}-${color}`)) return;
-        cache.set(`${userID}-${x}-${y}-${color}`, 1);
+        const hash = `${userID}-${x}-${y}-${color}`
+
+        if (cache.has(hash))
+            return;
+
+        
+        cache.set(hash, true);
 
         console.log(
             `* [PIXEL] ${userID} - ` +
@@ -19,7 +27,7 @@ export class LoggingHelper {
             `Color: ${color}; ` +
             `Tag: ${tag};`
         );
-        
-        setTimeout(() => cache.delete(`${userID}-${x}-${y}-${color}`), 750); // CORS spam fix 
+
+        setTimeout(() => cache.delete(hash), 750); // CORS spam fix 
     }
 }

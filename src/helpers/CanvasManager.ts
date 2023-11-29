@@ -1,9 +1,14 @@
 import { Collection } from "mongodb";
 import { MongoPixel } from "../models/MongoPixel";
 
+interface Point {
+    x: number;
+    y: number;
+}
+
 // const { pixel: pixelSchema } = require('../extra/Schemas');
-class CanvasManager {
-    private ready = false
+export class CanvasManager {
+    private ready = false;
     private pixels: MongoPixel[] = [];
     private changes: Point[];
     private collection: Collection<MongoPixel>;
@@ -56,11 +61,6 @@ class CanvasManager {
     }
 }
 
-interface Point {
-    x: number;
-    y: number;
-}
 
 
 
-module.exports = CanvasManager;

@@ -28,7 +28,7 @@ export const database = fp(async (app: FastifyInstance, _) => {
 
 
     if (!app.mongo.db) {
-        throw new Error()
+        throw new Error("Can't connect to the database")
     }
 
 
