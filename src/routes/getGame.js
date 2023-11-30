@@ -16,7 +16,7 @@ module.exports = ({ game }) => ({
 
         const schema = { 
             name: process.env.name ?? defaultGame.name,
-            cooldown: Number(process.env.cooldown ?? defaultGame.cooldown),
+            cooldown: game.cooldown,
             ended: game.ended,
             canvas: {
                 height: Number(process.env.height ?? defaultGame.height),

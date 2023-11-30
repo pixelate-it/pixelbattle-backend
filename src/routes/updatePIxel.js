@@ -86,7 +86,7 @@ module.exports = ({ database, parameters, canvas, game }) => ({
                 break;
 
             case false:
-                cooldown = Date.now() + Number(process.env.cooldown || defaultGame.cooldown);
+                cooldown = Date.now() + game.cooldown;
                 break;
         }
 

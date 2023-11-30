@@ -1,4 +1,8 @@
+console.log('* [ROOT] Activating extensions');
+require('./extenders');
+
 [
+    '                                                                        ',
     '  _____    _                 _           _              _____   _     _ ',
     ' |  __ \\  (_)               | |         | |            |_   _| | |   | |',
     ' | |__) |  _  __  __   ___  | |   __ _  | |_    ___      | |   | |_  | |',
@@ -80,7 +84,7 @@ const parameters = {};
         });
 
     app.setErrorHandler(function(error, request, response) {
-        if(error.statusCode == 429) response.code(429).send({ error: true, reason: reasons[8] })
+        if(error.statusCode === 429) response.code(429).send({ error: true, reason: reasons[8] })
     });
 
     for(

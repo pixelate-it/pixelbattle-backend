@@ -1,3 +1,4 @@
+const { isBoolean } = require('util');
 const { insideToken, syncEvery } = require('../../settings.json');
 const { reasons } = require('../extra/Constants');
 
@@ -7,10 +8,11 @@ module.exports = ({ database, game, canvas }) => ({
     schema: {
         body: {
             type: 'object',
-            required: ['token', 'ended'],
+            required: ['token'],
             properties: {
                 token: { type: 'string' },
-                ended: { type: 'boolean' }
+                ended: { type: 'boolean' },
+                cooldown: { type: 'integer' }
             }
         }
     },
@@ -25,48 +27,56 @@ module.exports = ({ database, game, canvas }) => ({
             .code(401)
             .send({ error: true, reason: reasons[0] });
 
-        if(request.body.ended === game.ended) return response
-            .code(200)
-            .send({ error: false, reason: reasons[1] });
-
-        game.ended = request.body.ended;
-        switch(request.body.ended) {
-            case true: {
-                clearInterval(global.sync);
-                request.server.websocketServer.clients.forEach((client) =>
-                    client.readyState === 1 &&
+        console.log(request.body.ended +" # "+ game.ended);
+        if(isBoolean(request.body.ended) && (request.body.ended !== game.ended)) {
+            game.ended = request.body.ended;
+            switch(request.body.ended) {
+                case true: {
+                    clearInterval(global.sync);
+                    console.log('1');
+                    request.server.websocketServer.clients.forEach((client) =>
+                        client.readyState === 1 &&
                         client.send(JSON.stringify({
-                            op: 'ENDED',
-                            value: true
-                        })
-                    )
-                );
-                
-                await canvas.sendPixels();
-                break;
-            }
+                                op: 'ENDED',
+                                value: true
+                            })
+                        )
+                    );
 
-            case false: {
-                global.sync = setInterval(async() => { 
-                    await canvas.sendPixels()
-                        .then(() => console.log('* [ROOT] Canvas synchronized with database'));
-                }, syncEvery);
+                    await canvas.sendPixels();
+                    break;
+                }
 
-                request.server.websocketServer.clients.forEach((client) =>
-                    client.readyState === 1 &&
+                case false: {
+                    global.sync = setInterval(async () => {
+                        await canvas.sendPixels()
+                            .then(() => console.log('* [ROOT] Canvas synchronized with database'));
+                    }, syncEvery);
+
+                    request.server.websocketServer.clients.forEach((client) =>
+                        client.readyState === 1 &&
                         client.send(JSON.stringify({
-                            op: 'ENDED',
-                            value: false
-                        })
-                    )
-                );
-                break;
+                                op: 'ENDED',
+                                value: false
+                            })
+                        )
+                    );
+                    break;
+                }
             }
+        }
+
+        if(Number.isInteger(request.body.cooldown) && (request.body.cooldown !== game.cooldown)) {
+            if(request.body.cooldown === 0) return response
+                .code(400)
+                .send({ error: false, reason: 'Cooldown cannot be zero' });
+
+            game.cooldown = request.body.cooldown;
         }
 
         await database
             .collection('games')
-            .updateOne({ id: 0 }, { $set: { ended: request.body.ended } });
+            .updateOne({ id: 0 }, { $set: { ended: game.ended, cooldown: game.cooldown } });
 
         return response           
             .code(202)
