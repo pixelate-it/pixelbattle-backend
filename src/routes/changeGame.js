@@ -27,13 +27,11 @@ module.exports = ({ database, game, canvas }) => ({
             .code(401)
             .send({ error: true, reason: reasons[0] });
 
-        console.log(request.body.ended +" # "+ game.ended);
         if(isBoolean(request.body.ended) && (request.body.ended !== game.ended)) {
             game.ended = request.body.ended;
             switch(request.body.ended) {
                 case true: {
                     clearInterval(global.sync);
-                    console.log('1');
                     request.server.websocketServer.clients.forEach((client) =>
                         client.readyState === 1 &&
                         client.send(JSON.stringify({
