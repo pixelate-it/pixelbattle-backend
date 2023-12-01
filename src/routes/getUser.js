@@ -1,6 +1,6 @@
 const { reasons } = require('../extra/Constants');
 
-module.exports = (database, parameters) => ({
+module.exports = ({ database, parameters }) => ({
     method: 'GET',
     path: '/users/:id',
     schema: {},

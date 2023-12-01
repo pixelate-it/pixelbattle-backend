@@ -1,6 +1,4 @@
-const { defaultGame } = require('../../settings.json');
-
-module.exports = () => ({
+module.exports = ({ game }) => ({
     method: 'GET',
     path: '/pixels/socket',
     schema: {},
@@ -14,6 +12,6 @@ module.exports = () => ({
     wsHandler(connection, request) {
         connection.setEncoding('utf8');
         connection.socket.request_ip = (request.headers['cf-connecting-ip'] || request.ip);
-        if(JSON.parse(process.env.ended ?? defaultGame.ended)) connection.write(JSON.stringify({ op: 'ENDED', value: true }));
+        if(game.ended) connection.send(JSON.stringify({ op: 'ENDED', value: true }));
     }
 });

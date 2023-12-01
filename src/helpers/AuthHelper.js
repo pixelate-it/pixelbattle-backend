@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const { clientSecret, clientId, guildId, api_domain, token } = require('../../settings.json');
 
-class AuthProcess {
+class AuthHelper {
     async authCodeGrant(code) {
         const data = await fetch(
             'https://discord.com/api/oauth2/token',
@@ -60,4 +60,4 @@ class AuthProcess {
     }
 }
 
-module.exports = AuthProcess;
+module.exports = AuthHelper;

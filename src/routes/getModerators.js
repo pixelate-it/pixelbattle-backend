@@ -1,4 +1,4 @@
-module.exports = (_, parameters) => ({
+module.exports = ({ parameters }) => ({
     method: 'GET',
     path: '/moderators',
     schema: {},

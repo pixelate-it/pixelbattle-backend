@@ -1,7 +1,7 @@
 const { insideToken } = require('../../settings.json');
 const { reasons } = require('../extra/Constants');
 
-module.exports = (_, parameters) => ({
+module.exports = ({ parameters }) => ({
     method: 'POST',
     path: '/bans/:id/edit',
     schema: {

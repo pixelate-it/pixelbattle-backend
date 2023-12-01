@@ -1,6 +1,6 @@
 const { reasons } = require('../extra/Constants');
 
-module.exports = (database) => ({
+module.exports = ({ canvas }) => ({
     method: 'GET',
     path: '/pixels',
     schema: {
@@ -16,21 +16,7 @@ module.exports = (database) => ({
         }
     },
     async handler(request, response) {
-        const x = request.query.x;
-        const y = request.query.y;
-
-        const data = await database
-            .collection('pixels')
-            .findOne(
-                { x, y }, 
-                { 
-                    projection: {
-                        _id: 0,
-                        author: 1,
-                        tag: 1
-                    } 
-                }
-            );
+        const data = canvas.select({ x: request.query.x, y: request.query.y })
 
         if(!data) return response
             .code(404)

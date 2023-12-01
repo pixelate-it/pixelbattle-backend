@@ -4,7 +4,7 @@ const { main_domain } = require('../../settings.json');
 
 const AuthHelper = require('../helpers/AuthHelper');
 
-module.exports = (database) => ({
+module.exports = ({ database }) => ({
     method: 'GET',
     path: '/login',
     schema: {},

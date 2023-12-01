@@ -14,5 +14,6 @@
     },
     "main_domain": "pixelbattle.fun",
     "api_domain": "https://api.pixelbattle.fun",
-    "owner": []
+    "owner": [],
+    "syncEvery": 300000
 }
