@@ -47,6 +47,7 @@ module.exports = ({ database, game, canvas }) => ({
                 }
 
                 case false: {
+                    await canvas.init(game.width, game.height);
                     global.sync = setInterval(async () => {
                         await canvas.sendPixels()
                             .then(() => console.log('* [ROOT] Canvas synchronized with database'));
