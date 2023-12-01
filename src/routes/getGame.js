@@ -19,8 +19,8 @@ module.exports = ({ game }) => ({
             cooldown: game.cooldown,
             ended: game.ended,
             canvas: {
-                height: Number(process.env.height ?? defaultGame.height),
-                width: Number(process.env.width ?? defaultGame.width)
+                height: game.height,
+                width: game.width
             },
             online: online.size
         };
