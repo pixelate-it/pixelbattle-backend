@@ -43,8 +43,8 @@ class CanvasManager {
         const pixels = new Array(this.width * this.height).fill(0)
         .map((_, i) => ({ x: i % this.width, y: Math.floor(i / this.width), color, author: null, tag: null }));
 
-        await message.client.database.collection('pixels').drop();
-        await message.client.database.collection('pixels').insertMany(pixels, { ordered: true });
+        await this.collection.drop();
+        await this.collection.insertMany(pixels, { ordered: true });
         this.#ready = true;
 
         return this.#pixels = pixels;
