@@ -22,7 +22,7 @@ module.exports = ({ canvas }) => ({
             timeWindow: '5s'
         }
     },
-    async handler() {
+    async handler(request, response) {
         if(request.body.token !== insideToken) return response
             .code(401)
             .send({ error: true, reason: reasons[0] });
@@ -37,6 +37,6 @@ module.exports = ({ canvas }) => ({
 
         return response
             .code(200)
-            .send({ error: true, reason: reasons[1] });
+            .send({ error: true, reason: reasons[1], canvas: { width: canvas.width, height: canvas.height } });
     }
 });
