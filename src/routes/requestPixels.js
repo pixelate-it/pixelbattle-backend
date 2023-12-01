@@ -18,8 +18,8 @@ module.exports = ({ canvas, game }) => ({
             .code(200)
             .send(
                 bmp.encode({
-                    width: Number(game.width),
-                    height: Number(game.height),
+                    width: game.width,
+                    height: game.height,
                     data: new Uint8Array(canvas.pixels.map(pix => translateHex(pix.color)).flat()),
                     bitPP: 32,
                 }).data

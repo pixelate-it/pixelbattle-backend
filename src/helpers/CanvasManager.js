@@ -35,7 +35,7 @@ class CanvasManager {
         return this.pixels;
     }
 
-    async clear(color) {
+    async clear(color = "#FFFFFF") {
         if(!this.#ready) throw new Error(`The class ${this.constructor.name} is not initialized (#ready must be true)`);
 
         this.#ready = false;

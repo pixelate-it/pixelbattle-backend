@@ -33,10 +33,10 @@ module.exports = ({ canvas }) => ({
             .code(400)
             .send({ error: true, reason: reasons[5] });
 
-        await canvas.clear();
+        await canvas.clear(color);
 
         return response
             .code(200)
-            .send({ error: true, reason: reasons[1], canvas: { width: canvas.width, height: canvas.height } });
+            .send({ error: false, reason: reasons[1], canvas: { width: canvas.width, height: canvas.height } });
     }
 });
