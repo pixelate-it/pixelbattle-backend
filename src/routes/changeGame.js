@@ -28,7 +28,7 @@ module.exports = ({ database, game, canvas }) => ({
             .code(401)
             .send({ error: true, reason: reasons[0] });
 
-        if(isBoolean(request.body.ended) && (request.body.ended !== game.ended)) {
+        if((typeof request.body.ended === 'boolean') && (request.body.ended !== game.ended)) {
             game.ended = request.body.ended;
             switch(request.body.ended) {
                 case true: {
@@ -74,7 +74,7 @@ module.exports = ({ database, game, canvas }) => ({
             game.cooldown = request.body.cooldown;
         }
 
-        if(request.body.name !== game.name) {
+        if((typeof request.body.name === 'string') && (request.body.name !== game.name)) {
             game.name = request.body.name;
         }
 
