@@ -1,5 +1,4 @@
 const { reasons } = require('../extra/Constants');
-const { defaultGame } = require('../../settings.json');
 const { sendPixelPlaced } = require('../helpers/LoggingHelper');
 const hexRegExp = /^#[0-9A-F]{6}$/i;
 

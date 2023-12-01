@@ -28,12 +28,12 @@ const parameters = {};
     const mongo = new MongoClient(
         settings.database
     );
-    const database = mongo.db('pixelbattledev');
+    const database = mongo.db('pixelbattle');
     await mongo.connect();
 
     const canvas = new CanvasManager(database.collection('pixels'));
     console.log('* [ROOT] Initializing the canvas');
-    await canvas.init();
+    await canvas.init(game.width, game.height);
 
     parameters.moderators = 
         await database
