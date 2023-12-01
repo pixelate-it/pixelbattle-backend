@@ -15,7 +15,7 @@ module.exports = ({ game }) => ({
         request.server.websocketServer.clients.forEach(v => online.add(v.request_ip));
 
         const schema = { 
-            name: process.env.name ?? defaultGame.name,
+            name: game.name,
             cooldown: game.cooldown,
             ended: game.ended,
             canvas: {

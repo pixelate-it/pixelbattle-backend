@@ -11,6 +11,7 @@ module.exports = ({ database, game, canvas }) => ({
             required: ['token'],
             properties: {
                 token: { type: 'string' },
+                name: { type: 'string', maxLength: 32 },
                 ended: { type: 'boolean' },
                 cooldown: { type: 'integer' }
             }
@@ -72,9 +73,13 @@ module.exports = ({ database, game, canvas }) => ({
             game.cooldown = request.body.cooldown;
         }
 
+        if(request.body.name !== game.name) {
+            game.name = request.body.name;
+        }
+
         await database
             .collection('games')
-            .updateOne({ id: 0 }, { $set: { ended: game.ended, cooldown: game.cooldown } });
+            .updateOne({ id: 0 }, { $set: { ended: game.ended, cooldown: game.cooldown, name: game.name } });
 
         return response           
             .code(202)
