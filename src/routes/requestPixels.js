@@ -21,7 +21,7 @@ module.exports = ({ canvas, game }) => ({
                     width: game.width,
                     height: game.height,
                     data: new Uint8Array(canvas.pixels.map(pix => translateHex(pix.color)).flat()),
-                    bitPP: 32,
+                    bitPP: 24,
                 }).data
             );
     }
