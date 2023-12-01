@@ -2,7 +2,7 @@ const bmp = require('@wokwi/bmp-ts').default;
 const { translateHex } = require('../extra/Utils');
 const { defaultGame } = require('../../settings.json');
 
-module.exports = ({ canvas }) => ({
+module.exports = ({ canvas, game }) => ({
     method: 'GET',
     path: '/pixels.bmp',
     schema: {},
@@ -18,8 +18,8 @@ module.exports = ({ canvas }) => ({
             .code(200)
             .send(
                 bmp.encode({
-                    width: Number(process.env.width ?? defaultGame.width),
-                    height: Number(process.env.height ?? defaultGame.height),
+                    width: Number(game.width),
+                    height: Number(game.height),
                     data: new Uint8Array(canvas.pixels.map(pix => translateHex(pix.color)).flat()),
                     bitPP: 32,
                 }).data

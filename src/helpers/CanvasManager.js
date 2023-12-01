@@ -4,6 +4,8 @@ class CanvasManager {
     #ready;
     #pixels;
     #changes;
+    width;
+    height;
 
     constructor(collection) {
         this.collection = collection;
@@ -12,10 +14,13 @@ class CanvasManager {
         this.#changes = [];
     }
 
-    async init() {
+    async init(width, height) {
         this.#pixels = await this.collection
             .find({}, { projection: { _id: 0 } })
             .toArray();
+
+        this.width = width;
+        this.height = height;
 
         this.#ready = true;
         return this.#pixels;
@@ -28,6 +33,21 @@ class CanvasManager {
         this.#changes = [];
 
         return this.pixels;
+    }
+
+    async clear(color) {
+        if(!this.#ready) throw new Error(`The class ${this.constructor.name} is not initialized (#ready must be true)`);
+
+        this.#ready = false;
+        this.#changes = [];
+        const pixels = new Array(this.width * this.height).fill(0)
+        .map((_, i) => ({ x: i % this.width, y: Math.floor(i / this.width), color, author: null, tag: null }));
+
+        await message.client.database.collection('pixels').drop();
+        await message.client.database.collection('pixels').insertMany(pixels, { ordered: true });
+        this.#ready = true;
+
+        return this.#pixels = pixels;
     }
 
     get pixels() {
