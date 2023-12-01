@@ -32,8 +32,6 @@ const parameters = {};
     await mongo.connect();
 
     const canvas = new CanvasManager(database.collection('pixels'));
-    console.log('* [ROOT] Initializing the canvas');
-    await canvas.init(game.width, game.height);
 
     parameters.moderators = 
         await database
@@ -62,6 +60,9 @@ const parameters = {};
         await database
         .collection('games')
         .findOne({ id: 0 }, { projection: { _id: 0 } });
+
+    console.log('* [ROOT] Initializing the canvas');
+    await canvas.init(game.width, game.height);
 
     const app = fastify();
 
