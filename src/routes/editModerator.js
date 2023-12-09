@@ -25,7 +25,7 @@ module.exports = ({ parameters }) => ({
             .code(401)
             .send({ error: true, reason: reasons[0] });
         if(request.body.action) parameters.moderators.push(request.params.id);
-        else parameters.moderators = parameters.filter(_ => _ !== request.params.id);
+        else parameters.moderators = parameters.moderators.filter(_ => _ !== request.params.id);
 
         return response
             .code(202)
