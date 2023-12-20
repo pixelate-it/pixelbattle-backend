@@ -18,9 +18,8 @@ class UserManager {
         }
 
         user = await this.collection.findOne(arguments[0], { projection: { _id: 0, token: 1, userID: 1, username: 1, cooldown: 1, tag: 1 } });
-        if(user) user = new UserDataCache(user);
+        if(user) { user = new UserDataCache(user); this.#cache.push(user); }
 
-        this.#cache.push(user);
         return user;
     }
 
