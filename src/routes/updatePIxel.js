@@ -2,6 +2,8 @@ const { reasons } = require('../extra/Constants');
 const { sendPixelPlaced } = require('../helpers/LoggingHelper');
 const hexRegExp = /^#[0-9A-F]{6}$/i;
 
+const cache = new Map();
+
 module.exports = ({ parameters, canvas, users, game }) => ({
     method: 'PUT',
     path: '/pixels',
@@ -25,7 +27,6 @@ module.exports = ({ parameters, canvas, users, game }) => ({
     },
     async preHandler(request, response, done) {
         const user = await users.get({ token: request.body.token });
-        console.log(user);
 
         if(!user) return response
             .code(401)
@@ -77,37 +78,41 @@ module.exports = ({ parameters, canvas, users, game }) => ({
 
         await users.edit({ token: request.body.token }, { cooldown });
 
-        canvas.paint(
-            { x, y },
-            { 
-                color,
-                author: request.userSession.username,
-                tag: adminCheck 
-                    ? null 
-                    : request.userSession.tag 
-            }
-        );
+        if(!cache.has(`${request.userSession.userID}-${x}-${y}-${color}`)) {
+            canvas.paint(
+                { x, y },
+                {
+                    color,
+                    author: request.userSession.username,
+                    tag: adminCheck
+                        ? null
+                        : request.userSession.tag
+                }
+            );
 
-        request.server.websocketServer.clients.forEach((client) =>
-        client.readyState === 1 &&
-            client.send(JSON.stringify({
-                    op: 'PLACE',
+            request.server.websocketServer.clients.forEach((client) =>
+            client.readyState === 1 &&
+                client.send(JSON.stringify({
+                        op: 'PLACE',
+                        x, y,
+                        color
+                    })
+                )
+            );
+
+            sendPixelPlaced(
+                {
+                    tag: adminCheck
+                        ? 'Pixelate It! Team'
+                        : request.userSession.tag,
+                    userID: request.userSession.userID,
                     x, y,
                     color
-                })
-            )
-        );
-
-        sendPixelPlaced(
-            {
-                tag: adminCheck 
-                    ? 'Pixelate It! Team' 
-                    : request.userSession.tag,
-                userID: request.userSession.userID,
-                x, y,
-                color
-            }
-        );
+                }
+            );
+            cache.set(`${request.userSession.userID}-${x}-${y}-${color}`);
+            setTimeout(() => cache.delete(`${request.userSession.userID}-${x}-${y}-${color}`), 600); // CORS spam fix
+        }
 
         return response
             .code(200)
