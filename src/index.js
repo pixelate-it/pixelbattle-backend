@@ -21,6 +21,7 @@ const fastify = require('fastify');
 const { MongoClient } = require('mongodb');
 const { reasons } = require('./extra/Constants');
 const CanvasManager = require('./helpers/CanvasManager');
+const UserManager = require('./helpers/UserManager');
 
 const parameters = {};
 
@@ -32,6 +33,7 @@ const parameters = {};
     await mongo.connect();
 
     const canvas = new CanvasManager(database.collection('pixels'));
+    const users = new UserManager(database.collection('users'));
 
     parameters.moderators = 
         await database
@@ -93,7 +95,7 @@ const parameters = {};
         of fs.readdirSync(path.join(__dirname, 'routes'))
         .filter(file => file.endsWith('.js'))
     ) {
-        const route = require(`./routes/${file}`)({ database, parameters, canvas, game });
+        const route = require(`./routes/${file}`)({ database, parameters, canvas, users, game });
         console.log(`* [${route.method}] ${route.path} - loaded`);
         app.route(route);
     }
@@ -111,4 +113,6 @@ const parameters = {};
         await canvas.sendPixels()
             .then(() => console.log('* [ROOT] Canvas synchronized with database'));
     }, settings.syncEvery);
+
+    users.handle();
 })();

@@ -2,7 +2,9 @@ const { reasons } = require('../extra/Constants');
 const { sendPixelPlaced } = require('../helpers/LoggingHelper');
 const hexRegExp = /^#[0-9A-F]{6}$/i;
 
-module.exports = ({ database, parameters, canvas, game }) => ({
+const cache = new Map();
+
+module.exports = ({ parameters, canvas, users, game }) => ({
     method: 'PUT',
     path: '/pixels',
     schema: {
@@ -24,22 +26,7 @@ module.exports = ({ database, parameters, canvas, game }) => ({
         }
     },
     async preHandler(request, response, done) {
-        const user = await database
-            .collection('users')
-            .findOne(
-                { 
-                    token: request.body.token 
-                }, 
-                { 
-                    projection: {
-                        _id: 0,
-                        userID: 1,
-                        username: 1,
-                        tag: 1, 
-                        cooldown: 1 
-                    } 
-                }
-            );
+        const user = await users.get({ token: request.body.token });
 
         if(!user) return response
             .code(401)
@@ -89,50 +76,43 @@ module.exports = ({ database, parameters, canvas, game }) => ({
                 break;
         }
 
-        await database
-            .collection('users')
-            .updateOne(
-                { 
-                    token: request.body.token 
-                }, 
-                { 
-                    $set: { 
-                        cooldown 
-                    } 
+        await users.edit({ token: request.body.token }, { cooldown });
+
+        if(!cache.has(`${request.userSession.userID}-${x}-${y}-${color}`)) {
+            canvas.paint(
+                { x, y },
+                {
+                    color,
+                    author: request.userSession.username,
+                    tag: adminCheck
+                        ? null
+                        : request.userSession.tag
                 }
             );
 
-        canvas.paint(
-            { x, y },
-            { 
-                color,
-                author: request.userSession.username,
-                tag: adminCheck 
-                    ? null 
-                    : request.userSession.tag 
-            }
-        );
+            request.server.websocketServer.clients.forEach((client) =>
+            client.readyState === 1 &&
+                client.send(JSON.stringify({
+                        op: 'PLACE',
+                        x, y,
+                        color
+                    })
+                )
+            );
 
-        request.server.websocketServer.clients.forEach((client) =>
-        client.readyState === 1 &&
-            client.send(JSON.stringify({
-                    op: 'PLACE',
+            sendPixelPlaced(
+                {
+                    tag: adminCheck
+                        ? 'Pixelate It! Team'
+                        : request.userSession.tag,
+                    userID: request.userSession.userID,
                     x, y,
                     color
-                })
-            )
-        );
-
-        sendPixelPlaced(
-            {
-                tag: adminCheck 
-                    ? 'Pixelate It! Team' 
-                    : request.userSession.tag,
-                userID: request.userSession.userID,
-                x, y,
-                color
-            }
-        );
+                }
+            );
+            cache.set(`${request.userSession.userID}-${x}-${y}-${color}`);
+            setTimeout(() => cache.delete(`${request.userSession.userID}-${x}-${y}-${color}`), 600); // CORS spam fix
+        }
 
         return response
             .code(200)
