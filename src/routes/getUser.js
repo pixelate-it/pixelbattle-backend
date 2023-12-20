@@ -1,6 +1,6 @@
 const { reasons } = require('../extra/Constants');
 
-module.exports = ({ database, parameters }) => ({
+module.exports = ({ parameters, users }) => ({
     method: 'GET',
     path: '/users/:id',
     schema: {},
@@ -11,20 +11,7 @@ module.exports = ({ database, parameters }) => ({
         }
     },
     async handler(request, response) {
-        const user = await database.collection('users').findOne(
-            { 
-                userID: request.params.id 
-            }, 
-            { 
-                projection: {
-                    _id: 0,
-                    userID: 1,
-                    cooldown: 1,
-                    tag: 1,
-                    username: 1
-                } 
-            }
-        );
+        const user = await users.get({ userID: request.params.id });
 
         if(!user) return response
             .code(404)

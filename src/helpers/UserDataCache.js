@@ -19,7 +19,7 @@ class UserDataCache {
     }
 
     breath() {
-        this.#expiresOn = Date.now() + parseInt(process.env.expiresIn || 360) * 1000;
+        this.#expiresOn = Date.now() + parseInt(process.env.expiresIn || 300) * 1000;
     }
 }
 

@@ -2,7 +2,7 @@ const { reasons } = require('../extra/Constants');
 const { sendPixelPlaced } = require('../helpers/LoggingHelper');
 const hexRegExp = /^#[0-9A-F]{6}$/i;
 
-module.exports = ({ database, parameters, canvas, game }) => ({
+module.exports = ({ parameters, canvas, users, game }) => ({
     method: 'PUT',
     path: '/pixels',
     schema: {
@@ -24,22 +24,8 @@ module.exports = ({ database, parameters, canvas, game }) => ({
         }
     },
     async preHandler(request, response, done) {
-        const user = await database
-            .collection('users')
-            .findOne(
-                { 
-                    token: request.body.token 
-                }, 
-                { 
-                    projection: {
-                        _id: 0,
-                        userID: 1,
-                        username: 1,
-                        tag: 1, 
-                        cooldown: 1 
-                    } 
-                }
-            );
+        const user = await users.get({ token: request.body.token });
+        console.log(user);
 
         if(!user) return response
             .code(401)
@@ -89,18 +75,7 @@ module.exports = ({ database, parameters, canvas, game }) => ({
                 break;
         }
 
-        await database
-            .collection('users')
-            .updateOne(
-                { 
-                    token: request.body.token 
-                }, 
-                { 
-                    $set: { 
-                        cooldown 
-                    } 
-                }
-            );
+        await users.edit({ token: request.body.token }, { cooldown });
 
         canvas.paint(
             { x, y },

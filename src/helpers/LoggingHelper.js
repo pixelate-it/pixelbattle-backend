@@ -7,7 +7,7 @@ class LoggingHelper {
 
         console.log(
             `* [PIXEL] ${userID} - ` +
-            `Cordinates: X${x} Y${y}; ` +
+            `Coordinates: X${x} Y${y}; ` +
             `Color: ${color}; ` +
             `Tag: ${tag};`
         );
