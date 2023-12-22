@@ -112,7 +112,7 @@ const parameters = {};
     if(!game.ended) global.sync = setInterval(async() => { 
         await canvas.sendPixels()
             .then(() => console.log('* [ROOT] Canvas synchronized with database'));
-    }, settings.syncEvery);
+    }, parseInt(process.env.syncEvery || settings.syncEvery));
 
     users.handle();
 })();
