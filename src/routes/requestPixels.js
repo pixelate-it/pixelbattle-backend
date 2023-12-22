@@ -1,6 +1,5 @@
 const bmp = require('@wokwi/bmp-ts').default;
 const { translateHex } = require('../extra/Utils');
-const { defaultGame } = require('../../settings.json');
 
 module.exports = ({ canvas, game }) => ({
     method: 'GET',
