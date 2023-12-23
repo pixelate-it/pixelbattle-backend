@@ -1,6 +1,6 @@
 const { reasons } = require('../extra/Constants');
 
-module.exports = ({ database, users }) => ({
+module.exports = ({ users }) => ({
     method: 'POST',
     path: '/users/:id/tag',
     schema: {
@@ -32,10 +32,14 @@ module.exports = ({ database, users }) => ({
         done();
     },
     async handler(request, response) {
-        await users.edit({
-            token: request.body.token,
-            userID: request.params.id
-        }, { tag: (!request.body.tag) ? null : request.body.tag.replace(/\s+/i, ' ').trim() });
+        await users.edit(
+            {
+                token: request.body.token,
+                userID: request.params.id
+            },
+            { tag: (!request.body.tag) ? null : request.body.tag.replace(/\s+/i, ' ').trim()  },
+            { force: true }
+        );
 
         return response
             .code(200)

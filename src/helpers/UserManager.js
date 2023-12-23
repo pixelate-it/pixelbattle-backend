@@ -1,4 +1,4 @@
-const UserDataCache = require('./UserDataCache');
+const UserDataCache = require('../extra/UserDataCache');
 
 class UserManager {
     collection;
@@ -23,11 +23,13 @@ class UserManager {
         return user;
     }
 
-    async edit({}, {}) {
+    async edit({}, {}, { force = false }) {
         const user = await this.get(arguments[0]);
         if(!user) return null;
 
         Object.keys(arguments[1]).map(prop => user.set(prop, arguments[1][prop]));
+        if(force) this.collection.updateOne(arguments[0], { $set: arguments[1] });
+
         return user;
     }
 
