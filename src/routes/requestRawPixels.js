@@ -1,4 +1,4 @@
-module.exports = ({ canvas }) => ({
+module.exports = ({ canvas, game }) => ({
     method: 'GET',
     path: '/pixels.json',
     schema: {},
@@ -12,6 +12,10 @@ module.exports = ({ canvas }) => ({
         return response
             .header('Content-Type', 'application/json')
             .code(200)
-            .send(canvas.pixels);
+            .send({ 
+		pixels: canvas.pixels,
+		width: game.width,
+		height: game.height
+	 });
     }
 });

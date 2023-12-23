@@ -18,6 +18,7 @@ class CanvasManager {
         this.#pixels = await this.collection
             .find({}, { projection: { _id: 0 } })
             .toArray();
+        this.#pixels = this.#pixels.sort((a, b) => a.x - b.x).sort((a, b) => a.y - b.y)
 
         this.width = width;
         this.height = height;

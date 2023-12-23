@@ -1,6 +1,6 @@
 {
   "name": "pixelbattle-backend",
-  "version": "3.3.0",
+  "version": "3.3.3",
   "description": "API https://pixelbattle.fun/",
   "main": "./src/index.js",
   "scripts": {

@@ -1,6 +1,6 @@
 const { reasons } = require('../extra/Constants');
 
-module.exports = ({ database }) => ({
+module.exports = ({ users }) => ({
     method: 'POST',
     path: '/users/:id/tag',
     schema: {
@@ -20,19 +20,10 @@ module.exports = ({ database }) => ({
         }
     },
     async preHandler(request, response, done) {
-        const user = await database
-            .collection('users')
-            .findOne(
-                { 
-                    token: request.body.token,
-                    userID: request.params.id
-                },
-                {
-                    projection: {
-                        _id: 1
-                    }
-                }
-            );
+        const user = await users.get({
+            token: request.body.token,
+            userID: request.params.id
+        })
 
         if(!user) return response
             .code(404)
@@ -41,19 +32,14 @@ module.exports = ({ database }) => ({
         done();
     },
     async handler(request, response) {
-        await database
-            .collection('users')
-            .updateOne(
-                {
-                    token: request.body.token,
-                    userID: request.params.id
-                },
-                {
-                    $set: {
-                        tag: (!request.body.tag) ? null : request.body.tag.replace(/\s+/i, ' ').trim()
-                    }
-                }
-            );
+        await users.edit(
+            {
+                token: request.body.token,
+                userID: request.params.id
+            },
+            { tag: (!request.body.tag) ? null : request.body.tag.replace(/\s+/i, ' ').trim()  },
+            { force: true }
+        );
 
         return response
             .code(200)
