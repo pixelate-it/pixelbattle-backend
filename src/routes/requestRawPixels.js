@@ -13,9 +13,9 @@ module.exports = ({ canvas, game }) => ({
             .header('Content-Type', 'application/json')
             .code(200)
             .send({ 
-		pixels: canvas.pixels,
-		width: game.width,
-		height: game.height
-	 });
+                pixels: canvas.pixels.map(pix => ({ x: pix.x, y: pix.y, color: pix.color })),
+                width: game.width,
+                height: game.height
+            });
     }
 });
