@@ -23,7 +23,7 @@ class UserManager {
         return user;
     }
 
-    async edit({}, {}, { force = false }) {
+    async edit({}, {}, force = false) {
         const user = await this.get(arguments[0]);
         if(!user) return null;
 
