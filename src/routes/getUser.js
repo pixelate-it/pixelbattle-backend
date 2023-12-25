@@ -18,6 +18,14 @@ module.exports = ({ parameters, users }) => ({
             .send({ error: true, reason: reasons[7] });
 
         return response
-            .send({ ...user, banned: parameters.bans.includes(request.params.id), isMod: parameters.moderators.includes(request.params.id) });
+            .send({
+                ...Object.fromEntries(
+                    Object
+                        .entries(user)
+                        .filter(n => n[1] !== user.token)
+                ),
+                banned: parameters.bans.includes(request.params.id),
+                isMod: parameters.moderators.includes(request.params.id)
+            });
     }
 });
