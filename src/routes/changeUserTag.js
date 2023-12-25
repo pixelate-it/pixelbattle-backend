@@ -38,7 +38,7 @@ module.exports = ({ users }) => ({
                 userID: request.params.id
             },
             { tag: (!request.body.tag) ? null : request.body.tag.replace(/\s+/i, ' ').trim()  },
-            { force: true }
+            true
         );
 
         return response
