@@ -6,9 +6,11 @@ import { socket } from "./socket";
 import { bindUser } from "../../plugins/bindUser";
 import { authRequired } from "../../plugins/authRequired";
 import { update } from "./update";
+import { getAllRaw } from "./getAllRaw";
 
 export function pixels(app: FastifyInstance, _: unknown, done: () => void) {
     app.route(getAll)
+    app.route(getAllRaw)
     app.route(getOne)
     app.route(getTags)
     app.route(socket)

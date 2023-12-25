@@ -4,6 +4,7 @@ import { AuthHelper } from "../helpers/AuthHelper";
 import { MongoUser } from "../models/MongoUser";
 import { utils } from "../extra/Utils";
 import { config } from "../config";
+import { AuthLoginError } from "../errors";
 
 
 export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Querystring: { code: string }; }> = {
@@ -21,18 +22,12 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
         }
     },
     async handler(request, response) {
-        // const code = request.query.code;
-        // if(!code) return response
-        //     .code(400)
-        //     .send({ error: true, reason: 'Please return to the login page and try again' });
-
         const auth = new AuthHelper();
-
         const data = await auth.authCodeGrant(request.query.code);
 
-        if ("error" in data) return response
-            .code(400)
-            .send({ error: true, reason: 'Please return to the login page and try again' });
+        if ("error" in data) {
+            throw new AuthLoginError()
+        }
 
         const { id, username } = await auth.getUserInfo();
 

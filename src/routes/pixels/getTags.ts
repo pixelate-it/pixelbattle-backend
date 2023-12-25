@@ -1,6 +1,4 @@
 import { RouteOptions } from "fastify";
-import { IncomingMessage, Server, ServerResponse } from "http";
-import { MongoUser } from "../../models/MongoUser";
 import { MongoPixel } from "../../models/MongoPixel";
 
 

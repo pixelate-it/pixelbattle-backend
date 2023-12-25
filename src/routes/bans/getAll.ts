@@ -1,6 +1,4 @@
 import { RouteOptions } from "fastify";
-import bmp from "@wokwi/bmp-ts"
-import { MongoPixel } from "../../models/MongoPixel";
 import { MongoUser } from "../../models/MongoUser";
 
 

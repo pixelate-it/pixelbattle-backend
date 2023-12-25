@@ -1,7 +1,5 @@
-import { ObjectId, Document } from "mongodb";
 
-export interface MongoPixel extends Document {
-    _id: ObjectId;
+export interface MongoPixel  {
     x: number;
     y: number;
     author: string | null;

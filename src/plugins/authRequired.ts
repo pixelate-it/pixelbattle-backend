@@ -1,5 +1,3 @@
-import { FastifyInstance } from "fastify";
-import { MongoUser } from "../models/MongoUser";
 import { NotAuthorizedError } from "../errors";
 import fp from "fastify-plugin"
 

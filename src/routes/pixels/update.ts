@@ -1,11 +1,11 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { MongoUser } from "../../models/MongoUser";
-import { MongoPixel } from "../../models/MongoPixel";
 import { LoggingHelper } from "../../helpers/LoggingHelper";
 import { config } from "../../config";
 import { TokenBannedError, UserCooldownError, EntityNotFoundError, EndedError, WrongTokenError } from "../../errors";
 import { genericSuccessResponse } from "../../types/ApiReponse";
+import { toJson } from "../../extra/toJson";
+import { SocketPayload } from "../../types/SocketActions";
 
 
 interface Body {
@@ -14,7 +14,6 @@ interface Body {
     y: number;
     token?: string;
 }
-
 
 
 export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Body: Body }> = {
@@ -45,7 +44,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
             throw new WrongTokenError()
         }
 
-        if (config.game.ended) {
+        if (request.server.game.ended) {
             throw new EndedError()
         }
 
@@ -60,7 +59,6 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
             throw new UserCooldownError(time)
         }
 
-
         done();
     },
     async handler(request, response) {
@@ -72,63 +70,57 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
         const x = Number(request.body.x);
         const y = Number(request.body.y)
         const color = request.body.color;
-
-        const pixel: Pick<MongoPixel, "_id"> | null = await request.server.database.pixels
-            .findOne({ x, y }, { projection: { _id: 1 } });
-
+        const pixel = request.server.cache.canvasManager.select({ x, y })
 
         if (!pixel) {
             throw new EntityNotFoundError("pixel")
         }
 
-        const cooldown =  performance.now() + request.user.role !== "USER" ? 50 : config.game.cooldown;
+        const cooldown = performance.now() + (request.user.role !== "USER" ? config.moderatorCooldown : request.server.game.cooldown);
 
-        await request.server.database.users
-            .updateOne(
-                {
-                    token: request.body.token
-                },
-                {
-                    $set: {
-                        cooldown
-                    }
-                }
-            );
+        await request.server.cache.usersManager.edit({ token: request.user.token }, { cooldown })
+        const cacheKey = `${request.user.userID}-${x}-${y}-${color}` as const
 
-        await request.server.database.pixels
-            .updateOne(
-                { x, y },
-                {
-                    $set: {
-                        color,
-                        author: request.user.username,
-                        tag: request.user.role !== "USER"
-                            ? null
-                            : request.user.tag
-                    }
-                }
-            );
+        if (!request.server.cache.map.has(cacheKey)) {
+            const tag = request.user.role !== "USER"
+                ? 'Pixelate It! Team'
+                : request.user.tag
 
-        request.server.websocketServer.clients.forEach((client) =>
-            client.readyState === 1 &&
-            client.send(JSON.stringify({
-                op: 'PLACE',
-                x, y,
-                color
+
+            request.server.cache.canvasManager.paint({
+                x,
+                y,
+                color,
+                tag,
+                author: request.user.username
             })
-            )
-        );
 
-        LoggingHelper.sendPixelPlaced(
-            {
-                tag: request.user.role !== "USER"
-                    ? 'Pixelate It! Team'
-                    : request.user.tag,
-                userID: request.user.userID,
-                x, y,
-                color
-            }
-        );
+            request.server.websocketServer.clients.forEach((client) => {
+                if (client.readyState !== WebSocket.OPEN) return;
+
+                const payload: SocketPayload<"PLACE"> = {
+                    op: 'PLACE',
+                    x,
+                    y,
+                    color,
+                }
+
+                client.send(toJson(payload))
+            });
+
+            LoggingHelper.sendPixelPlaced(
+                {
+                    tag,
+                    userID: request.user.userID,
+                    x, y,
+                    color
+                }
+            );
+
+
+            request.server.cache.map.set(cacheKey, true);
+            setTimeout(() => request.server.cache.map.delete(cacheKey), 600); // CORS spam fix
+        }
 
         return response
             .code(200)

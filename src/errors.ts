@@ -22,6 +22,11 @@ export class ApiError extends Error {
     public data?: Record<string, unknown>
 }
 
+export class AuthLoginError extends ApiError {
+    public message = "Please return to the login page and try again"
+    public statusCode = 400;
+}
+
 export class NotAuthorizedError extends ApiError {
     public statusCode = 400;
     public message = "You need to authorize first";

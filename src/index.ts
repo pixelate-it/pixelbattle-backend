@@ -4,10 +4,9 @@ import fastify from 'fastify';
 import { plugins } from './plugins/plugins';
 import { routes } from './plugins/routes';
 import { database } from './plugins/db';
-import { ApiError } from './errors';
-import fastifyCors from '@fastify/cors';
-import { ApiErrorResponse } from './types/ApiReponse';
 import { errorHandler } from './plugins/errorHandler';
+import { cache } from './plugins/cache';
+import { game } from './plugins/game';
 
 
 
@@ -31,6 +30,8 @@ async function init() {
     await app.register(errorHandler)
     await app.register(plugins)
     await app.register(database)
+    await app.register(game)
+    await app.register(cache)
     await app.register(routes)
 
     app.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 8080, path: "localhost" }).then(console.log)

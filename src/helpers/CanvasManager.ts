@@ -6,57 +6,78 @@ interface Point {
     y: number;
 }
 
-// const { pixel: pixelSchema } = require('../extra/Schemas');
+
 export class CanvasManager {
-    private ready = false;
-    private pixels: MongoPixel[] = [];
+    private _pixels: MongoPixel[] = [];
     private changes: Point[];
+    private width: number = 0;
+    private height: number = 0;
     private collection: Collection<MongoPixel>;
 
     constructor(collection: Collection<MongoPixel>) {
         this.collection = collection;
-        this.ready = false;
-        this.pixels = [];
+        this._pixels = [];
         this.changes = [];
     }
 
-    async init() {
-        this.pixels = await this.collection
-            .find({}, { projection: { _id: 0 } })
-            .toArray();
-
-        this.ready = true;
-
-        return this.pixels;
+    public get pixels() {
+        return this._pixels;
     }
 
-    async sendPixels() {
-        // if(!this.#pixels.length) throw new Error(`The class ${this.constructor.name} is not currently initialized`);
+    public async init(width: number, height: number) {
+        this._pixels = await this.collection
+            .find({}, { projection: { _id: 0 } })
+            .toArray();
+        
+        this.width = width
+        this.height = height
 
+        return this._pixels;
+    }
+
+    public async sendPixels() {
         this.changes.forEach((pixel) => this.collection.updateOne({ x: pixel.x, y: pixel.y }, { $set: { ...this.select({ x: pixel.x, y: pixel.y }) } }));
         this.changes = [];
 
-        return this.pixels;
+        return this._pixels;
     }
 
-    // get pixels() {
-    //     if(!this.#ready) throw new Error(`The class ${this.constructor.name} is not initialized (#ready must be true)`);
-    //     return this.#pixels;
-    // }
-
-    select({ x, y }: Point) {
-        return this.pixels.find(pixel => ((pixel.x === x) && (pixel.y === y)));
+    public select({ x, y }: Point) {
+        return this._pixels.find(pixel => ((pixel.x === x) && (pixel.y === y)));
     }
 
-    paint({ x, y }: Point) {
-        // if(!this.#ready) throw new Error(`The class ${this.constructor.name} is not initialized (#ready must be true)`);
-        const pixel = this.select({ x, y });
+    public async clear(color: string) {
+        this.changes = [];
 
-        // if(!pixel) throw new Error(`Pixel with coordinates X${x} Y${y} does not exist`);
-        // if(!color) throw new Error('A pixel cannot be zero color');
+        const pixels = new Array(this.width * this.height)
+            .fill(0)
+            .map((_, i) => ({ 
+                x: i % this.width, 
+                y: Math.floor(i / this.width), 
+                color, 
+                author: null, 
+                tag: null 
+            }));
 
-        // Object.keys(pixelSchema).map((arg) => (pixel[arg] = arguments[1][arg]));
-        this.changes.push({ x, y })
+        await this.collection.drop();
+        await this.collection.insertMany(pixels, { ordered: true });
+
+        this._pixels = pixels;
+
+        return pixels;
+    }
+
+    public paint(pixel: MongoPixel) {
+        const canvasPixel = this.select({ x: pixel.x, y: pixel.y });
+
+        if (!canvasPixel) return;
+
+        canvasPixel.author = pixel.author;
+        canvasPixel.color = pixel.color;
+        canvasPixel.tag = pixel.tag;
+
+        this.changes.push({ x: pixel.x, y: pixel.y })
+
         return pixel;
     }
 }

@@ -12,7 +12,7 @@ export function bans(app: FastifyInstance, _: unknown, done: () => void) {
         await app.register(bindUser)
         await app.register(authRequired)
         await app.register(minUserRole, {
-            minLevel: "MOD"
+            minRole: "MOD"
         })
 
         app.route(edit)

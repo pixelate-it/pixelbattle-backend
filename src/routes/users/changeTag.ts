@@ -1,6 +1,5 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { MongoUser } from "../../models/MongoUser";
 import { genericSuccessResponse } from "../../types/ApiReponse";
 
 
@@ -30,18 +29,26 @@ export const changeTag: RouteOptions<Server, IncomingMessage, ServerResponse, { 
         }
     },
     async handler(request, response) {
-        await request.server.database.users
-            .updateOne(
-                {
-                    token: request.body.token,
-                    userID: request.params.id
-                },
-                {
-                    $set: {
-                        tag: (!request.body.tag) ? null : request.body.tag.replace(/\s+/i, ' ').trim()
-                    }
-                }
-            );
+        await request.server.cache.usersManager.edit(
+            {
+                token: request.body.token,
+                userID: request.params.id
+            },
+            { tag: (!request.body.tag) ? null : request.body.tag.replace(/\s+/i, ' ').trim()  },
+            { force: true }
+        );
+        // await request.server.database.users
+        //     .updateOne(
+        //         {
+        //             token: request.body.token,
+        //             userID: request.params.id
+        //         },
+        //         {
+        //             $set: {
+        //                 tag: (!request.body.tag) ? null : request.body.tag.replace(/\s+/i, ' ').trim()
+        //             }
+        //         }
+        //     );
 
         return response
             .code(200)

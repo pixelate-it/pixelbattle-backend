@@ -1,7 +1,6 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { MongoUser } from "../../models/MongoUser";
-import { config } from "../../config";
+import { EntityNotFoundError } from "../../errors";
 
 interface ApiInfo {
     name: string;
@@ -28,13 +27,19 @@ export const get: RouteOptions<Server, IncomingMessage, ServerResponse, { Querys
         const online = new Set();
         request.server.websocketServer.clients.forEach(v => online.add(v));
 
+        const { game } = request.server
+
+        if (!game) {
+            throw new EntityNotFoundError("games")
+        }
+
         const info: ApiInfo = {
-            name: config.game.name,
-            cooldown: config.game.cooldown,
-            ended: config.game.ended,
+            name: game.name,
+            cooldown: game.cooldown,
+            ended: game.ended,
             canvas: {
-                height: config.game.height,
-                width: config.game.width
+                height: game.height,
+                width: game.width
             },
             online: online.size
         }

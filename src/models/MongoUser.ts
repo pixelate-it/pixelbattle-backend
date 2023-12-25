@@ -1,8 +1,6 @@
-import { ObjectId, Document } from "mongodb";
 
 export type UserRole = "USER" | "MOD" | "ADMIN"
-export interface MongoUser extends Document {
-    _id: ObjectId
+export interface MongoUser {
     username: string;
     tag: string | null;
     userID: string;
@@ -10,4 +8,6 @@ export interface MongoUser extends Document {
     role: UserRole;
     isBanned: boolean;
     token: string;
+    badges: string[];
+    points: number;
 }

@@ -20,5 +20,8 @@ export const config = {
         height: 80,
         width: 160,
     },
+    expiresIn: 3000,
+    syncTime: 5000,
+    moderatorCooldown: 50,
     frontend: process.env.FRONTEND_URL!
 }

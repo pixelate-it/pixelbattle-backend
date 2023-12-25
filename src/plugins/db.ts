@@ -5,11 +5,13 @@ import { MongoPixel } from "../models/MongoPixel";
 import { MongoUser } from "../models/MongoUser";
 import { config } from "../config";
 import fp from "fastify-plugin"
+import { MongoGame } from "../models/MongoGame";
 
 
 interface PixelDatabase {
     users: Collection<MongoUser>;
     pixels: Collection<MongoPixel>;
+    games: Collection<MongoGame>;
 }
 
 declare module 'fastify' {
@@ -35,6 +37,7 @@ export const database = fp(async (app: FastifyInstance, _) => {
     app.decorate("database", ({
         users: app.mongo.db.collection<MongoUser>("users"),
         pixels: app.mongo.db.collection<MongoPixel>("pixels"),
+        games: app.mongo.db.collection<MongoGame>("games")
     }))
 
     return

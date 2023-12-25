@@ -1,6 +1,5 @@
 import { RouteOptions } from "fastify";
-import { config } from "../../config";
-import { SocketServerActions, SocketPayload } from "../../types/SocketActions";
+import { SocketPayload } from "../../types/SocketActions";
 
 export const socket: RouteOptions = {
     method: 'GET',
@@ -21,7 +20,7 @@ export const socket: RouteOptions = {
 
         // connection.socket.request_ip = (request.headers['cf-connecting-ip'] || request.ip);
 
-        if (config.game.ended) {
+        if (request.server.game.ended) {
             const action: SocketPayload<"ENDED"> = {
                 op: "ENDED",
                 value: true,
