@@ -12,6 +12,6 @@ module.exports = ({ game }) => ({
     wsHandler(connection, request) {
         connection.setEncoding('utf8');
         connection.socket.request_ip = (request.headers['cf-connecting-ip'] || request.ip);
-        if(game.ended) connection.write(JSON.stringify({ op: 'ENDED', value: true }));
+        connection.write(JSON.stringify({ op: 'ENDED', value: game.ended }));
     }
 });
