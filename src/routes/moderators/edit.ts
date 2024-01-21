@@ -26,13 +26,10 @@ export const edit: RouteOptions<Server, IncomingMessage, ServerResponse, { Body:
         }
     },
     async handler(request, response) {
-        const user = request.server.database.users.findOneAndUpdate({
-            userID: request.params.id
-        }, {
-            $set: {
-                role: request.body.action ? "MOD" : "USER"
-            }
-        })
+        const user = await request.server.cache.usersManager.edit(
+            { userID: request.params.id }, 
+            { role: request.body.action ? "MOD" : "USER" }
+        )
 
         if (!user) {
             throw new EntityNotFoundError("user")

@@ -46,7 +46,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
             throw new EndedError()
         }
 
-        if (request.user.badges) {
+        if (request.user.banned) {
             throw new TokenBannedError()
         }
 
@@ -94,7 +94,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
             })
 
             request.server.websocketServer.clients.forEach((client) => {
-                if (client.readyState !== WebSocket.OPEN) return;
+                if (client.readyState !== 1) return;
 
                 const payload: SocketPayload<"PLACE"> = {
                     op: 'PLACE',
