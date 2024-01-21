@@ -4,7 +4,8 @@
   "description": "API https://pixelbattle.fun/",
   "main": "./src/index.js",
   "scripts": {
-    "prod": "node ."
+    "prod": "node .",
+    "watch": "node --watch ."
   },
   "keywords": [],
   "author": "mirdukkkkk",
@@ -15,7 +16,7 @@
     "@fastify/rate-limit": "^8.0.3",
     "@fastify/under-pressure": "^8.3.0",
     "@fastify/websocket": "^8.2.0",
-    "@wokwi/bmp-ts": "^3.0.0",
+    "fast-png": "^6.2.0",
     "fastify": "^4.24.3",
     "mongodb": "^6.2.0",
     "node-fetch": "^2.6.1",
