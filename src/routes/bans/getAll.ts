@@ -14,7 +14,10 @@ export const getAll: RouteOptions = ({
     },
     async handler(request, response) {
         const bans: Pick<MongoUser, "userID">[] = await request.server.database.users.find({
-            isBanned: true
+            banned: {
+                "$exists": true,
+                "$ne": null
+            }
         },
             {
                 projection: {

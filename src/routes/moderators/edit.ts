@@ -4,7 +4,6 @@ import { EntityNotFoundError } from "../../errors";
 import { genericSuccessResponse } from "../../types/ApiReponse";
 
 interface Body {
-    token: string;
     action: boolean;
 }
 
@@ -14,9 +13,8 @@ export const edit: RouteOptions<Server, IncomingMessage, ServerResponse, { Body:
     schema: {
         body: {
             type: 'object',
-            required: ['token', 'action'],
+            required: ['action'],
             properties: {
-                token: { type: 'string' },
                 action: { type: 'boolean' }
             }
         }

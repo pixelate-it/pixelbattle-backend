@@ -1,7 +1,8 @@
 import fastifyPlugin from "fastify-plugin";
-import { CanvasManager } from "../helpers/CanvasManager";
+
 import { config } from "../config";
-import { UserManager } from "../helpers/UserManager";
+import { CanvasManager } from "../managers/CanvasManager";
+import { UserManager } from "../managers/UserManager";
 
 declare module "fastify" {
     interface FastifyInstance {

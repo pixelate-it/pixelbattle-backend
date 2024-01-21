@@ -1,5 +1,6 @@
 import { Collection } from "mongodb";
 import { MongoPixel } from "../models/MongoPixel";
+import { BaseManager } from "./BaseManager";
 
 interface Point {
     x: number;
@@ -7,15 +8,15 @@ interface Point {
 }
 
 
-export class CanvasManager {
+export class CanvasManager extends BaseManager<MongoPixel>{
     private _pixels: MongoPixel[] = [];
     private changes: Point[];
     private width: number = 0;
     private height: number = 0;
-    private collection: Collection<MongoPixel>;
 
     constructor(collection: Collection<MongoPixel>) {
-        this.collection = collection;
+        super(collection)
+        
         this._pixels = [];
         this.changes = [];
     }

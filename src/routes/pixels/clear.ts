@@ -5,7 +5,6 @@ import { genericSuccessResponse } from "../../types/ApiReponse";
 
 interface Body {
     color: string;
-    token?: string;
 }
 
 export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Body: Body }> = {
@@ -14,9 +13,8 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
     schema: {
         body: {
             type: 'object',
-            required: ['token'],
+            required: [],
             properties: {
-                token: { type: 'string' },
                 color: { type: 'string', maxLength: 7, pattern: "^#[0-9A-Fa-f]{6}$" }
             }
         }

@@ -1,17 +1,12 @@
-import { Collection } from "mongodb";
+import { Collection, Filter } from "mongodb";
 import { MongoUser } from "../models/MongoUser";
 import { UserDataCache } from "../extra/UserDataCache";
+import { BaseManager } from "./BaseManager";
 
-export class UserManager {
-    private collection: Collection<MongoUser>;
-    private cache: Array<UserDataCache>;
+export class UserManager extends BaseManager<MongoUser>{
+    private cache: UserDataCache[] = [];
 
-    constructor(collection: Collection<MongoUser>) {
-        this.collection = collection;
-        this.cache = [];
-    }
-
-    public async get(filter: Partial<MongoUser>) {
+    public async get(filter: Filter<MongoUser>) {
         // Find the user in cache with same keys as argument passed
         let cachedUser = this.cache
             .find(u => (Object
@@ -57,19 +52,19 @@ export class UserManager {
         return user;
     }
 
+    private removeExpiredUsers() {
+        this.cache.map((user) => {
+            if (user.expiresOn > performance.now()) {
+                return
+            }
+
+            const expiredUserIndex = this.cache.findIndex(u => u.user.userID === user.user.userID)
+            this.cache.splice(expiredUserIndex, 1); // remove expired user from cache
+        });
+    }
+
 
     public handle(checkInterval = 5000) {
-        const removeExpiredUsers = () => {
-            this.cache.map((user) => {
-                if (user.expiresOn > performance.now()) {
-                    return
-                }
-
-                const expiredUserIndex = this.cache.findIndex(u => u.user.userID === user.user.userID)
-                this.cache.splice(expiredUserIndex, 1); // remove expired user from cache
-            });
-        }
-
-        return setInterval(removeExpiredUsers, checkInterval);
+        return setInterval(this.removeExpiredUsers.bind(this), checkInterval);
     }
 }

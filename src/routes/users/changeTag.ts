@@ -5,7 +5,6 @@ import { genericSuccessResponse } from "../../types/ApiReponse";
 
 
 interface Body {
-    token: string;
     tag: string;
 }
 
@@ -15,9 +14,8 @@ export const changeTag: RouteOptions<Server, IncomingMessage, ServerResponse, { 
     schema: {
         body: {
             type: 'object',
-            required: ['token', 'tag'],
+            required: ['tag'],
             properties: {
-                token: { type: 'string' },
                 tag: { type: 'string', maxLength: 8 }
             }
         }
@@ -31,7 +29,7 @@ export const changeTag: RouteOptions<Server, IncomingMessage, ServerResponse, { 
     async handler(request, response) {
         await request.server.cache.usersManager.edit(
             {
-                token: request.body.token,
+                token: request.headers.authorization?.slice("Bearer ".length),
                 userID: request.params.id
             },
             { tag: (!request.body.tag) ? null : request.body.tag.replace(/\s+/i, ' ').trim()  },

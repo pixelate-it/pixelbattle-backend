@@ -1,4 +1,5 @@
 import { RouteOptions } from "fastify";
+import { MongoPixel } from "../../models/MongoPixel";
 
 
 export const getAllRaw: RouteOptions = ({
@@ -16,7 +17,7 @@ export const getAllRaw: RouteOptions = ({
             .header('Content-Type', 'image/json')
             .code(200)
             .send({
-                pixels: request.server.cache.canvasManager.pixels.map(pix => ({ x: pix.x, y: pix.y, color: pix.color })),
+                pixels: request.server.cache.canvasManager.pixels.map((pix: MongoPixel) => ({ x: pix.x, y: pix.y, color: pix.color })),
                 width: request.server.game.width,
                 height: request.server.game.height
             });

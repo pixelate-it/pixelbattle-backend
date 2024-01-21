@@ -1,12 +1,11 @@
-import fastifyPlugin from "fastify-plugin";
+import fp from "fastify-plugin";
 import { ApiError, ValidationError } from "../errors";
 import { ApiErrorResponse } from "../types/ApiReponse";
 
-export const errorHandler = fastifyPlugin(async (app) => {
+export const errorHandler = fp(async (app) => {
     app.setSchemaErrorFormatter((errors, data) => {
         return new ValidationError([errors, data])
     })
-
 
     app.setErrorHandler<ApiError>(async (error, req, res) => {
         const payload: ApiErrorResponse = {

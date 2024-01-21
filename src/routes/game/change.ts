@@ -6,7 +6,6 @@ import { SocketPayload } from "../../types/SocketActions";
 import { genericSuccessResponse } from "../../types/ApiReponse";
 
 interface ApiBody {
-    token: string;
     name?: string;
     ended?: boolean;
     cooldown?: number;
@@ -18,9 +17,8 @@ export const change: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
     schema: {
         body: {
             type: 'object',
-            required: ['token'],
+            required: [],
             properties: {
-                token: { type: 'string' },
                 name: { type: 'string', maxLength: 32 },
                 ended: { type: 'boolean' },
                 cooldown: { type: 'integer', minimum: 1 }

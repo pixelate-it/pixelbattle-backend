@@ -1,6 +1,7 @@
 import { RouteOptions } from "fastify";
 import bmp from "@wokwi/bmp-ts"
 import { utils } from "../../extra/Utils";
+import { MongoPixel } from "../../models/MongoPixel";
 
 export const getAll: RouteOptions = ({
     method: 'GET',
@@ -20,7 +21,7 @@ export const getAll: RouteOptions = ({
                 bmp.encode({
                     width: request.server.game.width,
                     height: request.server.game.height,
-                    data: new Uint8Array(request.server.cache.canvasManager.pixels.map(pix => utils.translateHex(pix.color)).flat()),
+                    data: new Uint8Array(request.server.cache.canvasManager.pixels.map((pix: MongoPixel) => utils.translateHex(pix.color)).flat()),
                     bitPP: 32,
                 }).data
             );

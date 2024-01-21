@@ -12,7 +12,6 @@ interface Body {
     color: string;
     x: number;
     y: number;
-    token?: string;
 }
 
 
@@ -25,7 +24,6 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
             required: ['color', 'x', 'y'],
             properties: {
                 color: { type: 'string', pattern: "^#[0-9A-Fa-f]{6}$" },
-                token: { type: 'string' },
                 x: { type: 'integer' },
                 y: { type: 'integer' }
             }
@@ -48,7 +46,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
             throw new EndedError()
         }
 
-        if (request.user?.isBanned) {
+        if (request.user.badges) {
             throw new TokenBannedError()
         }
 

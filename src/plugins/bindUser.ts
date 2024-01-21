@@ -12,8 +12,11 @@ declare module 'fastify' {
 export const bindUser = fp(async (app) => {
     app.decorateRequest("user", null);
 
-    app.addHook("preHandler", async (req: FastifyRequest<{ Body: { token: string }; }>, _) => {
-        const userCache = await req.server.cache.usersManager.get({ token: req.body.token });
+    app.addHook("preHandler", async (req: FastifyRequest<{ Headers: { Authorization: `Bearer ${string}` } }>, _) => {
+        if (!req.headers.authorization) {
+            throw new NotAuthorizedError()
+        }
+        const userCache = await req.server.cache.usersManager.get({ token: req.headers.authorization.slice("Bearer ".length) });
 
         if (!userCache)
             throw new NotAuthorizedError()

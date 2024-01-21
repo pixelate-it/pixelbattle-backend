@@ -26,15 +26,16 @@ interface DiscordUser {
     accent_color?: number;
 }
 
+
 export class AuthHelper {
     private accessToken!: string;
     private tokenType!: string;
     private userId!: string;
-
+    private static API_URL = "https://discord.com/api"
 
     async authCodeGrant(code: string) {
         const data: DiscordAccessTokenResponse | DiscordErrorResponse = await fetch(
-            'https://discord.com/api/oauth2/token',
+            `${AuthHelper.API_URL}/oauth2/token`,
             {
                 method: 'POST',
                 body: new URLSearchParams({
@@ -51,23 +52,17 @@ export class AuthHelper {
             }
         ).then(res => res.json());
 
-        console.log(data)
-
-
         if ("error" in data) return data;
 
         this.accessToken = data.access_token;
         this.tokenType = data.token_type;
-
-        console.log(data)
-
 
         return data;
     }
 
     async getUserInfo() {
         const data: DiscordUser = await fetch(
-            'https://discord.com/api/users/@me',
+            `${AuthHelper.API_URL}/users/@me`,
             {
                 method: 'GET',
                 headers: { 
@@ -77,7 +72,6 @@ export class AuthHelper {
             }
         ).then(res => res.json());
 
-        console.log(data, `${this.tokenType} ${this.accessToken}`)
 
         this.userId = data.id;
         return data;
@@ -85,7 +79,7 @@ export class AuthHelper {
 
     async joinPixelateitServer() {
         return await fetch(
-            `https://discord.com/api/guilds/${config.discord.guildId}/members/${this.userId}`,
+            `${AuthHelper.API_URL}/guilds/${config.discord.guildId}/members/${this.userId}`,
             {
                 method: "PUT",
                 body: JSON.stringify({

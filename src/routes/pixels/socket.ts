@@ -1,5 +1,11 @@
 import { RouteOptions } from "fastify";
 import { SocketPayload } from "../../types/SocketActions";
+import { SocketStream } from "@fastify/websocket";
+import WebSocket from "ws";
+
+export type SocketConnection = SocketStream & {
+    socket: WebSocket & { requestIp: string; }
+}
 
 export const socket: RouteOptions = {
     method: 'GET',
@@ -17,8 +23,14 @@ export const socket: RouteOptions = {
     wsHandler(connection, request) {
         connection.setEncoding('utf8');
 
+        const cloudflareIpHeaders = request.headers['cf-connecting-ip']
+        const ip = cloudflareIpHeaders 
+            ? Array.isArray(cloudflareIpHeaders) 
+                ? cloudflareIpHeaders[0] 
+                : cloudflareIpHeaders 
+            : request.ip;
 
-        // connection.socket.request_ip = (request.headers['cf-connecting-ip'] || request.ip);
+        (connection as SocketConnection).socket.requestIp = ip;
 
         if (request.server.game.ended) {
             const action: SocketPayload<"ENDED"> = {
@@ -26,7 +38,6 @@ export const socket: RouteOptions = {
                 value: true,
             }
 
-            
             connection.write(action);
         }
     }
