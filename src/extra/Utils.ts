@@ -11,6 +11,6 @@ export const utils = {
         const g = parseInt(hex.slice(3, 5), 16);
         const b = parseInt(hex.slice(5, 7), 16);
 
-        return [255, b, g, r];
+        return [r, g, b];
     }
 }

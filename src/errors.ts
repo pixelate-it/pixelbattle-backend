@@ -1,47 +1,89 @@
 import { SchemaErrorFormatter } from "fastify/types/schema";
-import { UserRole } from "./models/MongoUser";
 
-const error = <Args extends unknown[], Return extends {}>(message: string, statusCode: number, constuctor?: (...args: Args) => Return) => {
-    return class extends ApiError<Return> {
-        public message = message;
-        public statusCode = statusCode;
 
-        constructor(...args: Args) {
-            super();
 
-            if (constuctor) {
-                this.data = constuctor(...args)
-            }
-        }
+export class ApiError extends Error {
+    public statusCode!: number;
+    public message!: string;
+    public data?: Record<string, unknown>
+}
+
+export class AuthLoginError extends ApiError {
+    public message = "Please return to the login page and try again"
+    public statusCode = 400;
+}
+
+export class NotAuthorizedError extends ApiError {
+    public statusCode = 400;
+    public message = "You need to authorize first";
+}
+
+export class TokenBannedError extends ApiError {
+    public statusCode = 400;
+    public message = "You are banned from PixelBattle";
+}
+
+export class UserCooldownError extends ApiError {
+    public statusCode = 400;
+    public message = "Wait a few seconds"
+
+    constructor(time: number) {
+        super()
+        this.data = { time }
     }
 }
 
-
-export class ApiError<Data extends {} = {}> extends Error {
-    public statusCode!: number;
-    public message!: string;
-    public data!: Data
+export class EndedError extends ApiError {
+    public statusCode = 400;
+    public message = "Please wait for a new game"
 }
 
+export class EntityNotFoundError extends ApiError {
+    public statusCode = 404;
+    public message = "Entity is not found"
 
+    constructor(entity: string) {
+        super()
+        this.data = { entity }
+    }
+}
 
+export class WrongTokenError extends ApiError {
+    public statusCode = 400;
+    public message = "Wrong token is used"
+}
 
-export const AuthLoginError = error("Please return to the login page and try again", 400)
+export class NotEnoughPrivilegesError extends ApiError {
+    public statusCode = 400;
+    public message = "Not enough privileges";
 
-export const NotAuthorizedError = error("You need to authorize first", 400)
+    constructor(role: string) {
+        super()
+        this.data = { requiredRole: role }
+    }
+}
 
-export const TokenBannedError = error("You are banned from PixelBattle", 400)
+export class RateLimitError extends ApiError {
+    public statusCode = 429;
+    public message = "Rate limit"
 
-export const UserCooldownError = error("Wait a few seconds", 400, (time: number) => ({ time }))
+    constructor(after: string) {
+        super()
 
-export const EndedError = error("Please wait for a new game", 400)
+        this.data = { after }
+    }
+}
 
-export const EntityNotFoundError = error("Entity is not found", 404, (entity: string) => ({ entity }))
+export class ValidationError extends ApiError {
+    public statusCode = 400;
+    public message = "Validation error"
 
-export const WrongTokenError = error("Wrong token is used", 400)
+    constructor(schema: Parameters<SchemaErrorFormatter>) {
+        super()
 
-export const NotEnoughPrivilegesError = error("Not enough privileges", 400, (role: UserRole) => ({ requiredRole: role }))
-
-export const RateLimitError = error("Rate limit", 429, (after: string) => ({ after }))
-
-export const ValidationError = error("Validation error", 400, (schema: Parameters<SchemaErrorFormatter>) => ({ errors: schema[0], dataVar: schema[1] }))
+        this.data = {
+            errors: schema[0],
+            dataVar: schema[1]
+        }
+    }
+}

@@ -1,11 +1,11 @@
 import { RouteOptions } from "fastify";
-import bmp from "@wokwi/bmp-ts"
 import { utils } from "../../extra/Utils";
 import { MongoPixel } from "../../models/MongoPixel";
+import { encode } from "fast-png"
 
 export const getAll: RouteOptions = ({
     method: 'GET',
-    url: '.bmp',
+    url: '.png',
     schema: {},
     config: {
         rateLimit: {
@@ -14,16 +14,16 @@ export const getAll: RouteOptions = ({
         }
     },
     handler: async function handler(request, response) {
+        const image = encode({
+            width: request.server.game.width,
+            height: request.server.game.height,
+            channels: 3,
+            data: new Uint8Array(request.server.cache.canvasManager.pixels.map((pix: MongoPixel) => utils.translateHex(pix.color)).flat()),
+        })
+
         response
-            .header('Content-Type', 'image/bmp')
+            .header('Content-Type', 'image/png')
             .code(200)
-            .send(
-                bmp.encode({
-                    width: request.server.game.width,
-                    height: request.server.game.height,
-                    data: new Uint8Array(request.server.cache.canvasManager.pixels.map((pix: MongoPixel) => utils.translateHex(pix.color)).flat()),
-                    bitPP: 32,
-                }).data
-            );
+            .send(image);
     }
 });
