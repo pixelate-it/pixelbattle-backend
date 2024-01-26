@@ -1,4 +1,4 @@
-const fs = require('fs');
+const { readFileSync }= require('fs');
 
 module.exports = () => ({
     method: 'GET',
@@ -14,6 +14,6 @@ module.exports = () => ({
         return response
             .header('Content-Type', 'image/x-icon')
             .code(200)
-            .send(await fs.readFileSync('./api/assets/favicon.ico'));
+            .send(await readFileSync('./api/assets/favicon.ico'));
     }
 });
