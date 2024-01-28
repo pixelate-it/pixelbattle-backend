@@ -13,6 +13,7 @@ import { game } from './plugins/game';
 async function init() {
     const app = fastify({
         logger: process.env.NODE_ENV === "development",
+        pluginTimeout: 300000
     });
 
     [

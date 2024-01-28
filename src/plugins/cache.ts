@@ -1,4 +1,4 @@
-import fastifyPlugin from "fastify-plugin";
+import fp from "fastify-plugin";
 
 import { config } from "../config";
 import { CanvasManager } from "../managers/CanvasManager";
@@ -16,7 +16,7 @@ declare module "fastify" {
     }
 }
 
-export const cache = fastifyPlugin(async (app) => {
+export const cache = fp(async (app) => {
     const canvasManager = new CanvasManager(app.database.pixels)
     const usersManager = new UserManager(app.database.users)
 
