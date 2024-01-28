@@ -13,17 +13,7 @@ export const getTags: RouteOptions = {
         }
     },
     async handler(request, response) {
-        const pixels: Pick<MongoPixel, "tag">[] = await request.server.database.pixels
-            .find(
-                {},
-                {
-                    projection: {
-                        _id: 0,
-                        tag: 1
-                    }
-                }
-            )
-            .toArray();
+        const pixels: MongoPixel[] = request.server.cache.canvasManager.pixels;
 
         const data = pixels.reduce((info, pixel) => {
             if (pixel.tag === null) {
