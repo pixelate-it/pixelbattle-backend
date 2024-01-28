@@ -2,9 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const utils = {
     generateToken(date: number | null = null) {
-        const token = `${uuidv4()}.${(date ?? Date.now()).toString(36)}.${uuidv4()}`
-
-        return token; // на данный момент у токена фиксированная длинна 82 символа!
+        return `${uuidv4()}.${(date ?? Date.now()).toString(36)}.${uuidv4()}`; // length = 82 (static)
     },
     translateHex(hex: string) {
         const r = parseInt(hex.slice(1, 3), 16);
