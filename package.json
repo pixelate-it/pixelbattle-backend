@@ -4,7 +4,7 @@
   "description": "API for https://pixelbattle.fun/",
   "main": "./src/index.js",
   "scripts": {
-    "prod": "ts-node src/index.ts",
+    "prod": "tsc --build && node ./dist/index.js",
     "dev": "nodemon src/index.ts"
   },
   "keywords": [],

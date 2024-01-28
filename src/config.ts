@@ -1,6 +1,7 @@
-import { config as dotenvConfig } from "dotenv"
+import { config as dotenvConfig } from "dotenv";
+import { join } from "path";
 
-dotenvConfig()
+dotenvConfig({ path: join(__dirname, '../.env') });
 
 export const config = {
     database: process.env.DATABASE,
@@ -21,7 +22,7 @@ export const config = {
         width: 160,
     },
     expiresIn: 3000,
-    syncTime: 5000,
+    syncTime: 15000,
     moderatorCooldown: 50,
     frontend: process.env.FRONTEND_URL!
 }
