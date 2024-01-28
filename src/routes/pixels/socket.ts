@@ -4,7 +4,7 @@ import { SocketStream } from "@fastify/websocket";
 import WebSocket from "ws";
 
 export type SocketConnection = SocketStream & {
-    socket: WebSocket & { requestIp: string; }
+    socket: WebSocket.WebSocket & { requestIp: string; }
 }
 
 export const socket: RouteOptions = {

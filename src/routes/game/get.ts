@@ -1,6 +1,7 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { EntityNotFoundError } from "../../errors";
+import { SocketConnection } from "../pixels/socket";
 
 interface ApiInfo {
     name: string;
@@ -25,7 +26,7 @@ export const get: RouteOptions<Server, IncomingMessage, ServerResponse, { Querys
     },
     async handler(request, response) {
         const online = new Set();
-        request.server.websocketServer.clients.forEach(v => online.add(v));
+        request.server.websocketServer.clients.forEach(v => online.add((v as SocketConnection["socket"]).requestIp));
 
         const { game } = request.server
 
