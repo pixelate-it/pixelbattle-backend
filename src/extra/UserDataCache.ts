@@ -27,6 +27,6 @@ export class UserDataCache {
     }
 
     public breath() {
-        this._expiresOn = performance.now() + config.expiresIn * 1000;
+        this._expiresOn = performance.now() + config.expiresIn;
     }
 }
