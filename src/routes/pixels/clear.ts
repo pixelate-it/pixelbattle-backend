@@ -7,7 +7,7 @@ interface Body {
     color: string;
 }
 
-export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Body: Body }> = {
+export const clear: RouteOptions<Server, IncomingMessage, ServerResponse, { Body: Body }> = {
     method: 'POST',
     url: '/clear',
     schema: {
