@@ -1,4 +1,4 @@
-import { Collection, Filter } from "mongodb";
+import { Filter } from "mongodb";
 import { MongoUser } from "../models/MongoUser";
 import { UserDataCache } from "../extra/UserDataCache";
 import { BaseManager } from "./BaseManager";
@@ -14,7 +14,7 @@ export class UserManager extends BaseManager<MongoUser>{
                 .map((key) => u.user[key] === filter[key])
                 .reduce((acc, val) => acc && val));
 
-        if (cachedUser) {
+        if(cachedUser) {
             cachedUser.breath();
 
             return cachedUser;
@@ -22,12 +22,11 @@ export class UserManager extends BaseManager<MongoUser>{
 
         const databaseUser = await this.collection.findOne(filter);
 
-        if (databaseUser) {
+        if(databaseUser) {
             cachedUser = new UserDataCache(databaseUser);
 
             this.cache.push(cachedUser);
         }
-
 
         return cachedUser;
     }
@@ -36,7 +35,7 @@ export class UserManager extends BaseManager<MongoUser>{
     public async edit(filter: Partial<MongoUser>, value: Partial<MongoUser>, options?: { force: boolean }) {
         const user = await this.get(filter);
 
-        if (!user) {
+        if(!user) {
             return null;
         }
 
@@ -45,7 +44,7 @@ export class UserManager extends BaseManager<MongoUser>{
             .filter(key => value[key] !== undefined)
             .map(key => user.set(key, value[key]!));
 
-        if (options?.force) {
+        if(options?.force) {
             this.collection.updateOne(value, { $set: value });
         }
 
@@ -54,11 +53,11 @@ export class UserManager extends BaseManager<MongoUser>{
 
     private removeExpiredUsers() {
         this.cache.map((user) => {
-            if (user.expiresOn > performance.now()) {
-                return
+            if(user.expiresOn > Date.now()) {
+                return;
             }
 
-            const expiredUserIndex = this.cache.findIndex(u => u.user.userID === user.user.userID)
+            const expiredUserIndex = this.cache.findIndex(u => u.user.userID === user.user.userID);
             this.cache.splice(expiredUserIndex, 1); // remove expired user from cache
         });
     }

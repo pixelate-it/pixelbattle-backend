@@ -18,14 +18,14 @@ export const unban: RouteOptions<Server, IncomingMessage, ServerResponse, { Para
         const user = await request.server.cache.usersManager.edit(
             { userID: request.params.id, },
             { banned: null }
-        )
+        );
 
-        if (!user) {
+        if(!user) {
             throw new EntityNotFoundError("user");
         }
 
         return response
             .status(200)
-            .send(genericSuccessResponse)
+            .send(genericSuccessResponse);
     }
 }

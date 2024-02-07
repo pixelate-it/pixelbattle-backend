@@ -32,25 +32,26 @@ export const ban: RouteOptions<Server, IncomingMessage, ServerResponse, { Params
         }
     },
     async handler(request, response) {
-        
         const user = await request.server.cache.usersManager.edit(
             { userID: request.params.id },
-            { banned: {
-                moderatorID: request.body.moderatorID,
-                reason: request.body.reason ?? null,
-                timeout: performance.now() + request.body.timeout,
-            }}
-        )
+            {
+                banned: {
+                    moderatorID: request.body.moderatorID,
+                    reason: request.body.reason ?? null,
+                    timeout: Date.now() + request.body.timeout,
+                }
+            }
+        );
 
 
 
-        if (!user) {
+        if(!user) {
             throw new EntityNotFoundError("user");
         }
 
 
         return response
             .status(200)
-            .send(genericSuccessResponse)
+            .send(genericSuccessResponse);
     }
 }

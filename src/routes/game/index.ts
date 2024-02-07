@@ -6,19 +6,19 @@ import { minUserRole } from "../../plugins/minUserRole";
 import { change } from "./change";
 
 export function info(app: FastifyInstance, _: unknown, done: () => void) {
-    app.route(get)
+    app.route(get);
 
     app.register(async (app,_, done) => {
-        await app.register(bindUser)
-        await app.register(authRequired)
+        await app.register(bindUser);
+        await app.register(authRequired);
         await app.register(minUserRole, {
-            minRole: "ADMIN"
-        })
+            minRole: 2
+        });
 
-        app.route(change)
+        app.route(change);
 
-        done()
-    })
+        done();
+    });
 
-    done()
+    done();
 }

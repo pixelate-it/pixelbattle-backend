@@ -2,6 +2,7 @@ import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { EntityNotFoundError } from "../../errors";
 import { genericSuccessResponse } from "../../types/ApiReponse";
+import { UserRole } from '../../models/MongoUser';
 
 interface Body {
     action: boolean;
@@ -28,11 +29,11 @@ export const edit: RouteOptions<Server, IncomingMessage, ServerResponse, { Body:
     async handler(request, response) {
         const user = await request.server.cache.usersManager.edit(
             { userID: request.params.id }, 
-            { role: request.body.action ? "MOD" : "USER" }
-        )
+            { role: Number(request.body.action) as UserRole }
+        );
 
-        if (!user) {
-            throw new EntityNotFoundError("user")
+        if(!user) {
+            throw new EntityNotFoundError("user");
         }
 
 
@@ -40,4 +41,4 @@ export const edit: RouteOptions<Server, IncomingMessage, ServerResponse, { Body:
             .code(202)
             .send(genericSuccessResponse);
     }
-};
+}

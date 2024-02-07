@@ -14,12 +14,11 @@ export const getUser: RouteOptions<Server, IncomingMessage, ServerResponse, { Pa
         }
     },
     async handler(request, response) {
-        const user = await request.server.cache.usersManager.get({ userID: request.params.id })
+        const user = await request.server.cache.usersManager.get({ userID: request.params.id });
 
-        if (!user) {
+        if(!user) {
             throw new EntityNotFoundError("user");
         }
-
 
         return response.send({
             ...user.user,
@@ -27,7 +26,7 @@ export const getUser: RouteOptions<Server, IncomingMessage, ServerResponse, { Pa
             _id: undefined,
             banned: user.user.banned,
             isBanned: !!user.user.banned,
-            isMod: user.user.role === "MOD"
-        })
+            isMod: Boolean(user.user.role)
+        });
     }
 }

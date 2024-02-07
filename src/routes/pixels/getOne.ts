@@ -22,13 +22,13 @@ export const getOne: RouteOptions<Server, IncomingMessage, ServerResponse, { Que
         const x = request.query.x;
         const y = request.query.y;
 
-        const pixel = request.server.cache.canvasManager.select({ x, y})
+        const pixel = request.server.cache.canvasManager.select({ x, y });
 
-        if (!pixel)
-            throw new EntityNotFoundError("pixel")
+        if(!pixel)
+            throw new EntityNotFoundError("pixel");
 
         return response
             .code(200)
             .send(pixel);
     }
-};
+}

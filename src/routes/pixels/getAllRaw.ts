@@ -13,7 +13,7 @@ export const getAllRaw: RouteOptions = ({
         }
     },
     handler: async function handler(request, response) {
-        response
+        return response
             .header('Content-Type', 'image/json')
             .code(200)
             .send({

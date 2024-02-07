@@ -1,4 +1,3 @@
-
 export interface MongoGame {
     id: number;
     name: string;

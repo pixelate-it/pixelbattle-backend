@@ -24,7 +24,7 @@ export const getAll: RouteOptions = ({
                     _id: 0,
                     userID: 1
                 }
-            }).toArray()
+            }).toArray();
 
         return response
             .code(200)

@@ -8,29 +8,29 @@ import { ban } from "./ban";
 import { unban } from "./unban";
 
 export function users(app: FastifyInstance, _: unknown, done: () => void) {
-    app.route(getUser)
+    app.route(getUser);
 
     app.register(async (app, _, done) => {
-        await app.register(bindUser)
-        await app.register(authRequired)
+        await app.register(bindUser);
+        await app.register(authRequired);
 
-        app.route(changeTag)
+        app.route(changeTag);
 
-        done()
-    })
+        done();
+    });
 
     app.register(async (app, _, done) => {
-        await app.register(bindUser)
-        await app.register(authRequired)
+        await app.register(bindUser);
+        await app.register(authRequired);
         await app.register(minUserRole, {
-            minRole: "ADMIN"
-        })
+            minRole: 2
+        });
 
-        app.route(ban)
-        app.route(unban)
+        app.route(ban);
+        app.route(unban);
 
-        done()
-    })
+        done();
+    });
 
-    done()
+    done();
 }

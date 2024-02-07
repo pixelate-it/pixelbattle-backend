@@ -34,32 +34,32 @@ export const change: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
     async handler(request, response) {
         const { game } = request.server;
 
-        if (!game) {
-            throw new EntityNotFoundError("game")
+        if(!game) {
+            throw new EntityNotFoundError("game");
         }
 
-        if (request.body.ended !== game.ended) {
+        if(request.body.ended !== game.ended) {
             game.ended = request.body.ended ?? false;
 
-            if (request.body.ended) {
+            if(request.body.ended) {
                 clearInterval(request.server.cache.interval);
 
-                await request.server.cache.canvasManager.sendPixels()
+                await request.server.cache.canvasManager.sendPixels();
             } else {
-                await request.server.cache.canvasManager.init(request.server.game.width, request.server.game.height)
+                await request.server.cache.canvasManager.init(request.server.game.width, request.server.game.height);
 
-                request.server.cache.createInterval()
+                request.server.cache.createInterval();
             }
 
             request.server.websocketServer.clients.forEach((client) => {
-                if (client.readyState !== WebSocket.OPEN) return;
+                if(client.readyState !== WebSocket.OPEN) return;
 
                 const payload: SocketPayload<"ENDED"> = {
                     op: "ENDED",
                     value: game.ended
                 }
 
-                client.send(toJson(payload))
+                client.send(toJson(payload));
             });
         }
 
@@ -73,4 +73,4 @@ export const change: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
             .code(202)
             .send(genericSuccessResponse);
     }
-};
+}

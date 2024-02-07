@@ -6,18 +6,18 @@ import { edit } from "./edit";
 import { authRequired } from "../../plugins/authRequired";
 
 export function moderators(app: FastifyInstance, _: unknown, done: () => void) {
-    app.route(getAll)
+    app.route(getAll);
 
     app.register(async (app, _, done) => {
-        await app.register(bindUser)
-        await app.register(authRequired)
+        await app.register(bindUser);
+        await app.register(authRequired);
         await app.register(minUserRole, {
-            minRole: "ADMIN"
-        })
+            minRole: 2
+        });
 
-        app.route(edit)
-        done()
+        app.route(edit);
+        done();
     })
 
-    done()
+    done();
 }

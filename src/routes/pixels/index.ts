@@ -11,31 +11,31 @@ import { getAllRaw } from "./getAllRaw";
 import { clear } from "./clear";
 
 export function pixels(app: FastifyInstance, _: unknown, done: () => void) {
-    app.route(getAll)
-    app.route(getAllRaw)
-    app.route(getOne)
-    app.route(getTags)
-    app.route(socket)
+    app.route(getAll);
+    app.route(getAllRaw);
+    app.route(getOne);
+    app.route(getTags);
+    app.route(socket);
 
     app.register(async (app, _, done) => {
-        await app.register(bindUser)
-        await app.register(authRequired)
+        await app.register(bindUser);
+        await app.register(authRequired);
 
-        app.route(update)
+        app.route(update);
 
-        done()
-    })
+        done();
+    });
 
     app.register(async (app, _, done) => {
-        await app.register(bindUser)
-        await app.register(authRequired)
+        await app.register(bindUser);
+        await app.register(authRequired);
         await app.register(minUserRole, {
-            minRole: "ADMIN"
-        })
+            minRole: 2
+        });
 
-        app.route(clear)
-        done()
-    })
+        app.route(clear);
+        done();
+    });
 
-    done()
+    done();
 }

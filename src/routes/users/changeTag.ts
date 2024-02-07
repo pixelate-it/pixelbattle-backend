@@ -32,7 +32,7 @@ export const changeTag: RouteOptions<Server, IncomingMessage, ServerResponse, { 
                 token: request.headers.authorization?.slice("Bearer ".length),
                 userID: request.params.id
             },
-            { tag: (!request.body.tag) ? null : request.body.tag.replace(/\s+/i, ' ').trim()  },
+            { tag: (!request.body.tag) ? null : request.body.tag.replace(/\s+/i, ' ').trim() },
             { force: true }
         );
         // await request.server.database.users
@@ -52,4 +52,4 @@ export const changeTag: RouteOptions<Server, IncomingMessage, ServerResponse, { 
             .code(200)
             .send(genericSuccessResponse);
     }
-};
+}

@@ -18,21 +18,21 @@ export const socket: RouteOptions = {
         }
     },
     handler(request, response) {
-        return response.status(418).send('why did you check this?')
+        return response.status(418).send('why did you check this?');
     },
     wsHandler(connection, request) {
         connection.setEncoding('utf8');
 
         const cloudflareIpHeaders = request.headers['cf-connecting-ip']
-        const ip = cloudflareIpHeaders 
-            ? Array.isArray(cloudflareIpHeaders) 
-                ? cloudflareIpHeaders[0] 
-                : cloudflareIpHeaders 
+        const ip = cloudflareIpHeaders
+            ? Array.isArray(cloudflareIpHeaders)
+                ? cloudflareIpHeaders[0]
+                : cloudflareIpHeaders
             : request.ip;
 
         (connection as SocketConnection).socket.requestIp = ip;
 
-        if (request.server.game.ended) {
+        if(request.server.game.ended) {
             const action: SocketPayload<"ENDED"> = {
                 op: "ENDED",
                 value: true,

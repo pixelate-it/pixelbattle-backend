@@ -1,5 +1,5 @@
 import { RouteOptions } from "fastify";
-import { readFile } from "fs/promises"
+import { readFile } from "fs/promises";
 
 export const favicon: RouteOptions = {
     method: 'GET',
@@ -17,4 +17,4 @@ export const favicon: RouteOptions = {
             .code(200)
             .send(await readFile('./api/assets/favicon.ico'));
     }
-};
+}

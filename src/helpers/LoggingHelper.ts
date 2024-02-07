@@ -1,6 +1,3 @@
-
-
-
 const cache = new Map<string, boolean>();
 
 interface PixelInfo {
@@ -15,9 +12,8 @@ export class LoggingHelper {
     static sendPixelPlaced({ userID, color, x, y, tag }: PixelInfo) {
         const hash = `${userID}-${x}-${y}-${color}`
 
-        if (cache.has(hash))
+        if(cache.has(hash))
             return;
-
         
         cache.set(hash, true);
 

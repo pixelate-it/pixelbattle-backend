@@ -4,8 +4,8 @@ import { ApiErrorResponse } from "../types/ApiReponse";
 
 export const errorHandler = fp(async (app) => {
     app.setSchemaErrorFormatter((errors, data) => {
-        return new ValidationError([errors, data])
-    })
+        return new ValidationError([errors, data]);
+    });
 
     app.setErrorHandler<ApiError>(async (error, req, res) => {
         const payload: ApiErrorResponse = {
@@ -15,8 +15,8 @@ export const errorHandler = fp(async (app) => {
             data: error.data
         }
 
-        res.status(error.statusCode ?? 500).send(payload)
-    })
+        res.status(error.statusCode ?? 500).send(payload);
+    });
 
-    return
-})
+    return;
+});

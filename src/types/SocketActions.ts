@@ -11,4 +11,4 @@ export interface SocketServerActions {
 
 export type SocketPayload<T extends keyof SocketServerActions> = {
     op: T;
-} & SocketServerActions[T]
+} & SocketServerActions[T];

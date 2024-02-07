@@ -1,9 +1,8 @@
-
-export type UserRole = "USER" | "MOD" | "ADMIN"
+export type UserRole = 0 | 1 | 2;
 export type DiscordUserId = string;
 
 export interface BanInfo {
-    moderatorID: DiscordUserId
+    moderatorID: DiscordUserId;
     timeout: number;
     reason: string | null;
 }
@@ -17,5 +16,5 @@ export interface MongoUser {
     token: string;
     badges: string[];
     points: number;
-    banned: BanInfo | null
+    banned: BanInfo | null;
 }

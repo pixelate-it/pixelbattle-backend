@@ -10,15 +10,15 @@ import { login } from "../routes/login";
 import fp from "fastify-plugin";
 
 export const routes = fp(async (app: FastifyInstance) => {
-    app.register(bans, { prefix: "/bans" })
-    app.register(info, { prefix: "/game" })
-    app.register(moderators, { prefix: "/moderators" })
-    app.register(pixels, { prefix: "/pixels" })
-    app.register(users, { prefix: "/users" })
+    app.register(bans, { prefix: "/bans" });
+    app.register(info, { prefix: "/game" });
+    app.register(moderators, { prefix: "/moderators" });
+    app.register(pixels, { prefix: "/pixels" });
+    app.register(users, { prefix: "/users" });
 
-    app.route(favicon)
-    app.route(root)
-    app.route(login)
+    app.route(favicon);
+    app.route(root);
+    app.route(login);
 
-    return
-})
+    return;
+});

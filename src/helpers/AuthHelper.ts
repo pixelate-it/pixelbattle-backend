@@ -10,7 +10,7 @@ interface DiscordAccessTokenResponse {
 }
 
 interface DiscordErrorResponse {
-    error: true
+    error: true;
 }
 
 interface DiscordUser {
@@ -31,7 +31,7 @@ export class AuthHelper {
     private accessToken!: string;
     private tokenType!: string;
     private userId!: string;
-    private static API_URL = "https://discord.com/api"
+    private static API_URL = "https://discord.com/api";
 
     async authCodeGrant(code: string) {
         const data: DiscordAccessTokenResponse | DiscordErrorResponse = await fetch(
@@ -52,7 +52,7 @@ export class AuthHelper {
             }
         ).then(res => res.json());
 
-        if ("error" in data) return data;
+        if("error" in data) return data;
 
         this.accessToken = data.access_token;
         this.tokenType = data.token_type;

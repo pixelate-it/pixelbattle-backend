@@ -5,7 +5,7 @@ import { MongoGame } from "../models/MongoGame";
 
 declare module "fastify" {
     interface FastifyInstance {
-        game: WithId<MongoGame>
+        game: WithId<MongoGame>;
     }
 }
 
@@ -13,11 +13,11 @@ export const game = fp(async (app) => {
     // Find existing game or create new one and find it
     const game = (await app.database.games.findOne({ id: 0 }))
         ?? (await app.database.games.insertOne({ id: 0, ...config.game })
-            .then(r => app.database.games.findOne({ _id: r.insertedId })))
+            .then(r => app.database.games.findOne({ _id: r.insertedId })));
 
-    if (!game) {
-        throw new Error("No game found")
+    if(!game) {
+        throw new Error("No game found");
     }
 
-    app.decorate("game", game)
-})
+    app.decorate("game", game);
+});

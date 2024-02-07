@@ -1,5 +1,3 @@
-
-
 import fastify from 'fastify';
 import { plugins } from './plugins/plugins';
 import { routes } from './plugins/routes';
@@ -28,14 +26,14 @@ async function init() {
         '                                                                        '
     ].map(str => console.log(str));
 
-    await app.register(errorHandler)
-    await app.register(plugins)
-    await app.register(database)
-    await app.register(game)
-    await app.register(cache)
-    await app.register(routes)
+    await app.register(errorHandler);
+    await app.register(plugins);
+    await app.register(database);
+    await app.register(game);
+    await app.register(cache);
+    await app.register(routes);
 
-    app.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 8080, path: "localhost" }).then(console.log)
+    app.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 8080, path: "localhost" }).then(console.log);
 }
 
-init()
+init();

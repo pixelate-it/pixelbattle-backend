@@ -14,14 +14,14 @@ export const getAll: RouteOptions = ({
     },
     async handler(request, response) {
         const moderators: Pick<MongoUser, "userID">[] = await request.server.database.users.find({
-            role: "MOD"
+            role: 1
         },
             {
                 projection: {
                     _id: 0,
                     userID: 1
                 }
-            }).toArray()
+            }).toArray();
 
         return response
             .code(200)

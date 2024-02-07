@@ -28,10 +28,10 @@ export const get: RouteOptions<Server, IncomingMessage, ServerResponse, { Querys
         const online = new Set();
         request.server.websocketServer.clients.forEach(v => online.add((v as SocketConnection["socket"]).requestIp));
 
-        const { game } = request.server
+        const { game } = request.server;
 
-        if (!game) {
-            throw new EntityNotFoundError("games")
+        if(!game) {
+            throw new EntityNotFoundError("games");
         }
 
         const info: ApiInfo = {
@@ -49,4 +49,4 @@ export const get: RouteOptions<Server, IncomingMessage, ServerResponse, { Querys
             .code(200)
             .send(info);
     }
-};
+}

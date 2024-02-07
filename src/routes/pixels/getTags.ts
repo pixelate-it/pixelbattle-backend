@@ -16,22 +16,22 @@ export const getTags: RouteOptions = {
         const pixels: MongoPixel[] = request.server.cache.canvasManager.pixels;
 
         const data = pixels.reduce((info, pixel) => {
-            if (pixel.tag === null) {
+            if(pixel.tag === null) {
                 info.unused++;
 
-                return info
+                return info;
             }
 
-            const tagAmount = info.tags[pixel.tag]
-            info.tags[pixel.tag] = tagAmount ? tagAmount + 1 : 1
+            const tagAmount = info.tags[pixel.tag];
+            info.tags[pixel.tag] = tagAmount ? tagAmount + 1 : 1;
             info.used++;
 
-            return info
+            return info;
         }, {
             used: 0,
             unused: 0,
             tags: {} as Record<string, number>
-        })
+        });
 
         return response.send({
             pixels: {
@@ -45,4 +45,4 @@ export const getTags: RouteOptions = {
                 .slice(0, 10)
         });
     }
-};
+}

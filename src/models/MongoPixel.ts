@@ -1,4 +1,3 @@
-
 export interface MongoPixel  {
     x: number;
     y: number;

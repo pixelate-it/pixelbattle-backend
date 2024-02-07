@@ -25,8 +25,8 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
         const auth = new AuthHelper();
         const data = await auth.authCodeGrant(request.query.code);
 
-        if ("error" in data) {
-            throw new AuthLoginError()
+        if("error" in data) {
+            throw new AuthLoginError();
         }
 
         const { id, username } = await auth.getUserInfo();
@@ -61,7 +61,7 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
                         tag: user?.tag ?? null,
                         badges: user?.badges ?? [],
                         points: user?.points ?? 0,
-                        role: "USER",
+                        role: 0,
 
                     }
                 },

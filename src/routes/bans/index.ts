@@ -5,7 +5,7 @@ import { minUserRole } from "../../plugins/minUserRole";
 import { authRequired } from "../../plugins/authRequired";
 
 export function bans(app: FastifyInstance, _: unknown, done: () => void) {
-    app.route(getAll)
+    app.route(getAll);
 
-    done()
+    done();
 }

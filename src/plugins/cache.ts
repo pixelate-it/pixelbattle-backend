@@ -10,28 +10,28 @@ declare module "fastify" {
             interval?: NodeJS.Timeout;
             canvasManager: CanvasManager;
             usersManager: UserManager;
-            map: Map<`${string}-${number}-${number}-${string}`, boolean> ;
-            createInterval: () => void
+            map: Map<`${string}-${number}-${number}-${string}`, boolean>;
+            createInterval: () => void;
         }
     }
 }
 
 export const cache = fp(async (app) => {
-    const canvasManager = new CanvasManager(app.database.pixels)
-    const usersManager = new UserManager(app.database.users)
+    const canvasManager = new CanvasManager(app.database.pixels);
+    const usersManager = new UserManager(app.database.users);
 
-    await canvasManager.init(app.game.width, app.game.height)
-    usersManager.handle()
+    await canvasManager.init(app.game.width, app.game.height);
+    usersManager.handle();
 
     async function updateDatabase() {
-        await canvasManager.sendPixels()
+        await canvasManager.sendPixels();
     }
 
     async function createInterval() {
-        app.cache.interval = setInterval(updateDatabase, config.syncTime)
+        app.cache.interval = setInterval(updateDatabase, config.syncTime);
     }
 
-    const interval = app.game.ended ? undefined : setInterval(updateDatabase, config.syncTime)
+    const interval = app.game.ended ? undefined : setInterval(updateDatabase, config.syncTime);
 
     app.decorate("cache", {
         interval: interval,
@@ -39,5 +39,5 @@ export const cache = fp(async (app) => {
         usersManager: usersManager,
         canvasManager: canvasManager,
         map: new Map()
-    })
-})
+    });
+});

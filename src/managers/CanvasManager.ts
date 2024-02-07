@@ -15,8 +15,8 @@ export class CanvasManager extends BaseManager<MongoPixel>{
     private height: number = 0;
 
     constructor(collection: Collection<MongoPixel>) {
-        super(collection)
-        
+        super(collection);
+
         this._pixels = [];
         this.changes = [];
     }
@@ -29,9 +29,9 @@ export class CanvasManager extends BaseManager<MongoPixel>{
         this._pixels = await this.collection
             .find({}, { projection: { _id: 0 } })
             .toArray();
-        
-        this.width = width
-        this.height = height
+
+        this.width = width;
+        this.height = height;
 
         return this._pixels;
     }
@@ -52,12 +52,12 @@ export class CanvasManager extends BaseManager<MongoPixel>{
 
         const pixels = new Array(this.width * this.height)
             .fill(0)
-            .map((_, i) => ({ 
-                x: i % this.width, 
-                y: Math.floor(i / this.width), 
-                color, 
-                author: null, 
-                tag: null 
+            .map((_, i) => ({
+                x: i % this.width,
+                y: Math.floor(i / this.width),
+                color,
+                author: null,
+                tag: null
             }));
 
         await this.collection.drop();
@@ -71,7 +71,7 @@ export class CanvasManager extends BaseManager<MongoPixel>{
     public paint(pixel: MongoPixel) {
         const canvasPixel = this.select({ x: pixel.x, y: pixel.y });
 
-        if (!canvasPixel) return;
+        if(!canvasPixel) return;
 
         canvasPixel.author = pixel.author;
         canvasPixel.color = pixel.color;

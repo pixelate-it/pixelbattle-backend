@@ -5,7 +5,7 @@ import { MongoUser } from "../models/MongoUser";
 
 declare module "mongodb" {
     interface Db {
-        collection<K extends keyof PixelDatabase>(name: K, options?: CollectionOptions | undefined): Collection<PixelDatabase[K]>
+        collection<K extends keyof PixelDatabase>(name: K, options?: CollectionOptions | undefined): Collection<PixelDatabase[K]>;
     }
 }
 
@@ -20,7 +20,7 @@ export type PixelDatabaseCollections = {
 }
 
 export function createDatabaseMap(database: Db) {
-    const keys: (keyof PixelDatabase)[] = ["games", "pixels", "users"]
+    const keys: (keyof PixelDatabase)[] = ["games", "pixels", "users"];
 
-    return Object.fromEntries(keys.map(key => [key, database.collection(key)])) as PixelDatabaseCollections
+    return Object.fromEntries(keys.map(key => [key, database.collection(key)])) as PixelDatabaseCollections;
 }

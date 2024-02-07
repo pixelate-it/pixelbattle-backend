@@ -1,7 +1,7 @@
 import { RouteOptions } from "fastify";
 import { utils } from "../../extra/Utils";
 import { MongoPixel } from "../../models/MongoPixel";
-import { encode } from "fast-png"
+import { encode } from "fast-png";
 
 export const getAll: RouteOptions = ({
     method: 'GET',
@@ -19,9 +19,9 @@ export const getAll: RouteOptions = ({
             height: request.server.game.height,
             channels: 3,
             data: new Uint8Array(request.server.cache.canvasManager.pixels.map((pix: MongoPixel) => utils.translateHex(pix.color)).flat()),
-        })
+        });
 
-        response
+        return response
             .header('Content-Type', 'image/png')
             .code(200)
             .send(image);
