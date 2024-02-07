@@ -18,7 +18,7 @@ export function moderators(app: FastifyInstance, _: unknown, done: () => void) {
 
         app.route(edit);
         done();
-    })
+    });
 
     done();
 }

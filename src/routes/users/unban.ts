@@ -7,7 +7,15 @@ import { genericSuccessResponse } from "../../types/ApiReponse";
 export const unban: RouteOptions<Server, IncomingMessage, ServerResponse, { Params: { id: string }; }> = {
     method: 'POST',
     url: '/:id/unban',
-    schema: {},
+    schema: {
+        body: {
+            type: 'object',
+            required: [],
+            properties: {
+                reason: { type: "string" }
+            }
+        }
+    },
     config: {
         rateLimit: {
             max: 3,
@@ -16,7 +24,7 @@ export const unban: RouteOptions<Server, IncomingMessage, ServerResponse, { Para
     },
     async handler(request, response) {
         const user = await request.server.cache.usersManager.edit(
-            { userID: request.params.id, },
+            { userID: request.params.id },
             { banned: null }
         );
 

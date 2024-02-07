@@ -5,7 +5,8 @@
   "main": "./src/index.js",
   "scripts": {
     "prod": "tsc --build && node ./dist/index.js",
-    "dev": "nodemon src/index.ts"
+    "dev": "nodemon src/index.ts",
+    "build": "tsc --build --force"
   },
   "keywords": [],
   "author": "pixelate-it",
