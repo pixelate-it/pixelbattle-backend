@@ -6,7 +6,7 @@ import { MongoUser } from "../models/MongoUser";
 import { utils } from "../extra/Utils";
 import { config } from "../config";
 import { AuthLoginError } from "../errors";
-
+import { UserRole } from "../models/MongoUser";
 
 export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Querystring: { code: string }; }> = {
     method: 'GET',
@@ -62,7 +62,7 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
                         tag: user?.tag ?? null,
                         badges: user?.badges ?? [],
                         points: user?.points ?? 0,
-                        role: 0,
+                        role: UserRole.User,
 
                     }
                 },

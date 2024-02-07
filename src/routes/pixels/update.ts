@@ -6,6 +6,7 @@ import { TokenBannedError, UserCooldownError, EntityNotFoundError, EndedError, W
 import { genericSuccessResponse } from "../../types/ApiReponse";
 import { toJson } from "../../extra/toJson";
 import { SocketPayload } from "../../types/SocketActions";
+import { UserRole } from "../../models/MongoUser";
 
 
 interface Body {
@@ -73,13 +74,13 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
             throw new EntityNotFoundError("pixel");
         }
 
-        const cooldown = Date.now() + (request.user.role !== 0 ? config.moderatorCooldown : request.server.game.cooldown);
+        const cooldown = Date.now() + (request.user.role !== UserRole.User ? config.moderatorCooldown : request.server.game.cooldown);
 
         await request.server.cache.usersManager.edit({ token: request.user.token }, { cooldown });
         const cacheKey = `${request.user.userID}-${x}-${y}-${color}` as const;
 
         if(!request.server.cache.map.has(cacheKey)) {
-            const tag = request.user.role !== 0
+            const tag = request.user.role !== UserRole.User
                 ? 'Pixelate It! Team'
                 : request.user.tag;
 

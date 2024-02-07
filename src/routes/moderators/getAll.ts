@@ -1,5 +1,6 @@
 import { RouteOptions } from "fastify";
 import { MongoUser } from "../../models/MongoUser";
+import { UserRole } from "../../models/MongoUser";
 
 
 export const getAll: RouteOptions = ({
@@ -14,7 +15,7 @@ export const getAll: RouteOptions = ({
     },
     async handler(request, response) {
         const moderators: Pick<MongoUser, "userID">[] = await request.server.database.users.find({
-            role: 1
+            role: UserRole.Moderator
         },
             {
                 projection: {

@@ -4,6 +4,7 @@ import { bindUser } from "../../plugins/bindUser";
 import { minUserRole } from "../../plugins/minUserRole";
 import { edit } from "./edit";
 import { authRequired } from "../../plugins/authRequired";
+import { UserRole } from "../../models/MongoUser";
 
 export function moderators(app: FastifyInstance, _: unknown, done: () => void) {
     app.route(getAll);
@@ -12,7 +13,7 @@ export function moderators(app: FastifyInstance, _: unknown, done: () => void) {
         await app.register(bindUser);
         await app.register(authRequired);
         await app.register(minUserRole, {
-            minRole: 2
+            minRole: UserRole.Admin
         });
 
         app.route(edit);

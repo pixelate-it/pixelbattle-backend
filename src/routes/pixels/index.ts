@@ -9,6 +9,7 @@ import { minUserRole } from "../../plugins/minUserRole";
 import { update } from "./update";
 import { getAllRaw } from "./getAllRaw";
 import { clear } from "./clear";
+import { UserRole } from "../../models/MongoUser";
 
 export function pixels(app: FastifyInstance, _: unknown, done: () => void) {
     app.route(getAll);
@@ -30,7 +31,7 @@ export function pixels(app: FastifyInstance, _: unknown, done: () => void) {
         await app.register(bindUser);
         await app.register(authRequired);
         await app.register(minUserRole, {
-            minRole: 2
+            minRole: UserRole.Admin
         });
 
         app.route(clear);

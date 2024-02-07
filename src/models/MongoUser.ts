@@ -1,5 +1,10 @@
-export type UserRole = 0 | 1 | 2;
 export type DiscordUserId = string;
+
+export enum UserRole {
+    User = 0,
+    Moderator = 1,
+    Admin = 2
+}
 
 export interface BanInfo {
     moderatorID: DiscordUserId;

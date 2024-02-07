@@ -6,6 +6,7 @@ import { authRequired } from "../../plugins/authRequired";
 import { minUserRole } from "../../plugins/minUserRole";
 import { ban } from "./ban";
 import { unban } from "./unban";
+import { UserRole } from "../../models/MongoUser";
 
 export function users(app: FastifyInstance, _: unknown, done: () => void) {
     app.route(getUser);
@@ -23,7 +24,7 @@ export function users(app: FastifyInstance, _: unknown, done: () => void) {
         await app.register(bindUser);
         await app.register(authRequired);
         await app.register(minUserRole, {
-            minRole: 2
+            minRole: UserRole.Admin
         });
 
         app.route(ban);
