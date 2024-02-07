@@ -1,6 +1,7 @@
 import fastifyCors from "@fastify/cors";
 import fastifyFormbody from "@fastify/formbody";
 import fastifyRateLimit from "@fastify/rate-limit";
+import fastifyCookie from "@fastify/cookie";
 import fastifyUnderPressure from "@fastify/under-pressure";
 import fastifyWebsocket from "@fastify/websocket";
 import fp from "fastify-plugin";
@@ -23,6 +24,8 @@ export const plugins = fp(async (app) => {
             return new RateLimitError(context.after);
         }
     });
+
+    await app.register(fastifyCookie);
 
     await app.register(fastifyUnderPressure, {
         maxHeapUsedBytes: 536870912,

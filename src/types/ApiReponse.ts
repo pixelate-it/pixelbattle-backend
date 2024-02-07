@@ -2,7 +2,7 @@ export interface ApiErrorResponse<T = Record<string, unknown>> {
     error: true;
     message: string;
     reason: string;
-    data?: T
+    data?: T;
 }
 
 export interface ApiSuccessResponse {

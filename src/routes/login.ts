@@ -1,5 +1,6 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
+import { CookieSerializeOptions } from "@fastify/cookie";
 import { AuthHelper } from "../helpers/AuthHelper";
 import { MongoUser } from "../models/MongoUser";
 import { utils } from "../extra/Utils";
@@ -70,7 +71,15 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
 
         auth.joinPixelateitServer();
 
+        const params = {
+            domain: config.frontend.split('//')[1].split(':')[0],
+            path: '/',
+            sameSite: 'none'
+        } as CookieSerializeOptions;
+
         return response
-            .redirect(`${config.frontend}/?token=${token}&id=${id}`);
+            .cookie('token', token, params)
+            .cookie('userid', id, params)
+            .redirect(config.frontend);
     }
 }

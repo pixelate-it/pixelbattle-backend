@@ -11,6 +11,7 @@
   "author": "pixelate-it",
   "license": "LGPL-3.0-only",
   "dependencies": {
+    "@fastify/cookie": "^9.3.1",
     "@fastify/cors": "^8.4.0",
     "@fastify/formbody": "^7.4.0",
     "@fastify/mongodb": "^8.0.0",
