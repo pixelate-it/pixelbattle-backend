@@ -30,7 +30,6 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
         if("error" in data) throw new AuthLoginError();
 
         const { id, username, verified } = await auth.getUserInfo();
-        console.log(id);
 
         if(!verified) throw new NotVerifiedEmailError();
 
