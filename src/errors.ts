@@ -8,6 +8,11 @@ export class ApiError extends Error {
     public data?: Record<string, unknown>;
 }
 
+export class NotVerifiedEmailError extends ApiError {
+    public message = "Please confirm your discord account email";
+    public statusCode = 401;
+}
+
 export class AuthLoginError extends ApiError {
     public message = "Please return to the login page and try again";
     public statusCode = 400;

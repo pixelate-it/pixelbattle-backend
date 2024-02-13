@@ -26,6 +26,21 @@ interface DiscordUser {
     accent_color?: number;
 }
 
+interface GuildMember {
+    user?: DiscordUser;
+    nick?: string;
+    avatar?: string;
+    roles: string[];
+    joined_at: string;
+    premium_since?: string;
+    deaf: boolean;
+    mute: boolean;
+    flags: number;
+    pending?: boolean;
+    permissions?: string;
+    communication_disabled_until?: string;
+}
+
 
 export class AuthHelper {
     private accessToken!: string;
@@ -44,7 +59,7 @@ export class AuthHelper {
 					code,
 					grant_type: 'authorization_code',
 					redirect_uri: config.discord.bot.redirectUri,
-					scope: 'identify guilds.join',
+					scope: 'email identify guilds.join',
                 }).toString(),
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -77,7 +92,7 @@ export class AuthHelper {
         return data;
     }
 
-    async joinPixelateitServer() {
+    async joinPixelateitServer(): Promise<GuildMember> {
         return await fetch(
             `${AuthHelper.API_URL}/guilds/${config.discord.guildId}/members/${this.userId}`,
             {
@@ -90,6 +105,6 @@ export class AuthHelper {
                     Authorization: `Bot ${config.discord.bot.token}`
                 }
             }
-        ).catch(() => {});
+        ).then(res => res.json())
     }
 }

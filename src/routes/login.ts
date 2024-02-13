@@ -5,7 +5,7 @@ import { AuthHelper } from "../helpers/AuthHelper";
 import { MongoUser } from "../models/MongoUser";
 import { utils } from "../extra/Utils";
 import { config } from "../config";
-import { AuthLoginError } from "../errors";
+import { AuthLoginError, NotVerifiedEmailError } from "../errors";
 import { UserRole } from "../models/MongoUser";
 
 export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Querystring: { code: string }; }> = {
@@ -25,12 +25,14 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
     async handler(request, response) {
         const auth = new AuthHelper();
         const data = await auth.authCodeGrant(request.query.code);
+        console.log(data);
 
-        if("error" in data) {
-            throw new AuthLoginError();
-        }
+        if("error" in data) throw new AuthLoginError();
 
-        const { id, username } = await auth.getUserInfo();
+        const { id, username, verified } = await auth.getUserInfo();
+        console.log(id);
+
+        if(!verified) throw new NotVerifiedEmailError();
 
         const user: Omit<MongoUser, "_id" | "userID" | "username"> | null = await request.server.database.users
             .findOne(
@@ -68,13 +70,15 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
                 { upsert: true }
             );
 
-        auth.joinPixelateitServer();
+        await auth.joinPixelateitServer();
 
-        const params = {
+        const params: CookieSerializeOptions = {
             domain: config.frontend.split('//')[1].split(':')[0],
             path: '/',
-            sameSite: 'none'
-        } as CookieSerializeOptions;
+            httpOnly: false,
+            sameSite: "none",
+            secure: true
+        }
 
         return response
             .cookie('token', token, params)

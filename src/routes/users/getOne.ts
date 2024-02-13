@@ -24,9 +24,6 @@ export const getUser: RouteOptions<Server, IncomingMessage, ServerResponse, { Pa
             ...user.user,
             token: undefined,
             _id: undefined,
-            banned: user.user.banned,
-            isBanned: !!user.user.banned,
-            isMod: Boolean(user.user.role)
         });
     }
 }
