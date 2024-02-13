@@ -37,6 +37,6 @@ export const socket: RouteOptions = {
             value: true,
         }
 
-        connection.write(action);
+        connection.write(JSON.stringify(action));
     }
 }
