@@ -26,20 +26,20 @@ interface DiscordUser {
     accent_color?: number;
 }
 
-interface GuildMember {
-    user?: DiscordUser;
-    nick?: string;
-    avatar?: string;
-    roles: string[];
-    joined_at: string;
-    premium_since?: string;
-    deaf: boolean;
-    mute: boolean;
-    flags: number;
-    pending?: boolean;
-    permissions?: string;
-    communication_disabled_until?: string;
-}
+//interface GuildMember {
+//    user?: DiscordUser;
+//    nick?: string;
+//    avatar?: string;
+//    roles: string[];
+//    joined_at: string;
+//    premium_since?: string;
+//    deaf: boolean;
+//    mute: boolean;
+//    flags: number;
+//    pending?: boolean;
+//    permissions?: string;
+//    communication_disabled_until?: string;
+//}
 
 
 export class AuthHelper {
@@ -92,7 +92,7 @@ export class AuthHelper {
         return data;
     }
 
-    async joinPixelateitServer(): Promise<GuildMember> {
+    async joinPixelateitServer() {
         return await fetch(
             `${AuthHelper.API_URL}/guilds/${config.discord.guildId}/members/${this.userId}`,
             {
@@ -105,6 +105,6 @@ export class AuthHelper {
                     Authorization: `Bot ${config.discord.bot.token}`
                 }
             }
-        ).then(res => res.json())
+        );
     }
 }

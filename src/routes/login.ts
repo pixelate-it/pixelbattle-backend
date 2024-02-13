@@ -25,7 +25,6 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
     async handler(request, response) {
         const auth = new AuthHelper();
         const data = await auth.authCodeGrant(request.query.code);
-        console.log(data);
 
         if("error" in data) throw new AuthLoginError();
 
@@ -69,7 +68,7 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
                 { upsert: true }
             );
 
-        await auth.joinPixelateitServer();
+        auth.joinPixelateitServer();
 
         const params: CookieSerializeOptions = {
             domain: config.frontend.split('//')[1].split(':')[0],
