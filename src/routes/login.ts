@@ -62,8 +62,7 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
                         tag: user?.tag ?? null,
                         badges: user?.badges ?? [],
                         points: user?.points ?? 0,
-                        role: UserRole.User,
-
+                        role: user?.role ?? UserRole.User,
                     }
                 },
                 { upsert: true }
