@@ -32,13 +32,11 @@ export const socket: RouteOptions = {
 
         (connection as SocketConnection).socket.requestIp = ip;
 
-        if(request.server.game.ended) {
-            const action: SocketPayload<"ENDED"> = {
-                op: "ENDED",
-                value: true,
-            }
-
-            connection.write(action);
+        const action: SocketPayload<"ENDED"> = {
+            op: "ENDED",
+            value: true,
         }
+
+        connection.write(action);
     }
 }
