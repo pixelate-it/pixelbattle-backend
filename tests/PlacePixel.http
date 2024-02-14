@@ -1,9 +1,0 @@
-PUT localhost:8080/pixels
-Content-Type: application/json
-
-{
-  "token": "ed339a66-b017-42db-ba04-f0d673e302eb.lohv8ola.ea51ebca-c548-40cc-adca-29ffb8d6df82",
-  "color": "#FFFFFF",
-  "x": 0,
-  "y": 0
-}

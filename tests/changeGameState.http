@@ -1,9 +1,0 @@
-POST localhost:8080/game/change
-Content-Type: application/json
-
-{
-  "token": "",
-  "ended": false
-}
-
-###
