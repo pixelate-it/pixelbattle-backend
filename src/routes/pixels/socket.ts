@@ -34,7 +34,7 @@ export const socket: RouteOptions = {
 
         const action: SocketPayload<"ENDED"> = {
             op: "ENDED",
-            value: true,
+            value: request.server.game.ended,
         }
 
         connection.write(JSON.stringify(action));
