@@ -20,7 +20,7 @@ export class UserManager extends BaseManager<MongoUser>{
             return cachedUser;
         }
 
-        const databaseUser = await this.collection.findOne(filter);
+        const databaseUser = await this.collection.findOne(filter, { projection: {  _id: 0 }, hint: { userID: 1 } });
 
         if(databaseUser) {
             cachedUser = new UserDataCache(databaseUser);
@@ -45,7 +45,7 @@ export class UserManager extends BaseManager<MongoUser>{
             .map(key => user.set(key, value[key]!));
 
         if(options?.force) {
-            await this.collection.updateOne(filter, { $set: value });
+            await this.collection.updateOne(filter, { $set: value }, { hint: { userID: 1 } });
         }
 
         return user;
