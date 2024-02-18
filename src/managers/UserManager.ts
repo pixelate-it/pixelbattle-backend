@@ -45,7 +45,7 @@ export class UserManager extends BaseManager<MongoUser>{
             .map(key => user.set(key, value[key]!));
 
         if(options?.force) {
-            this.collection.updateOne(value, { $set: value });
+            await this.collection.updateOne(filter, { $set: value });
         }
 
         return user;
