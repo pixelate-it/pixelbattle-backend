@@ -4,6 +4,7 @@ import { EntityNotFoundError } from "../../errors";
 import { toJson } from "../../extra/toJson";
 import { SocketPayload } from "../../types/SocketActions";
 import { genericSuccessResponse } from "../../types/ApiReponse";
+import { WebSocket } from "ws";
 
 interface ApiBody {
     name?: string;
@@ -38,8 +39,8 @@ export const change: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
             throw new EntityNotFoundError("game");
         }
 
-        if(request.body.ended !== game.ended) {
-            game.ended = request.body.ended ?? false;
+        if((request.body.ended !== game.ended) && (typeof request.body.ended === 'boolean')) {
+            game.ended = request.body.ended;
 
             if(request.body.ended) {
                 clearInterval(request.server.cache.interval);

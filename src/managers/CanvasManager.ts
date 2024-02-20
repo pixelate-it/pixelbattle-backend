@@ -37,9 +37,17 @@ export class CanvasManager extends BaseManager<MongoPixel>{
     }
 
     public async sendPixels() {
-        this.changes.forEach((pixel) => this.collection.updateOne({ x: pixel.x, y: pixel.y }, { $set: { ...this.select({ x: pixel.x, y: pixel.y }) } }));
-        this.changes = [];
+        const bulk = this.changes.map((pixel) => ({
+            updateOne: {
+                filter: { x: pixel.x, y: pixel.y },
+                update: { $set: this.select({ x: pixel.x, y: pixel.y }) },
+                hint: { x: 1, y: 1 }
+            }
+        }));
 
+        if(bulk.length) await this.collection.bulkWrite(bulk);
+
+        this.changes = [];
         return this._pixels;
     }
 

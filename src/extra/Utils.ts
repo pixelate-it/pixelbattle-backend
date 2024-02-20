@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const utils = {
     generateToken(date: number | null = null) {
-        return `${uuidv4()}.${(date ?? Date.now()).toString(36)}.${uuidv4()}`; // length = 82 (static)
+        return `${(uuidv4() + '.' + uuidv4()).replace(/-/g, '')}.${(date ?? Date.now()).toString(36)}`; // length = 72 (static)
     },
     translateHex(hex: string) {
         const r = parseInt(hex.slice(1, 3), 16);
