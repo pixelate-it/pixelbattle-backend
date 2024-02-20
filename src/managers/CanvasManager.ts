@@ -43,8 +43,8 @@ export class CanvasManager extends BaseManager<MongoPixel> {
             .toArray()
             .then(pixels =>  pixels.map((pixel) => {
                 const { color, ...pix } = pixel;
-                colors.push(utils.translateHex(color));
 
+                colors.push(utils.translateHex(color));
                 return pix;
             }));
         this._colors.set(colors.flat());
@@ -75,24 +75,28 @@ export class CanvasManager extends BaseManager<MongoPixel> {
     }
 
     public async clear(color: string) {
-        this.changes = [];
-
+        const colors: number[][] = [];
+        const RGB = utils.translateHex(color);
         const pixels = new Array(this.width * this.height)
-            .map((_, i) => ({
-                x: i % this.width,
-                y: Math.floor(i / this.width),
-                author: null,
-                tag: null
-            }));
+            .fill(0)
+            .map((_, i) => {
+                colors.push(RGB);
+
+                return {
+                    x: i % this.width,
+                    y: Math.floor(i / this.width),
+                    author: null,
+                    tag: null
+                }
+            });
 
         await this.collection.drop();
+        await this.collection.createIndex({ x: 1, y: 1 }, { unique: true });
         await this.collection.insertMany(pixels.map(pixel => ({ ...pixel, color })), { ordered: true });
 
+        this.changes = [];
         this._pixels = pixels;
-
-        this._colors = new Uint8Array();
-        const RGB = utils.translateHex(color);
-        pixels.forEach((_, index) => this._colors.set(RGB, index * 3))
+        this._colors = new Uint8Array(colors.flat());
 
         return pixels;
     }

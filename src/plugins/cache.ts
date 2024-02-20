@@ -40,4 +40,6 @@ export const cache = fp(async (app) => {
         canvasManager: canvasManager,
         map: new Map()
     });
+
+    return;
 });
