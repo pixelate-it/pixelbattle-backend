@@ -69,11 +69,8 @@ export class CanvasManager extends BaseManager<MongoPixel> {
         return this._pixels;
     }
 
-    public select({ x, y }: Point, color?: boolean): MongoPixel | Pixel | any {
-        return {
-            ...this._pixels.find(pixel => ((pixel.x === x) && (pixel.y === y))),
-            color: color ? this.getColor({ x, y }) : undefined
-        }
+    public select({ x, y }: Point): Pixel | any {
+        this._pixels.find(pixel => ((pixel.x === x) && (pixel.y === y)))
     }
 
     public async clear(color: string) {
