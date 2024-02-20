@@ -40,7 +40,7 @@ export const ban: RouteOptions<Server, IncomingMessage, ServerResponse, { Params
                     reason: request.body.reason || null,
                     timeout: request.body.timeout,
                 }
-            }
+            }, { force: true }
         );
 
 

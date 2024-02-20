@@ -25,7 +25,8 @@ export const unban: RouteOptions<Server, IncomingMessage, ServerResponse, { Para
     async handler(request, response) {
         const user = await request.server.cache.usersManager.edit(
             { userID: request.params.id },
-            { banned: null }
+            { banned: null },
+            { force: true }
         );
 
         if(!user) {

@@ -7,7 +7,7 @@ import { genericSuccessResponse } from "../../types/ApiReponse";
 import { toJson } from "../../extra/toJson";
 import { SocketPayload } from "../../types/SocketActions";
 import { UserRole } from "../../models/MongoUser";
-import { Pixel } from "../../models/MongoPixel";
+import { WebSocket } from "ws";
 
 
 interface Body {
@@ -93,7 +93,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
             });
 
             request.server.websocketServer.clients.forEach((client) => {
-                if(client.readyState !== 1) return;
+                if(client.readyState !== WebSocket.OPEN) return;
 
                 const payload: SocketPayload<"PLACE"> = {
                     op: 'PLACE',
