@@ -1,5 +1,5 @@
 import { RouteOptions } from "fastify";
-import { MongoPixel } from "../../models/MongoPixel";
+import { MongoPixelInternal } from "../../models/MongoPixel";
 
 
 export const getTags: RouteOptions = {
@@ -13,7 +13,7 @@ export const getTags: RouteOptions = {
         }
     },
     async handler(request, response) {
-        const pixels: MongoPixel[] = request.server.cache.canvasManager.pixels;
+        const pixels: MongoPixelInternal[] = request.server.cache.canvasManager.pixels;
 
         const data = pixels.reduce((info, pixel) => {
             if(pixel.tag === null) {

@@ -37,8 +37,6 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
         }
     },
     async preHandler(request, response, done) {
-        // console.log(request.user)
-
         if(!request.user) {
             throw new WrongTokenError();
         }

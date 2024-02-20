@@ -17,10 +17,10 @@ declare module "fastify" {
 }
 
 export const cache = fp(async (app) => {
-    const canvasManager = new CanvasManager(app.database.pixels);
+    const canvasManager = new CanvasManager(app.database.pixels, app.game.width, app.game.height);
     const usersManager = new UserManager(app.database.users);
 
-    await canvasManager.init(app.game.width, app.game.height);
+    await canvasManager.init();
     usersManager.handle();
 
     async function updateDatabase() {

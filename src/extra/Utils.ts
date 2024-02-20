@@ -10,5 +10,8 @@ export const utils = {
         const b = parseInt(hex.slice(5, 7), 16);
 
         return [r, g, b];
+    },
+    translateRGB(rgb: number[]) {
+        return '#' + rgb.map(f => f.toString(16)).join('');
     }
 }

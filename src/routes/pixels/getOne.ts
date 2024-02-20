@@ -1,6 +1,7 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { EntityNotFoundError } from "../../errors";
+import { utils } from "../../extra/Utils";
 
 
 export const getOne: RouteOptions<Server, IncomingMessage, ServerResponse, { Querystring: { x: number; y: number }; }> = {
@@ -29,6 +30,9 @@ export const getOne: RouteOptions<Server, IncomingMessage, ServerResponse, { Que
 
         return response
             .code(200)
-            .send(pixel);
+            .send({
+                ...pixel,
+                color: utils.translateRGB(pixel.color)
+            });
     }
 }

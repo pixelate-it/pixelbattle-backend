@@ -1,6 +1,8 @@
 import { Collection } from "mongodb";
-import { MongoPixel } from "../models/MongoPixel";
+import { MongoPixel, MongoPixelInternal } from "../models/MongoPixel";
 import { BaseManager } from "./BaseManager";
+import { utils } from "../extra/Utils";
+import * as util from "util";
 
 interface Point {
     x: number;
@@ -9,12 +11,10 @@ interface Point {
 
 
 export class CanvasManager extends BaseManager<MongoPixel>{
-    private _pixels: MongoPixel[] = [];
+    private _pixels: MongoPixelInternal[] = [];
     private changes: Point[];
-    private width: number = 0;
-    private height: number = 0;
 
-    constructor(collection: Collection<MongoPixel>) {
+    constructor(collection: Collection<MongoPixel>, readonly width: number, readonly height: number) {
         super(collection);
 
         this._pixels = [];
@@ -25,25 +25,31 @@ export class CanvasManager extends BaseManager<MongoPixel>{
         return this._pixels;
     }
 
-    public async init(width: number, height: number) {
+    public async init() {
         this._pixels = await this.collection
             .find({}, { projection: { _id: 0 } })
-            .toArray();
-
-        this.width = width;
-        this.height = height;
+            .toArray()
+            .then(pixels =>
+                pixels.map((pixel) => ({
+                    ...pixel,
+                    color: utils.translateHex(pixel.color)
+                }))
+            );
 
         return this._pixels;
     }
 
     public async sendPixels() {
-        const bulk = this.changes.map((pixel) => ({
-            updateOne: {
-                filter: { x: pixel.x, y: pixel.y },
-                update: { $set: this.select({ x: pixel.x, y: pixel.y }) },
-                hint: { x: 1, y: 1 }
+        const bulk = this.changes.map((pixel) => {
+            const data = this.select({ x: pixel.x, y: pixel.y })!;
+            return {
+                updateOne: {
+                    filter: { x: pixel.x, y: pixel.y },
+                    update: { $set: { ...data, color: utils.translateRGB(data.color) } },
+                    hint: { x: 1, y: 1 }
+                }
             }
-        }));
+        });
 
         if(bulk.length) await this.collection.bulkWrite(bulk);
 
@@ -71,7 +77,8 @@ export class CanvasManager extends BaseManager<MongoPixel>{
         await this.collection.drop();
         await this.collection.insertMany(pixels, { ordered: true });
 
-        this._pixels = pixels;
+        const RGB = utils.translateHex(color);
+        this._pixels = pixels.map(pixel => ({ ...pixel, color: RGB }));
 
         return pixels;
     }
@@ -81,8 +88,8 @@ export class CanvasManager extends BaseManager<MongoPixel>{
 
         if(!canvasPixel) return;
 
+        canvasPixel.color = utils.translateHex(pixel.color);
         canvasPixel.author = pixel.author;
-        canvasPixel.color = pixel.color;
         canvasPixel.tag = pixel.tag;
 
         this.changes.push({ x: pixel.x, y: pixel.y })
