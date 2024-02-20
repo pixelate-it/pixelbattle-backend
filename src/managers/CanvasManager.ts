@@ -1,8 +1,7 @@
 import { Collection } from "mongodb";
-import { MongoPixel, MongoPixelInternal } from "../models/MongoPixel";
+import { MongoPixel, Pixel } from "../models/MongoPixel";
 import { BaseManager } from "./BaseManager";
 import { utils } from "../extra/Utils";
-import * as util from "util";
 
 interface Point {
     x: number;
@@ -10,31 +9,44 @@ interface Point {
 }
 
 
-export class CanvasManager extends BaseManager<MongoPixel>{
-    private _pixels: MongoPixelInternal[] = [];
+export class CanvasManager extends BaseManager<MongoPixel> {
+    private readonly bitPP = 3;
+    private _colors: Uint8Array;
+    private _pixels: Pixel[];
     private changes: Point[];
 
     constructor(collection: Collection<MongoPixel>, readonly width: number, readonly height: number) {
         super(collection);
 
+        this._colors = new Uint8Array(width * height * this.bitPP);
         this._pixels = [];
         this.changes = [];
     }
-
     public get pixels() {
         return this._pixels;
     }
 
+    public get colors() {
+        return this._colors;
+    }
+
+    private startIndex({ x, y }: Point) {
+        return x + y * this.width;
+    }
+
     public async init() {
+        const colors: number[][] = [];
+
         this._pixels = await this.collection
             .find({}, { projection: { _id: 0 } })
             .toArray()
-            .then(pixels =>
-                pixels.map((pixel) => ({
-                    ...pixel,
-                    color: utils.translateHex(pixel.color)
-                }))
-            );
+            .then(pixels =>  pixels.map((pixel) => {
+                const { color, ...pix } = pixel;
+                colors.push(utils.translateHex(color));
+
+                return pix;
+            }));
+        this._colors.set(colors.flat());
 
         return this._pixels;
     }
@@ -45,7 +57,7 @@ export class CanvasManager extends BaseManager<MongoPixel>{
             return {
                 updateOne: {
                     filter: { x: pixel.x, y: pixel.y },
-                    update: { $set: { ...data, color: utils.translateRGB(data.color) } },
+                    update: { $set: { ...data, color: this.getColor({ x: pixel.x, y: pixel.y }) } },
                     hint: { x: 1, y: 1 }
                 }
             }
@@ -57,28 +69,32 @@ export class CanvasManager extends BaseManager<MongoPixel>{
         return this._pixels;
     }
 
-    public select({ x, y }: Point) {
-        return this._pixels.find(pixel => ((pixel.x === x) && (pixel.y === y)));
+    public select({ x, y }: Point, color?: boolean): MongoPixel | Pixel | any {
+        return {
+            ...this._pixels.find(pixel => ((pixel.x === x) && (pixel.y === y))),
+            color: color ? this.getColor({ x, y }) : undefined
+        }
     }
 
     public async clear(color: string) {
         this.changes = [];
 
         const pixels = new Array(this.width * this.height)
-            .fill(0)
             .map((_, i) => ({
                 x: i % this.width,
                 y: Math.floor(i / this.width),
-                color,
                 author: null,
                 tag: null
             }));
 
         await this.collection.drop();
-        await this.collection.insertMany(pixels, { ordered: true });
+        await this.collection.insertMany(pixels.map(pixel => ({ ...pixel, color })), { ordered: true });
 
+        this._pixels = pixels;
+
+        this._colors = new Uint8Array();
         const RGB = utils.translateHex(color);
-        this._pixels = pixels.map(pixel => ({ ...pixel, color: RGB }));
+        pixels.forEach((_, index) => this._colors.set(RGB, index * 3))
 
         return pixels;
     }
@@ -88,7 +104,7 @@ export class CanvasManager extends BaseManager<MongoPixel>{
 
         if(!canvasPixel) return;
 
-        canvasPixel.color = utils.translateHex(pixel.color);
+        this.setColor({ x: pixel.x, y: pixel.y }, pixel.color);
         canvasPixel.author = pixel.author;
         canvasPixel.tag = pixel.tag;
 
@@ -96,8 +112,20 @@ export class CanvasManager extends BaseManager<MongoPixel>{
 
         return pixel;
     }
+
+    public getColor({ x, y }: Point) {
+        const index = this.startIndex({ x, y });
+        const RGB = this._colors.slice(index * this.bitPP, index * this.bitPP + this.bitPP);
+
+        return utils.translateRGB(Array.from(RGB));
+    }
+
+    private setColor({ x, y }: Point, color: string) {
+        const startIndex = this.startIndex({ x, y }) * this.bitPP;
+        const [R, G, B] = utils.translateHex(color);
+
+        this._colors[startIndex] = R;
+        this._colors[startIndex + 1] = G;
+        this._colors[startIndex + 2] = B;
+    }
 }
-
-
-
-

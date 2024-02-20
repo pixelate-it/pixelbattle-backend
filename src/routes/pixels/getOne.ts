@@ -32,7 +32,7 @@ export const getOne: RouteOptions<Server, IncomingMessage, ServerResponse, { Que
             .code(200)
             .send({
                 ...pixel,
-                color: utils.translateRGB(pixel.color)
+                color: request.server.cache.canvasManager.getColor({ x, y })
             });
     }
 }

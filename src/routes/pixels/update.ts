@@ -7,6 +7,7 @@ import { genericSuccessResponse } from "../../types/ApiReponse";
 import { toJson } from "../../extra/toJson";
 import { SocketPayload } from "../../types/SocketActions";
 import { UserRole } from "../../models/MongoUser";
+import { Pixel } from "../../models/MongoPixel";
 
 
 interface Body {
@@ -66,7 +67,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
         const x = Number(request.body.x);
         const y = Number(request.body.y);
         const color = request.body.color;
-        const pixel = request.server.cache.canvasManager.select({ x, y });
+        const pixel: Pixel = request.server.cache.canvasManager.select({ x, y });
 
         if(!pixel) {
             throw new EntityNotFoundError("pixel");
@@ -79,7 +80,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
 
         if(!request.server.cache.map.has(cacheKey)) {
             const tag = request.user.role !== UserRole.User
-                ? 'Pixelate It! Team'
+                ? null
                 : request.user.tag;
 
 
