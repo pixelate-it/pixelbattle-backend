@@ -24,4 +24,6 @@ export const game = fp(async (app) => {
     }
 
     app.decorate("game", game);
+
+    return;
 });

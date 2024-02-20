@@ -10,5 +10,4 @@ export const authRequired = fp(async (app) => {
     });
 
     return;
-
 });

@@ -7,6 +7,7 @@ import { genericSuccessResponse } from "../../types/ApiReponse";
 import { toJson } from "../../extra/toJson";
 import { SocketPayload } from "../../types/SocketActions";
 import { UserRole } from "../../models/MongoUser";
+import { WebSocket } from "ws";
 
 
 interface Body {
@@ -37,8 +38,6 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
         }
     },
     async preHandler(request, response, done) {
-        // console.log(request.user)
-
         if(!request.user) {
             throw new WrongTokenError();
         }
@@ -81,7 +80,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
 
         if(!request.server.cache.map.has(cacheKey)) {
             const tag = request.user.role !== UserRole.User
-                ? 'Pixelate It! Team'
+                ? null
                 : request.user.tag;
 
 
@@ -94,7 +93,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
             });
 
             request.server.websocketServer.clients.forEach((client) => {
-                if(client.readyState !== 1) return;
+                if(client.readyState !== WebSocket.OPEN) return;
 
                 const payload: SocketPayload<"PLACE"> = {
                     op: 'PLACE',

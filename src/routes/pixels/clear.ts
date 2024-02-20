@@ -26,7 +26,7 @@ export const clear: RouteOptions<Server, IncomingMessage, ServerResponse, { Body
         }
     },
     async handler(request, response) {
-        const color = request.body.color ?? '#FFFFFF';
+        const color = request.body.color ?? '#ffffff';
         const canvas = {
             width: request.server.game.width,
             height: request.server.game.height

@@ -47,7 +47,7 @@ export const change: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
 
                 await request.server.cache.canvasManager.sendPixels();
             } else {
-                await request.server.cache.canvasManager.init(request.server.game.width, request.server.game.height);
+                await request.server.cache.canvasManager.init();
 
                 request.server.cache.createInterval();
             }
