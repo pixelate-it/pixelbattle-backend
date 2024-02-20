@@ -67,7 +67,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
         const x = Number(request.body.x);
         const y = Number(request.body.y);
         const color = request.body.color;
-        const pixel: Pixel = request.server.cache.canvasManager.select({ x, y });
+        const pixel = request.server.cache.canvasManager.select({ x, y });
 
         if(!pixel) {
             throw new EntityNotFoundError("pixel");

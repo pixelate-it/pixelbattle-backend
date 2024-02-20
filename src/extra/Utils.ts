@@ -11,7 +11,7 @@ export const utils = {
 
         return [R, G, B];
     },
-    translateRGB(rgb: number[]) {
-        return '#' + rgb.map(f => f.toString(16)).join('');
+    translateRGB(rgb: Uint8Array | number[]) {
+        return '#' + [...rgb].map(f => f.toString(16)).join('');
     }
 }

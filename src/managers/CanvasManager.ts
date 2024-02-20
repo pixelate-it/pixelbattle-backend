@@ -22,6 +22,7 @@ export class CanvasManager extends BaseManager<MongoPixel> {
         this._pixels = [];
         this.changes = [];
     }
+
     public get pixels() {
         return this._pixels;
     }
@@ -69,8 +70,8 @@ export class CanvasManager extends BaseManager<MongoPixel> {
         return this._pixels;
     }
 
-    public select({ x, y }: Point): Pixel | any {
-        this._pixels.find(pixel => ((pixel.x === x) && (pixel.y === y)))
+    public select({ x, y }: Point) {
+        return this._pixels.find(pixel => ((pixel.x === x) && (pixel.y === y)));
     }
 
     public async clear(color: string) {
@@ -114,7 +115,7 @@ export class CanvasManager extends BaseManager<MongoPixel> {
         const index = this.startIndex({ x, y });
         const RGB = this._colors.slice(index * this.bitPP, index * this.bitPP + this.bitPP);
 
-        return utils.translateRGB(Array.from(RGB));
+        return utils.translateRGB(RGB);
     }
 
     private setColor({ x, y }: Point, color: string) {
