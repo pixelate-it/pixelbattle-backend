@@ -11,14 +11,14 @@ interface Point {
 
 export class CanvasManager extends BaseManager<MongoPixel> {
     private readonly bitPP = 3;
-    private _colors: Uint8Array;
+    private _colors: Uint8ClampedArray;
     private _pixels: Pixel[];
     private changes: Point[];
 
     constructor(collection: Collection<MongoPixel>, readonly width: number, readonly height: number) {
         super(collection);
 
-        this._colors = new Uint8Array(width * height * this.bitPP);
+        this._colors = new Uint8ClampedArray(width * height * this.bitPP);
         this._pixels = [];
         this.changes = [];
     }
@@ -96,7 +96,7 @@ export class CanvasManager extends BaseManager<MongoPixel> {
 
         this.changes = [];
         this._pixels = pixels;
-        this._colors = new Uint8Array(colors.flat());
+        this._colors = new Uint8ClampedArray(colors.flat());
 
         return pixels;
     }
