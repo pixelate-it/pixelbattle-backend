@@ -24,7 +24,7 @@ export function users(app: FastifyInstance, _: unknown, done: () => void) {
         await app.register(bindUser);
         await app.register(authRequired);
         await app.register(minUserRole, {
-            minRole: UserRole.Admin
+            minRole: UserRole.Moderator
         });
 
         app.route(ban);

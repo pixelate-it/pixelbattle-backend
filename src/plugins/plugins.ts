@@ -29,7 +29,7 @@ export const plugins = fp(async (app) => {
 
     await app.register(fastifyUnderPressure, {
         maxHeapUsedBytes: 2147483648,
-        sampleInterval: 1000
+        sampleInterval: 5000
     });
 
     await app.register(fastifyWebsocket, {

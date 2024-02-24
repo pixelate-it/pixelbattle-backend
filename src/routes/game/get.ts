@@ -14,7 +14,7 @@ interface ApiInfo {
     online: number;
 }
 
-export const get: RouteOptions<Server, IncomingMessage, ServerResponse, { Querystring: { x: number; y: number }; }> = {
+export const get: RouteOptions<Server, IncomingMessage, ServerResponse> = {
     method: 'GET',
     url: '/',
     schema: {},
