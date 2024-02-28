@@ -11,7 +11,7 @@ export const utils = {
 
         return [R, G, B];
     },
-    translateRGB(rgb: Uint8Array | number[]) {
+    translateRGB(rgb: Uint8ClampedArray | number[]) {
         return '#' + [...rgb]
             .map(f => (f < 16 ? '0' : '') + Math.max(0, Math.min(f, 255)).toString(16))
             .join('');

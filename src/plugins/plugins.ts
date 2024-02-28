@@ -28,8 +28,8 @@ export const plugins = fp(async (app) => {
     await app.register(fastifyCookie);
 
     await app.register(fastifyUnderPressure, {
-        maxHeapUsedBytes: 536870912,
-        sampleInterval: 1000
+        maxHeapUsedBytes: 2147483648,
+        sampleInterval: 5000
     });
 
     await app.register(fastifyWebsocket, {
