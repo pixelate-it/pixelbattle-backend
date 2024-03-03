@@ -52,7 +52,7 @@ export class CanvasManager extends BaseManager<MongoPixel> {
         return this._pixels;
     }
 
-    public async sendPixels() {
+    public sendPixels() {
         const bulk = this.changes.map((pixel) => {
             const data = this.select({ x: pixel.x, y: pixel.y })!;
             return {
@@ -64,7 +64,7 @@ export class CanvasManager extends BaseManager<MongoPixel> {
             }
         });
 
-        if(bulk.length) await this.collection.bulkWrite(bulk);
+        if(bulk.length) this.collection.bulkWrite(bulk);
 
         this.changes = [];
         return this._pixels;

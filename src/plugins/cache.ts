@@ -23,8 +23,8 @@ export const cache = fp(async (app) => {
     await canvasManager.init();
     usersManager.handle();
 
-    async function updateDatabase() {
-        await canvasManager.sendPixels();
+    function updateDatabase() {
+        canvasManager.sendPixels();
     }
 
     async function createInterval() {

@@ -45,7 +45,7 @@ export const change: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
             if(request.body.ended) {
                 clearInterval(request.server.cache.interval);
 
-                await request.server.cache.canvasManager.sendPixels();
+                request.server.cache.canvasManager.sendPixels();
             } else {
                 await request.server.cache.canvasManager.init();
 
