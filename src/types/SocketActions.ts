@@ -6,8 +6,23 @@ export interface SocketServerActions {
     };
     "ENDED": {
         value: boolean;
+    },
+    "BANNED": {
+        timeout: number;
+        reason: string | null;
+    },
+    "COOLDOWN": {
+        time: number;
     }
 }
+
+//export interface SocketClientActions {
+//    "PLACE": {
+//        x: number,
+//        y: number,
+//        color: number
+//    }
+//}
 
 export type SocketPayload<T extends keyof SocketServerActions> = {
     op: T;

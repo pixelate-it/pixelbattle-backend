@@ -1,11 +1,5 @@
 import { RouteOptions } from "fastify";
-import { SocketPayload } from "../../types/SocketActions";
-import { SocketStream } from "@fastify/websocket";
-import WebSocket from "ws";
-
-export type SocketConnection = SocketStream & {
-    socket: WebSocket.WebSocket & { requestIp: string; }
-}
+import { SocketConnection, SocketHelper } from "../../helpers/SocketHelper";
 
 export const socket: RouteOptions = {
     method: 'GET',
@@ -30,13 +24,9 @@ export const socket: RouteOptions = {
                 : cloudflareIpHeaders
             : request.ip;
 
-        (connection as SocketConnection).socket.requestIp = ip;
+        (connection as SocketConnection).socket.requestIp = ip; console.log(request.cookies.token);
 
-        const action: SocketPayload<"ENDED"> = {
-            op: "ENDED",
-            value: request.server.game.ended,
-        }
-
-        connection.write(JSON.stringify(action));
+        const helper = new SocketHelper(connection.socket as SocketConnection['socket'], request.server, request.cookies);
+        if(request.cookies.token) helper.login(request.cookies.token);
     }
 }

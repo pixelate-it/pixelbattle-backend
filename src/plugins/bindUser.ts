@@ -9,6 +9,11 @@ declare module 'fastify' {
     }
 }
 
+export type RequestCookie = {
+    token?: string;
+    userid?: string;
+}
+
 export const bindUser = fp(async (app) => {
     app.decorateRequest("user", null);
 

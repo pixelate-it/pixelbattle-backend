@@ -1,7 +1,7 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { EntityNotFoundError } from "../../errors";
-import { SocketConnection } from "../pixels/socket";
+import { SocketConnection } from "../../helpers/SocketHelper";
 
 interface ApiInfo {
     name: string;
