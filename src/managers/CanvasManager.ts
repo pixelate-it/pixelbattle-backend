@@ -52,19 +52,18 @@ export class CanvasManager extends BaseManager<MongoPixel> {
         return this._pixels;
     }
 
-    public async sendPixels() {
+    public sendPixels() {
         const bulk = this.changes.map((pixel) => {
             const data = this.select({ x: pixel.x, y: pixel.y })!;
             return {
                 updateOne: {
                     filter: { x: pixel.x, y: pixel.y },
-                    update: { $set: { ...data, color: this.getColor({ x: pixel.x, y: pixel.y }) } },
-                    hint: { x: 1, y: 1 }
+                    update: { $set: { ...data, color: this.getColor({ x: pixel.x, y: pixel.y }) } }
                 }
             }
         });
 
-        if(bulk.length) await this.collection.bulkWrite(bulk);
+        if(bulk.length) this.collection.bulkWrite(bulk);
 
         this.changes = [];
         return this._pixels;
@@ -91,7 +90,6 @@ export class CanvasManager extends BaseManager<MongoPixel> {
             });
 
         await this.collection.drop();
-        await this.collection.createIndex({ x: 1, y: 1 }, { unique: true });
         await this.collection.insertMany(pixels.map(pixel => ({ ...pixel, color })), { ordered: true });
 
         this.changes = [];

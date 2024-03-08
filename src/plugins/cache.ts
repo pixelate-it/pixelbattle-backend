@@ -4,14 +4,16 @@ import { config } from "../config";
 import { CanvasManager } from "../managers/CanvasManager";
 import { UserManager } from "../managers/UserManager";
 
+type SetType = `${string}-${number}-${number}-${string}`;
+
 declare module "fastify" {
     interface FastifyInstance {
         cache: {
-            interval?: NodeJS.Timeout;
+            set: Set<SetType>;
+            createInterval: () => void;
             canvasManager: CanvasManager;
             usersManager: UserManager;
-            map: Map<`${string}-${number}-${number}-${string}`, boolean>;
-            createInterval: () => void;
+            interval?: NodeJS.Timeout;
         }
     }
 }
@@ -23,8 +25,8 @@ export const cache = fp(async (app) => {
     await canvasManager.init();
     usersManager.handle();
 
-    async function updateDatabase() {
-        await canvasManager.sendPixels();
+    function updateDatabase() {
+        canvasManager.sendPixels();
     }
 
     async function createInterval() {
@@ -34,11 +36,11 @@ export const cache = fp(async (app) => {
     const interval = app.game.ended ? undefined : setInterval(updateDatabase, config.syncTime);
 
     app.decorate("cache", {
-        interval: interval,
-        createInterval: createInterval,
-        usersManager: usersManager,
-        canvasManager: canvasManager,
-        map: new Map()
+        set: new Set<SetType>(),
+        createInterval,
+        canvasManager,
+        usersManager,
+        interval
     });
 
     return;

@@ -33,7 +33,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
     },
     config: {
         rateLimit: {
-            max: 5,
+            max: 8,
             timeWindow: '1s'
         }
     },
@@ -78,7 +78,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
         await request.server.cache.usersManager.edit({ token: request.user.token }, { cooldown });
         const cacheKey = `${request.user.userID}-${x}-${y}-${color}` as const;
 
-        if(!request.server.cache.map.has(cacheKey)) {
+        if(!request.server.cache.set.has(cacheKey)) {
             const tag = request.user.role !== UserRole.User
                 ? null
                 : request.user.tag;
@@ -115,8 +115,8 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
             );
 
 
-            request.server.cache.map.set(cacheKey, true);
-            setTimeout(() => request.server.cache.map.delete(cacheKey), 600); // CORS spam fix
+            request.server.cache.set.add(cacheKey);
+            setTimeout(() => request.server.cache.set.delete(cacheKey), 600); // CORS spam fix
         }
 
         return response
