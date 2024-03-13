@@ -23,7 +23,7 @@ export const socket: RouteOptions = {
                 : cloudflareIpHeaders
             : request.ip;
 
-        (connection as SocketConnection).socket.requestIp = ip; console.log(request.cookies.token);
+        (connection as SocketConnection).socket.requestIp = ip;
 
         const helper = new SocketHelper((connection as SocketConnection).socket, request.server, request.cookies);
         if(request.cookies.token) helper.login(request.cookies.token);

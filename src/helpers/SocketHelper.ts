@@ -4,7 +4,6 @@ import { LoggingHelper } from "./LoggingHelper";
 import { SocketPayload } from "../types/SocketActions";
 import { RequestCookie } from "../plugins/bindUser";
 import { UserRole } from "../models/MongoUser";
-import { toJson } from "../extra/toJson";
 import { config } from "../config";
 import WebSocket from "ws";
 
@@ -94,7 +93,7 @@ export class SocketHelper {
                         color,
                     }
 
-                    client.send(toJson(payload));
+                    client.send(JSON.stringify(payload));
                 });
 
                 LoggingHelper.sendPixelPlaced(

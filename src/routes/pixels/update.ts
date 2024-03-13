@@ -102,7 +102,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
                     color,
                 }
 
-                client.send(toJson(payload));
+                client.send(JSON.stringify(payload));
             });
 
             LoggingHelper.sendPixelPlaced(

@@ -8,7 +8,7 @@ import fp from "fastify-plugin";
 import { RateLimitError } from "../apiErrors";
 
 export const plugins = fp(async (app) => {
-    await app.register(fastifyCors, { origin: true });
+    await app.register(fastifyCors, { origin: true, credentials: true, hook: 'preParsing' });
 
     await app.register(fastifyFormbody);
 

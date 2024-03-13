@@ -15,9 +15,7 @@ export interface SocketServerActions {
         time: number;
         id: string;
     },
-    "INC_PIXEL": {
-
-    }
+    "INC_PIXEL": {}
 }
 
 //export interface SocketClientActions {

@@ -17,11 +17,17 @@ export type RequestCookie = {
 export const bindUser = fp(async (app) => {
     app.decorateRequest("user", null);
 
-    app.addHook("preHandler", async (req: FastifyRequest<{ Headers: { Authorization: `Bearer ${string}` } }>, _) => {
-        if(!req.headers.authorization) {
+    app.addHook("preHandler", async (req: FastifyRequest<{ Headers: { Authorization?: `Bearer ${string}` } }>, _) => {
+        const cookies: RequestCookie = req.cookies;
+
+        if(!cookies.token && !req.headers.authorization)
             throw new NotAuthorizedError();
-        }
-        const userCache = await req.server.cache.usersManager.get({ token: req.headers.authorization.slice("Bearer ".length) });
+
+        const userCache = await req.server.cache.usersManager.get({
+            token: cookies.token
+                ? cookies.token
+                : req.headers.authorization?.slice("Bearer ".length)
+        });
 
         if(!userCache)
             throw new NotAuthorizedError();
