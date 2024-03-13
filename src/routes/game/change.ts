@@ -1,6 +1,6 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { EntityNotFoundError } from "../../errors";
+import { EntityNotFoundError } from "../../apiErrors";
 import { toJson } from "../../extra/toJson";
 import { SocketPayload } from "../../types/SocketActions";
 import { genericSuccessResponse } from "../../types/ApiReponse";

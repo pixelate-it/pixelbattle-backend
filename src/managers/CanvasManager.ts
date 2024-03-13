@@ -69,7 +69,7 @@ export class CanvasManager extends BaseManager<MongoPixel> {
             }
         });
 
-        if(bulk.length) this.collection.bulkWrite(bulk);
+        if(bulk.length) this.collection.bulkWrite(bulk, { writeConcern: { w: "majority" } });
 
         this.changes = [];
         return this._pixels;

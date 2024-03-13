@@ -1,6 +1,6 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { EntityNotFoundError } from "../../errors";
+import { EntityNotFoundError } from "../../apiErrors";
 
 
 export const getUser: RouteOptions<Server, IncomingMessage, ServerResponse, { Params: { id: string }; }> = {

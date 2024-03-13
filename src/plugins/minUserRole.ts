@@ -1,4 +1,4 @@
-import { NotEnoughPrivilegesError } from "../errors";
+import { NotEnoughPrivilegesError } from "../apiErrors";
 import fp from "fastify-plugin";
 import { UserRole } from "../models/MongoUser";
 

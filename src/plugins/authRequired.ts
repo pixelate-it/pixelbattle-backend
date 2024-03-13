@@ -1,4 +1,4 @@
-import { NotAuthorizedError } from "../errors";
+import { NotAuthorizedError } from "../apiErrors";
 import fp from "fastify-plugin";
 
 

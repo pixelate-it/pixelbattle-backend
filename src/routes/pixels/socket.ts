@@ -16,7 +16,6 @@ export const socket: RouteOptions = {
     },
     wsHandler(connection, request) {
         connection.setEncoding('utf8');
-
         const cloudflareIpHeaders = request.headers['cf-connecting-ip']
         const ip = cloudflareIpHeaders
             ? Array.isArray(cloudflareIpHeaders)
@@ -26,7 +25,7 @@ export const socket: RouteOptions = {
 
         (connection as SocketConnection).socket.requestIp = ip; console.log(request.cookies.token);
 
-        const helper = new SocketHelper(connection.socket as SocketConnection['socket'], request.server, request.cookies);
+        const helper = new SocketHelper((connection as SocketConnection).socket, request.server, request.cookies);
         if(request.cookies.token) helper.login(request.cookies.token);
     }
 }

@@ -1,9 +1,19 @@
 import { FastifyInstance } from "fastify";
-import { SocketPayload } from "../types/SocketActions";
 import { SocketStream } from "@fastify/websocket";
+import { LoggingHelper } from "./LoggingHelper";
+import { SocketPayload } from "../types/SocketActions";
+import { RequestCookie } from "../plugins/bindUser";
+import { UserRole } from "../models/MongoUser";
+import { toJson } from "../extra/toJson";
+import { config } from "../config";
 import WebSocket from "ws";
 
-import { RequestCookie } from "../plugins/bindUser";
+import {
+    SocketError,
+    IncorrectPixelError,
+    TokenBannedError,
+    UserCooldownError
+} from "../socketErrors";
 
 enum WebsocketStatus {
     NONAME = 0,
@@ -11,21 +21,26 @@ enum WebsocketStatus {
 }
 
 export type SocketConnection = SocketStream & {
-    socket: WebSocket.WebSocket & { requestIp: string; }
+    socket: WebSocket & { requestIp: string };
 }
 
 export class SocketHelper {
-    level = WebsocketStatus.NONAME;
+    private level = WebsocketStatus.NONAME;
     constructor(readonly socket: SocketConnection['socket'], private readonly server: FastifyInstance, private readonly cookies: RequestCookie) {
-        socket.on('message', this.message);
+        socket.on('message', this.message.bind(this));
     }
 
-    private static parseJSON(str: string) {
+    public static parseJSON(str: string) {
         try {
             return JSON.parse(str);
         } catch {
             return null;
         }
+    }
+
+    public error(error: SocketError) {
+        if(this.socket.readyState !== this.socket.OPEN) return;
+        this.socket.send(JSON.stringify(error.payload));
     }
 
     private async message(data: WebSocket.RawData) {
@@ -39,48 +54,69 @@ export class SocketHelper {
                 const cache = await this.server.cache.usersManager.get({ token: this.cookies.token });
 
                 if(!cache) return;
-                if(cache.user.banned) {
-                    const action: SocketPayload<'BANNED'> = {
-                        op: 'BANNED',
-                        timeout: cache.user.banned.timeout,
-                        reason: cache.user.banned.reason
-                    }
-
-                    if(this.socket.readyState === WebSocket.OPEN) this.socket.send(JSON.stringify(action));
-                    return;
-                }
+                if(cache.user.banned) return this.error(new TokenBannedError(cache.user.banned.timeout, cache.user.banned.reason));
 
                 const now = Date.now();
                 if(cache.user.cooldown > now) {
                     const time = Number(((cache.user.cooldown - now) / 1000).toFixed(1));
 
-                    const action: SocketPayload<'COOLDOWN'> = {
-                        op: 'COOLDOWN',
-                        time
-                    }
-
-                    if(this.socket.readyState === WebSocket.OPEN) this.socket.send(JSON.stringify(action));
-                    return;
+                    return this.error(new UserCooldownError(time, message.id ?? Math.random().toString(8).slice(2)));
                 }
 
                 const { x, y, color } = message;
                 const pixel = this.server.cache.canvasManager.select({ x, y });
 
-                // to be continued...
+                if(!pixel) return this.error(new IncorrectPixelError());
+
+                const cooldown = Date.now() + (cache.user.role !== UserRole.User ? config.moderatorCooldown : this.server.game.cooldown);
+
+                await this.server.cache.usersManager.edit({ token: cache.user.token }, { cooldown });
+
+                const tag = cache.user.role !== UserRole.User
+                    ? null
+                    : cache.user.tag;
+
+                this.server.cache.canvasManager.paint({
+                    x,
+                    y,
+                    color,
+                    tag,
+                    author: cache.user.username
+                });
+
+                this.server.websocketServer.clients.forEach((client) => {
+                    if(client.readyState !== WebSocket.OPEN) return;
+
+                    const payload: SocketPayload<"PLACE"> = {
+                        op: 'PLACE',
+                        x,
+                        y,
+                        color,
+                    }
+
+                    client.send(toJson(payload));
+                });
+
+                LoggingHelper.sendPixelPlaced(
+                    {
+                        tag,
+                        userID: cache.user.userID,
+                        x, y,
+                        color
+                    }
+                );
 
                 break;
             }
 
             default: break;
         }
-        console.log(message);
     }
 
     public async login(token: string) {
         const user = await this.server.cache.usersManager.get({ token });
         if(!user) return;
 
-        // i think we need to add a message about successful login
         this.level = WebsocketStatus.REGISTERED;
     }
 }

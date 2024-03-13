@@ -13,6 +13,10 @@ export interface SocketServerActions {
     },
     "COOLDOWN": {
         time: number;
+        id: string;
+    },
+    "INC_PIXEL": {
+
     }
 }
 

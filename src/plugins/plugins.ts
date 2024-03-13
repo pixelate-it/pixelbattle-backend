@@ -5,7 +5,7 @@ import fastifyCookie from "@fastify/cookie";
 import fastifyUnderPressure from "@fastify/under-pressure";
 import fastifyWebsocket from "@fastify/websocket";
 import fp from "fastify-plugin";
-import { RateLimitError } from "../errors";
+import { RateLimitError } from "../apiErrors";
 
 export const plugins = fp(async (app) => {
     await app.register(fastifyCors, { origin: true });

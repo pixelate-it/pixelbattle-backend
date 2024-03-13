@@ -1,7 +1,6 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { EntityNotFoundError } from "../../errors";
-import { utils } from "../../extra/Utils";
+import { EntityNotFoundError } from "../../apiErrors";
 
 
 export const getOne: RouteOptions<Server, IncomingMessage, ServerResponse, { Querystring: { x: number; y: number }; }> = {

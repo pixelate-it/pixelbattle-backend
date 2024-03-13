@@ -5,7 +5,7 @@ import { AuthHelper } from "../helpers/AuthHelper";
 import { MongoUser } from "../models/MongoUser";
 import { utils } from "../extra/Utils";
 import { config } from "../config";
-import { AuthLoginError, NotVerifiedEmailError } from "../errors";
+import { AuthLoginError, NotVerifiedEmailError } from "../apiErrors";
 import { UserRole } from "../models/MongoUser";
 
 export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Querystring: { code: string }; }> = {

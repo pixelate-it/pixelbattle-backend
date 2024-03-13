@@ -2,7 +2,7 @@ import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { LoggingHelper } from "../../helpers/LoggingHelper";
 import { config } from "../../config";
-import { TokenBannedError, UserCooldownError, EntityNotFoundError, EndedError, WrongTokenError } from "../../errors";
+import { TokenBannedError, UserCooldownError, EntityNotFoundError, EndedError, WrongTokenError } from "../../apiErrors";
 import { genericSuccessResponse } from "../../types/ApiReponse";
 import { toJson } from "../../extra/toJson";
 import { SocketPayload } from "../../types/SocketActions";

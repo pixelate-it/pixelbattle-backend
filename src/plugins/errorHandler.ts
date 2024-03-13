@@ -1,5 +1,5 @@
 import fp from "fastify-plugin";
-import { ApiError, ValidationError } from "../errors";
+import { ApiError, ValidationError } from "../apiErrors";
 import { ApiErrorResponse } from "../types/ApiReponse";
 
 export const errorHandler = fp(async (app) => {
@@ -7,7 +7,7 @@ export const errorHandler = fp(async (app) => {
         return new ValidationError([errors, data]);
     });
 
-    app.setErrorHandler<ApiError>(async (error, req, res) => {
+    app.setErrorHandler<ApiError>(async(error, req, res) => {
         const payload: ApiErrorResponse = {
             error: true,
             message: error.message ?? "Internal error",

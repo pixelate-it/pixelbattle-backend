@@ -12,6 +12,10 @@ declare module 'fastify' {
 
 export const database = fp(async (app: FastifyInstance, _) => {
     await app.register(fastifyMongodb, {
+        retryWrites: true,
+        readPreference: 'primaryPreferred',
+        compressors: ['zlib'],
+        zlibCompressionLevel: 4,
         forceClose: true,
         url: config.database
     });
