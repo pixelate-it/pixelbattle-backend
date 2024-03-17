@@ -19,11 +19,9 @@ export class PixelateIDGenerator {
 
         this.lastTimestamp = timestamp;
 
-        const id = ((BigInt(timestamp - this.epoch) << BigInt(22)) |
+        return ((BigInt(timestamp - this.epoch) << BigInt(22)) |
             (BigInt(this.workerID) << BigInt(12)) |
             BigInt(this.sequence)).toString();
-
-        return id.padStart(18, '0');
     }
 
     private waitNextMillis(currentTimestamp: number) {

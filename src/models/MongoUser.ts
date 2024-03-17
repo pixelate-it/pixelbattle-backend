@@ -21,6 +21,7 @@ export interface AuthInfo {
 export interface UserAuth {
     discord: AuthInfo | null;
     google: AuthInfo | null;
+    twitch: AuthInfo | null
 }
 
 export interface MongoUser {

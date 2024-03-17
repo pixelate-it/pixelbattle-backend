@@ -1,14 +1,14 @@
-import { FastifyRequest, RouteOptions } from "fastify";
+import { RouteOptions, FastifyRequest } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { DiscordAuthHelper, cookieParameters } from "../../helpers/AuthHelper";
+import { TwitchAuthHelper, cookieParameters } from "../../helpers/AuthHelper";
 import { AuthLoginError, NotVerifiedEmailError } from "../../apiErrors";
 import { MongoUser, UserRole } from "../../models/MongoUser";
 import { utils } from "../../extra/Utils";
 import { config } from "../../config";
 
-export const discordCallback: RouteOptions<Server, IncomingMessage, ServerResponse> = {
+export const twitchCallback: RouteOptions<Server, IncomingMessage, ServerResponse> = {
     method: 'GET',
-    url: '/discord/callback',
+    url: '/twitch/callback',
     schema: {},
     config: {
         rateLimit: {
@@ -17,18 +17,18 @@ export const discordCallback: RouteOptions<Server, IncomingMessage, ServerRespon
         }
     },
     async handler(request, response) {
-        const { token: discordToken } = await request.server.discordOauth2.getAccessTokenFromAuthorizationCodeFlow(request as FastifyRequest);
-        if(!discordToken) throw new AuthLoginError();
+        const { token: twitchToken } = await request.server.twitchOauth2.getAccessTokenFromAuthorizationCodeFlow(request as FastifyRequest);
+        if(!twitchToken) throw new AuthLoginError();
 
-        const helper = new DiscordAuthHelper();
+        const helper = new TwitchAuthHelper();
 
-        const { id, username, global_name, email, verified } = await helper.getUserInfo(discordToken);
-        if(!email || !verified) throw new NotVerifiedEmailError();
+        const { id, login, display_name, email } = await helper.getUserInfo(twitchToken);
+        if(!email) throw new NotVerifiedEmailError();
 
         const user: Omit<MongoUser, "_id"> | null = await request.server.database.users
             .findOne(
-                { $or: [{ connections: { discord: { id } } }, { email }] },
-                { projection: { _id: 0 } }
+                { $or: [{ connections: { twitch: { id } } }, { email }] },
+                { projection: { _id: 0 }  }
             );
 
         const token = user?.token || utils.generateToken();
@@ -41,7 +41,7 @@ export const discordCallback: RouteOptions<Server, IncomingMessage, ServerRespon
                     $set: {
                         token,
                         email,
-                        username: user?.username ?? (global_name || username),
+                        username: user?.username ?? (display_name || login),
                         cooldown: user?.cooldown ?? 0,
                         tag: user?.tag ?? null,
                         badges: user?.badges ?? [],
@@ -49,19 +49,13 @@ export const discordCallback: RouteOptions<Server, IncomingMessage, ServerRespon
                         role: user?.role ?? UserRole.User,
                         connections: {
                             twitch: user?.connections.twitch ?? null,
-                            discord: {
-                                accessToken: discordToken.access_token,
-                                refreshToken: discordToken.refresh_token!,
-                                id
-                            },
+                            discord: user?.connections.discord ?? null,
                             google: user?.connections.google ?? null
                         }
                     }
                 },
                 { upsert: true }
             );
-
-        helper.joinPixelateITServer(discordToken);
 
         return response
             .cookie('token', token, cookieParameters)
