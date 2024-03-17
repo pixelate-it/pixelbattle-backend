@@ -64,7 +64,8 @@ export class CanvasManager extends BaseManager<MongoPixel> {
             return {
                 updateOne: {
                     filter: { x: pixel.x, y: pixel.y },
-                    update: { $set: { ...data, color: this.getColor({ x: pixel.x, y: pixel.y }) } }
+                    update: { $set: { ...data, color: this.getColor({ x: pixel.x, y: pixel.y }) } },
+                    hint: { x: 1, y: 1 }
                 }
             }
         });
@@ -96,6 +97,7 @@ export class CanvasManager extends BaseManager<MongoPixel> {
             });
 
         await this.collection.drop();
+        await this.collection.createIndex({ x: 1, y: 1 });
         await this.collection.insertMany(pixels.map(pixel => ({ ...pixel, color })), { ordered: true });
 
         this.changes = [];

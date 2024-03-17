@@ -1,8 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
+import { PixelateIDGenerator } from './PixelateIDGenerator';
+
+const generator = new PixelateIDGenerator();
 
 export const utils = {
     generateToken(date: number | null = null) {
         return `${(uuidv4() + '.' + uuidv4()).replace(/-/g, '')}.${(date ?? Date.now()).toString(36)}`; // length = 72 (static)
+    },
+    generateId() {
+        return generator.generate();
     },
     translateHex(hex: string) {
         const R = parseInt(hex.slice(1, 3), 16);

@@ -1,17 +1,6 @@
+import { Token } from "@fastify/oauth2";
 import fetch from "node-fetch"
 import { config } from "../config";
-
-interface DiscordAccessTokenResponse {
-    access_token: string;
-    token_type: string;
-    expires_in: number;
-    refresh_token: string;
-    scope: string;
-}
-
-interface DiscordErrorResponse {
-    error: true;
-}
 
 interface DiscordUser {
     id:	string;
@@ -23,66 +12,22 @@ interface DiscordUser {
     mfa_enabled?: boolean;
     locale?: string;
     verified?: boolean;
+    email?: string;
     accent_color?: number;
 }
 
-//interface GuildMember {
-//    user?: DiscordUser;
-//    nick?: string;
-//    avatar?: string;
-//    roles: string[];
-//    joined_at: string;
-//    premium_since?: string;
-//    deaf: boolean;
-//    mute: boolean;
-//    flags: number;
-//    pending?: boolean;
-//    permissions?: string;
-//    communication_disabled_until?: string;
-//}
-
-
-export class AuthHelper {
-    private accessToken!: string;
-    private tokenType!: string;
+export class DiscordAuthHelper {
     private userId!: string;
     private static API_URL = "https://discord.com/api";
 
-    async authCodeGrant(code: string) {
-        const data: DiscordAccessTokenResponse | DiscordErrorResponse = await fetch(
-            `${AuthHelper.API_URL}/oauth2/token`,
-            {
-                method: 'POST',
-                body: new URLSearchParams({
-                    client_id: config.discord.bot.id,
-					client_secret: config.discord.bot.secret,
-					code,
-					grant_type: 'authorization_code',
-					redirect_uri: config.discord.bot.redirectUri,
-					scope: 'email identify guilds.join',
-                }).toString(),
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }
-        ).then(res => res.json());
-
-        if("error" in data) return data;
-
-        this.accessToken = data.access_token;
-        this.tokenType = data.token_type;
-
-        return data;
-    }
-
-    async getUserInfo() {
+    async getUserInfo({ token_type, access_token }: Token) {
         const data: DiscordUser = await fetch(
-            `${AuthHelper.API_URL}/users/@me`,
+            `${DiscordAuthHelper.API_URL}/users/@me`,
             {
                 method: 'GET',
                 headers: { 
                     'Content_Type': 'application/json', 
-                    Authorization: `${this.tokenType} ${this.accessToken}` 
+                    Authorization: `${token_type} ${access_token}`
                 }
             }
         ).then(res => res.json());
@@ -92,14 +37,12 @@ export class AuthHelper {
         return data;
     }
 
-    async joinPixelateitServer() {
+    async joinPixelateITServer({ access_token }: Token) {
         return await fetch(
-            `${AuthHelper.API_URL}/guilds/${config.discord.guildId}/members/${this.userId}`,
+            `${DiscordAuthHelper.API_URL}/guilds/${config.discord.guildId}/members/${this.userId}`,
             {
                 method: "PUT",
-                body: JSON.stringify({
-                    access_token: this.accessToken
-                }),
+                body: JSON.stringify({ access_token }),
                 headers: { 
                     'Content-Type': 'application/json', 
                     Authorization: `Bot ${config.discord.bot.token}`

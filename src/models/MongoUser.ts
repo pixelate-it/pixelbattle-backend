@@ -1,4 +1,4 @@
-export type DiscordUserId = string;
+export type InternalUserId = string;
 
 export enum UserRole {
     User = 0,
@@ -7,19 +7,32 @@ export enum UserRole {
 }
 
 export interface BanInfo {
-    moderatorID: DiscordUserId;
+    moderatorID: InternalUserId;
     timeout: number;
     reason: string | null;
 }
 
+export interface AuthInfo {
+    accessToken: string;
+    refreshToken: string;
+    id: string;
+}
+
+export interface UserAuth {
+    discord: AuthInfo | null;
+    google: AuthInfo | null;
+}
+
 export interface MongoUser {
+    email: string;
     username: string;
     tag: string | null;
-    userID: DiscordUserId;
+    userID: InternalUserId;
     cooldown: number;
     role: UserRole;
     token: string;
     badges: string[];
     points: number;
     banned: BanInfo | null;
+    connections: UserAuth
 }

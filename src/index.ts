@@ -5,6 +5,7 @@ import { database } from './plugins/db';
 import { errorHandler } from './plugins/errorHandler';
 import { cache } from './plugins/cache';
 import { game } from './plugins/game';
+import { oauth2 } from './plugins/oauth2';
 
 
 
@@ -31,6 +32,7 @@ async function init() {
     await app.register(database);
     await app.register(game);
     await app.register(cache);
+    await app.register(oauth2);
     await app.register(routes);
 
     app.listen({ port: process.env.PORT ? parseInt(process.env.PORT) : 8080, path: "localhost" }).then(console.log);

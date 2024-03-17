@@ -22,7 +22,9 @@ export const getUser: RouteOptions<Server, IncomingMessage, ServerResponse, { Pa
 
         return response.send({
             ...user.user,
-            token: undefined
+            token: undefined,
+            email: undefined,
+            connections: undefined
         });
     }
 }

@@ -9,10 +9,13 @@ export const config = {
         bot: {
             token: process.env.DISCORD_BOT_TOKEN!,
             id: process.env.DISCORD_BOT_ID!,
-            secret: process.env.DISCORD_BOT_SECRET!,
-            redirectUri: process.env.DISCORD_BOT_REDIRECT!
+            secret: process.env.DISCORD_BOT_SECRET!
         },
         guildId: process.env.DISCORD_GUILD_ID!,
+    },
+    google: {
+        id: process.env.GOOGLE_CLIENT_ID!,
+        secret: process.env.GOOGLE_CLIENT_SECRET!
     },
     game: {
         name: "Test",
@@ -24,5 +27,6 @@ export const config = {
     expiresIn: 30000,
     syncTime: 15000,
     moderatorCooldown: 50,
-    frontend: process.env.FRONTEND_URL!
+    frontend: process.env.FRONTEND_URL!,
+    redirectUri: process.env.REDIRECT!
 }

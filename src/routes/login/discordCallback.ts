@@ -1,42 +1,34 @@
-import { RouteOptions } from "fastify";
-import { IncomingMessage, Server, ServerResponse } from "http";
+import { FastifyRequest, RouteOptions } from "fastify";
 import { CookieSerializeOptions } from "@fastify/cookie";
-import { AuthHelper } from "../helpers/AuthHelper";
-import { MongoUser } from "../models/MongoUser";
-import { utils } from "../extra/Utils";
-import { config } from "../config";
-import { AuthLoginError, NotVerifiedEmailError } from "../apiErrors";
-import { UserRole } from "../models/MongoUser";
+import { IncomingMessage, Server, ServerResponse } from "http";
+import { DiscordAuthHelper } from "../../helpers/AuthHelper";
+import { AuthLoginError, NotVerifiedEmailError } from "../../apiErrors";
+import { MongoUser, UserRole } from "../../models/MongoUser";
+import { utils } from "../../extra/Utils";
+import { config } from "../../config";
 
-export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Querystring: { code: string }; }> = {
+export const discordCallback: RouteOptions<Server, IncomingMessage, ServerResponse> = {
     method: 'GET',
-    url: '/login',
-    schema: {
-        querystring: {
-            code: { type: 'string' },
-        }
-    },
+    url: '/discord/callback',
+    schema: {},
     config: {
         rateLimit: {
             max: 2,
-            timeWindow: '5s'
+            timeWindow: '10s'
         }
     },
     async handler(request, response) {
-        const auth = new AuthHelper();
-        const data = await auth.authCodeGrant(request.query.code);
+        const { token: discordToken } = await request.server.discordOauth2.getAccessTokenFromAuthorizationCodeFlow(request as FastifyRequest);
+        if(!discordToken) throw new AuthLoginError();
 
-        if("error" in data) throw new AuthLoginError();
+        const helper = new DiscordAuthHelper();
 
-        const { id, username, verified } = await auth.getUserInfo();
-
-        if(!verified) throw new NotVerifiedEmailError();
+        const { id, username, email, verified } = await helper.getUserInfo(discordToken);
+        if(!email || !verified) throw new NotVerifiedEmailError();
 
         const user: Omit<MongoUser, "_id" | "userID" | "username"> | null = await request.server.database.users
             .findOne(
-                {
-                    userID: id
-                },
+                { $or: [{ connections: { discord: { id } } }, { email }] },
                 {
                     projection: {
                         _id: 0,
@@ -47,6 +39,7 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
             );
 
         const token = user?.token || utils.generateToken();
+        const userID = utils.generateId();
 
         await request.server.database.users
             .updateOne(
@@ -56,19 +49,28 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
                 {
                     $set: {
                         token,
-                        userID: id,
+                        email,
+                        userID,
                         username: username,
                         cooldown: user?.cooldown ?? 0,
                         tag: user?.tag ?? null,
                         badges: user?.badges ?? [],
                         points: user?.points ?? 0,
                         role: user?.role ?? UserRole.User,
+                        connections: {
+                            discord: {
+                                accessToken: discordToken.access_token,
+                                refreshToken: discordToken.refresh_token!,
+                                id
+                            },
+                            google: user?.connections?.google ?? null
+                        }
                     }
                 },
                 { upsert: true }
             );
 
-        auth.joinPixelateitServer();
+        helper.joinPixelateITServer(discordToken);
 
         const params: CookieSerializeOptions = {
             domain: config.frontend.split('//')[1].split(':')[0],
@@ -81,7 +83,7 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
 
         return response
             .cookie('token', token, params)
-            .cookie('userid', id, params)
+            .cookie('userid', userID, params)
             .redirect(config.frontend);
     }
 }
