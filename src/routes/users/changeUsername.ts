@@ -1,39 +1,42 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
+import {EntityInvalidError, WrongTokenError} from "../../apiErrors";
 import { genericSuccessResponse } from "../../types/ApiReponse";
-import { WrongTokenError } from "../../apiErrors";
 
 interface Body {
-    tag: string;
+    username: string;
 }
 
-export const changeTag: RouteOptions<Server, IncomingMessage, ServerResponse, { Body: Body; Params: { id: string } }> = {
+export const changeUsername: RouteOptions<Server, IncomingMessage, ServerResponse, { Body: Body; Params: { id: string } }> = {
     method: 'POST',
-    url: '/:id/tag',
+    url: '/:id/username',
     schema: {
         body: {
             type: 'object',
-            required: ['tag'],
+            required: ['username'],
             properties: {
-                tag: { type: 'string', maxLength: 8 }
+                username: { type: 'string', maxLength: 16 }
             }
         }
     },
     config: {
         rateLimit: {
-            max: 3,
-            timeWindow: '1s'
+            max: 2,
+            timeWindow: '3s'
         }
     },
     async handler(request, response) {
         if(!request.user) throw new WrongTokenError();
+
+        const username = request.body.username.replace(/\s+/i, ' ').trim();
+        if(username === '') throw new EntityInvalidError('username');
 
         await request.server.cache.usersManager.edit(
             {
                 token: request.user.token,
                 userID: request.params.id
             },
-            { tag: (!request.body.tag) ? null : request.body.tag.replace(/\s+/i, ' ').trim() },
+            { username },
             { force: true }
         );
 

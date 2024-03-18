@@ -17,18 +17,20 @@ export const discordCallback: RouteOptions<Server, IncomingMessage, ServerRespon
         }
     },
     async handler(request, response) {
-        const { token: discordToken } = await request.server.discordOauth2.getAccessTokenFromAuthorizationCodeFlow(request as FastifyRequest);
+        const { token: discordToken } = await request.server.discordOauth2.getAccessTokenFromAuthorizationCodeFlow(request as FastifyRequest)
+            .catch(() => { throw new AuthLoginError() });
         if(!discordToken) throw new AuthLoginError();
 
         const helper = new DiscordAuthHelper();
 
-        const { id, username, global_name, email, verified } = await helper.getUserInfo(discordToken);
+        const { id, username, global_name, email, verified } = await helper.getUserInfo(discordToken)
+            .catch(() => { throw new AuthLoginError() });;
         if(!email || !verified) throw new NotVerifiedEmailError();
 
         const user: Omit<MongoUser, "_id"> | null = await request.server.database.users
             .findOne(
                 { $or: [{ connections: { discord: { id } } }, { email }] },
-                { projection: { _id: 0 } }
+                { projection: { _id: 0 }, hint: { userID: 1 } }
             );
 
         const token = user?.token || utils.generateToken();
@@ -44,21 +46,21 @@ export const discordCallback: RouteOptions<Server, IncomingMessage, ServerRespon
                         username: user?.username ?? (global_name || username),
                         cooldown: user?.cooldown ?? 0,
                         tag: user?.tag ?? null,
-                        badges: user?.badges ?? [],
+                        badges: user?.badges ?? 0,
                         points: user?.points ?? 0,
                         role: user?.role ?? UserRole.User,
                         connections: {
                             twitch: user?.connections.twitch ?? null,
                             discord: {
-                                accessToken: discordToken.access_token,
-                                refreshToken: discordToken.refresh_token!,
+                                visible: user?.connections.discord?.visible ?? true,
+                                username: global_name || username,
                                 id
                             },
                             google: user?.connections.google ?? null
                         }
                     }
                 },
-                { upsert: true }
+                { upsert: true, hint: { userID: 1 } }
             );
 
         helper.joinPixelateITServer(discordToken);

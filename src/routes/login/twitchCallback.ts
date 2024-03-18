@@ -17,18 +17,20 @@ export const twitchCallback: RouteOptions<Server, IncomingMessage, ServerRespons
         }
     },
     async handler(request, response) {
-        const { token: twitchToken } = await request.server.twitchOauth2.getAccessTokenFromAuthorizationCodeFlow(request as FastifyRequest);
+        const { token: twitchToken } = await request.server.twitchOauth2.getAccessTokenFromAuthorizationCodeFlow(request as FastifyRequest)
+            .catch(() => { throw new AuthLoginError() });
         if(!twitchToken) throw new AuthLoginError();
 
         const helper = new TwitchAuthHelper();
 
-        const { id, login, display_name, email } = await helper.getUserInfo(twitchToken);
+        const { id, login, display_name, email } = await helper.getUserInfo(twitchToken)
+            .catch(() => { throw new AuthLoginError() });
         if(!email) throw new NotVerifiedEmailError();
 
         const user: Omit<MongoUser, "_id"> | null = await request.server.database.users
             .findOne(
                 { $or: [{ connections: { twitch: { id } } }, { email }] },
-                { projection: { _id: 0 }  }
+                { projection: { _id: 0 }, hint: { userID: 1 }  }
             );
 
         const token = user?.token || utils.generateToken();
@@ -44,17 +46,21 @@ export const twitchCallback: RouteOptions<Server, IncomingMessage, ServerRespons
                         username: user?.username ?? (display_name || login),
                         cooldown: user?.cooldown ?? 0,
                         tag: user?.tag ?? null,
-                        badges: user?.badges ?? [],
+                        badges: user?.badges ?? 0,
                         points: user?.points ?? 0,
                         role: user?.role ?? UserRole.User,
                         connections: {
-                            twitch: user?.connections.twitch ?? null,
+                            twitch: {
+                                visible: user?.connections.twitch?.visible ?? true,
+                                username: display_name || login,
+                                id
+                            },
                             discord: user?.connections.discord ?? null,
                             google: user?.connections.google ?? null
                         }
                     }
                 },
-                { upsert: true }
+                { upsert: true, hint: { userID: 1 } }
             );
 
         return response

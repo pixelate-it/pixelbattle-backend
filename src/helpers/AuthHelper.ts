@@ -119,12 +119,13 @@ export class TwitchAuthHelper {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${access_token}`,
+                    Authorization: `${token_type[0].toUpperCase() + token_type.slice(1)} ${access_token}`,
                     'Client-Id': config.twitch.id
                 }
             }
         ).then(res => res.json());
 
+        this.userId = data.data[0].id;
         return data.data[0];
     }
 }

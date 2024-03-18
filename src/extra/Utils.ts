@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PixelateIDGenerator } from './PixelateIDGenerator';
+import { IdentificatorGenerator } from './IdentificatorGenerator';
 
-const generator = new PixelateIDGenerator();
+const generator = new IdentificatorGenerator();
 
 export const utils = {
     generateToken(date: number | null = null) {

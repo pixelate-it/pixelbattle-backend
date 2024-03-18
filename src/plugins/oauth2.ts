@@ -29,7 +29,7 @@ export const oauth2 = fp(async(app) => {
         callbackUri: config.redirectUri + '/login/discord/callback'
     });
 
-    app.register(fastifyOauth2, {
+    if(config.google.id) app.register(fastifyOauth2, {
         name: 'googleOauth2',
         scope: ['profile', 'email'],
         credentials: {
@@ -43,13 +43,10 @@ export const oauth2 = fp(async(app) => {
             secure: true
         },
         startRedirectPath: '/login/google',
-        callbackUri: config.redirectUri + '/login/google/callback',
-        callbackUriParams: {
-            access_type: 'offline'
-        }
+        callbackUri: config.redirectUri + '/login/google/callback'
     });
 
-    app.register(fastifyOauth2, {
+    if(config.twitch.id) app.register(fastifyOauth2, {
         name: 'twitchOauth2',
         scope: ['user:read:email'],
         credentials: {

@@ -2,15 +2,14 @@ import { config } from "../config";
 import { MongoUser } from "../models/MongoUser";
 
 export class UserDataCache {
+    private readonly _user: MongoUser;
     private _expiresOn: number = 0;
-    private _user: MongoUser;
-    
+
     constructor(data: MongoUser) {
         this._user = data
 
         this.breath();
     }
-
 
     public get expiresOn() {
         return this._expiresOn;

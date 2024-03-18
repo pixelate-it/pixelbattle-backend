@@ -20,7 +20,19 @@ export class UserManager extends BaseManager<MongoUser>{
             return cachedUser;
         }
 
-        const databaseUser = await this.collection.findOne(filter, { projection: {  _id: 0 }, hint: { userID: 1 } });
+        const keys = Object.keys(filter);
+        const databaseUser = await this.collection.findOne(filter, {
+            projection: { _id: 0 },
+            hint: {
+                [
+                    keys.includes('userID') && keys.includes('token')
+                        ? 'userID'
+                        : keys.includes('token')
+                            ? 'token'
+                            : 'userID'
+                ]: 1
+            }
+        });
 
         if(databaseUser) {
             cachedUser = new UserDataCache(databaseUser);
@@ -44,8 +56,19 @@ export class UserManager extends BaseManager<MongoUser>{
             .filter(key => value[key] !== undefined)
             .map(key => user.set(key, value[key]!));
 
+        const keys = Object.keys(filter);
         if(options?.force) {
-            await this.collection.updateOne(filter, { $set: value }, { hint: { userID: 1 } });
+            await this.collection.updateOne(filter, { $set: value }, {
+                hint: {
+                    [
+                        keys.includes('userID') && keys.includes('token')
+                            ? 'userID'
+                            : keys.includes('token')
+                                ? 'token'
+                                : 'userID'
+                    ]: 1
+                }
+            });
         }
 
         return user;

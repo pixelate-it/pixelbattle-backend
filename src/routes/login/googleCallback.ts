@@ -17,19 +17,20 @@ export const googleCallback: RouteOptions<Server, IncomingMessage, ServerRespons
         }
     },
     async handler(request, response) {
-        const { token: googleToken } = await request.server.googleOauth2.getAccessTokenFromAuthorizationCodeFlow(request as FastifyRequest);
+        const { token: googleToken } = await request.server.googleOauth2.getAccessTokenFromAuthorizationCodeFlow(request as FastifyRequest)
+            .catch(() => { throw new AuthLoginError() });
         if(!googleToken) throw new AuthLoginError();
-        if(!googleToken.refresh_token) throw new AuthLoginError();
 
         const helper = new GoogleAuthHelper();
 
-        const { id, name, email, verified_email } = await helper.getUserInfo(googleToken);
+        const { id, name, email, verified_email } = await helper.getUserInfo(googleToken)
+            .catch(() => { throw new AuthLoginError() });
         if(!email || !verified_email) throw new NotVerifiedEmailError();
 
         const user: Omit<MongoUser, "_id"> | null = await request.server.database.users
             .findOne(
                 { $or: [{ connections: { google: { id } } }, { email }] },
-                { projection: { _id: 0 }  }
+                { projection: { _id: 0 }, hint: { userID: 1 } }
             );
 
         const token = user?.token || utils.generateToken();
@@ -45,21 +46,21 @@ export const googleCallback: RouteOptions<Server, IncomingMessage, ServerRespons
                         username: user?.username ?? name,
                         cooldown: user?.cooldown ?? 0,
                         tag: user?.tag ?? null,
-                        badges: user?.badges ?? [],
+                        badges: user?.badges ?? 0,
                         points: user?.points ?? 0,
                         role: user?.role ?? UserRole.User,
                         connections: {
                             twitch: user?.connections.twitch ?? null,
                             discord: user?.connections.discord ?? null,
                             google: {
-                                accessToken: googleToken.access_token,
-                                refreshToken: googleToken.refresh_token!,
+                                visible: user?.connections.google?.visible ?? true,
+                                username: name,
                                 id
                             }
                         }
                     }
                 },
-                { upsert: true }
+                { upsert: true, hint: { userID: 1 } }
             );
 
         return response

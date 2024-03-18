@@ -1,6 +1,6 @@
 import process from 'process';
 
-export class PixelateIDGenerator {
+export class IdentificatorGenerator {
     private sequence = 0;
     private lastTimestamp = -1;
     constructor(

@@ -53,6 +53,17 @@ export class EntityNotFoundError extends ApiError {
     }
 }
 
+export class EntityInvalidError extends ApiError {
+    public statusCode = 400;
+    public message = "Entity is invalid";
+
+    constructor(entity: string) {
+        super();
+        this.data = { entity };
+    }
+
+}
+
 export class WrongTokenError extends ApiError {
     public statusCode = 400;
     public message = "Wrong token is used";

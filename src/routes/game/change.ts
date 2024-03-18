@@ -1,7 +1,6 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { EntityNotFoundError } from "../../apiErrors";
-import { toJson } from "../../extra/toJson";
 import { SocketPayload } from "../../types/SocketActions";
 import { genericSuccessResponse } from "../../types/ApiReponse";
 import { WebSocket } from "ws";
@@ -60,7 +59,7 @@ export const change: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
                     value: game.ended
                 }
 
-                client.send(toJson(payload));
+                client.send(JSON.stringify(payload));
             });
         }
 
@@ -68,7 +67,7 @@ export const change: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
         game.cooldown = request.body.cooldown ?? game.cooldown;
         game.name = request.body.name ?? game.name;
 
-        await request.server.database.games.updateOne({ id: 0 }, { $set: { ended: game.ended, cooldown: game.cooldown, name: game.name } });
+        await request.server.database.games.updateOne({ id: 0 }, { $set: { ended: game.ended, cooldown: game.cooldown, name: game.name } }, { hint: { id: 1 } });
 
         return response
             .code(202)

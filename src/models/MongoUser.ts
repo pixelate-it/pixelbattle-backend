@@ -13,8 +13,8 @@ export interface BanInfo {
 }
 
 export interface AuthInfo {
-    accessToken: string;
-    refreshToken: string;
+    visible: boolean;
+    username: string;
     id: string;
 }
 
@@ -32,7 +32,7 @@ export interface MongoUser {
     cooldown: number;
     role: UserRole;
     token: string;
-    badges: string[];
+    badges: number;
     points: number;
     banned: BanInfo | null;
     connections: UserAuth

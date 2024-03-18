@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { getUser } from "./getOne";
 import { changeTag } from "./changeTag";
+import { changeUsername } from "./changeUsername";
 import { bindUser } from "../../plugins/bindUser";
 import { authRequired } from "../../plugins/authRequired";
 import { minUserRole } from "../../plugins/minUserRole";
@@ -15,6 +16,7 @@ export function users(app: FastifyInstance, _: unknown, done: () => void) {
         await app.register(bindUser);
         await app.register(authRequired);
 
+        app.route(changeUsername);
         app.route(changeTag);
 
         done();

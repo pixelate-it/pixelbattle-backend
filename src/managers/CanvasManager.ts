@@ -39,7 +39,7 @@ export class CanvasManager extends BaseManager<MongoPixel> {
         const colors: number[][] = [];
 
         this._pixels = await this.collection
-            .find({}, { projection: { _id: 0 } })
+            .find({}, { projection: { _id: 0 }, hint: { x: 1, y: 1 } })
             .toArray()
             .then(pixels =>  pixels
                 .sort((a, b) => {
