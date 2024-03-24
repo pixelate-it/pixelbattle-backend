@@ -100,8 +100,10 @@ export class SocketHelper {
                     {
                         tag,
                         userID: cache.user.userID,
+                        nickname: cache.user.username,
                         x, y,
-                        color
+                        color,
+                        ip: this.socket.requestIp
                     }
                 );
 

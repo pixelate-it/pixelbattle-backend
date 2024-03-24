@@ -1,29 +1,48 @@
-const cache = new Map<string, boolean>();
+const cache = new Set<string>();
 
+type LoginMethod = 'Discord' | 'Twitch' | 'Google';
 interface PixelInfo {
     userID: string;
+    nickname: string;
     x: number;
     y: number;
     tag: string | null;
     color: string;
+    ip: string;
+}
+
+interface LoginInfo {
+    userID: string;
+    nickname: string;
+    method: LoginMethod;
+    ip: string;
 }
 
 export class LoggingHelper {
-    static sendPixelPlaced({ userID, color, x, y, tag }: PixelInfo) {
-        const hash = `${userID}-${x}-${y}-${color}`
+    static sendPixelPlaced({ userID, nickname, color, x, y, tag, ip }: PixelInfo) {
+        /*const hash = `${userID}-${x}-${y}-${color}`;
 
         if(cache.has(hash))
             return;
         
-        cache.set(hash, true);
+        cache.add(hash);*/
 
         console.log(
-            `* [PIXEL] ${userID} - ` +
-            `Cordinates: X${x} Y${y}; ` +
+            `* [PIXEL] ${userID} - ${nickname}; ` +
+            `Coordinates: X${x} Y${y}; ` +
             `Color: ${color}; ` +
-            `Tag: ${tag};`
+            `Tag: ${tag}; ` +
+            `IP: ${ip}; `
         );
 
-        setTimeout(() => cache.delete(hash), 750); // CORS spam fix 
+        //setTimeout(() => cache.delete(hash), 750); // CORS spam fix
+    }
+
+    static sendLoginSuccess({ userID, nickname, method, ip }: LoginInfo) {
+        console.log(
+            `* [LOGIN] ${userID} - ${nickname}; ` +
+            `Method: ${method}; ` +
+            `IP: ${ip}`
+        );
     }
 }

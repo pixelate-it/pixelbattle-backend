@@ -5,6 +5,7 @@ import { AuthLoginError, NotVerifiedEmailError } from "../../apiErrors";
 import { MongoUser, UserRole } from "../../models/MongoUser";
 import { utils } from "../../extra/Utils";
 import { config } from "../../config";
+import { LoggingHelper } from "../../helpers/LoggingHelper";
 
 export const twitchCallback: RouteOptions<Server, IncomingMessage, ServerResponse> = {
     method: 'GET',
@@ -62,6 +63,18 @@ export const twitchCallback: RouteOptions<Server, IncomingMessage, ServerRespons
                 },
                 { upsert: true, hint: { userID: 1 } }
             );
+
+        const cloudflareIpHeaders = request.headers['cf-connecting-ip'];
+        LoggingHelper.sendLoginSuccess({
+            userID,
+            nickname: user?.username ?? (display_name || login),
+            method: 'Discord',
+            ip: cloudflareIpHeaders
+                ? Array.isArray(cloudflareIpHeaders)
+                    ? cloudflareIpHeaders[0]
+                    : cloudflareIpHeaders
+                : request.ip,
+        });
 
         return response
             .cookie('token', token, cookieParameters)
