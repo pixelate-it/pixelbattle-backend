@@ -15,6 +15,6 @@ export const favicon: RouteOptions = {
         return response
             .header('Content-Type', 'image/x-icon')
             .code(200)
-            .send(await readFile('./api/assets/favicon.ico'));
+            .send(await readFile('./assets/favicon.ico'));
     }
 }
