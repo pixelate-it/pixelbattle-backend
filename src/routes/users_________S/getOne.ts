@@ -20,10 +20,9 @@ export const getUser: RouteOptions<Server, IncomingMessage, ServerResponse, { Pa
             throw new EntityNotFoundError("user");
         }
 
-        user.user.username = user.user.username.split('').reverse().join('');
-
         return response.send({
             ...user.user,
+            username: user.user.username.split('').reverse().join(''),
             token: undefined
         });
     }
