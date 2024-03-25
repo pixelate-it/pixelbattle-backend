@@ -112,10 +112,18 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
                 client.send(toJson(payload));
             });
 
+            const cloudflareIpHeaders = request.headers['cf-connecting-ip'];
+
             LoggingHelper.sendPixelPlaced(
                 {
                     tag,
                     userID: request.user.userID,
+                    nickname: request.user.username,
+                    ip: cloudflareIpHeaders
+                        ? Array.isArray(cloudflareIpHeaders)
+                            ? cloudflareIpHeaders[0]
+                            : cloudflareIpHeaders
+                        : request.ip,
                     x, y,
                     color
                 }
