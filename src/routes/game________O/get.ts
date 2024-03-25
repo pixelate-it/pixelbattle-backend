@@ -1,7 +1,7 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { EntityNotFoundError } from "../../errors";
-import { SocketConnection } from "../pixels/socket";
+import { SocketConnection } from "../pixels_________L/socket";
 
 interface ApiInfo {
     name: string;
@@ -12,6 +12,7 @@ interface ApiInfo {
         height: number;
     };
     online: number;
+    important: string;
 }
 
 export const get: RouteOptions<Server, IncomingMessage, ServerResponse> = {
@@ -42,7 +43,8 @@ export const get: RouteOptions<Server, IncomingMessage, ServerResponse> = {
                 height: game.height,
                 width: game.width
             },
-            online: online.size
+            online: online.size,
+            important: 'april fools'
         }
 
         return response

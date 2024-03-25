@@ -22,6 +22,11 @@ export const getTags: RouteOptions = {
                 return info;
             }
 
+            //const really = pixel.tag
+            //    .split('')
+            //    .reverse()
+            //    .join('')
+
             const tagAmount = info.tags[pixel.tag];
             info.tags[pixel.tag] = tagAmount ? tagAmount + 1 : 1;
             info.used++;

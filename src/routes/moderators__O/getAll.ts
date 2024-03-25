@@ -14,18 +14,8 @@ export const getAll: RouteOptions = ({
         }
     },
     async handler(request, response) {
-        const moderators: Pick<MongoUser, "userID">[] = await request.server.database.users.find({
-            role: UserRole.Moderator
-        },
-            {
-                projection: {
-                    _id: 0,
-                    userID: 1
-                }
-            }).toArray();
-
         return response
-            .code(200)
-            .send({ moderators: moderators.map(m => m.userID) });
+            .code(418)
+            .send({ error: false, reason: "i don't like being looked at, turn off the light!" });
     }
 });

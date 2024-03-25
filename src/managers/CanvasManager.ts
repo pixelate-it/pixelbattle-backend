@@ -41,12 +41,19 @@ export class CanvasManager extends BaseManager<MongoPixel> {
         this._pixels = await this.collection
             .find({}, { projection: { _id: 0 } })
             .toArray()
-            .then(pixels =>  pixels.map((pixel) => {
-                const { color, ...pix } = pixel;
+            .then(pixels => pixels
+                .sort((a, b) => {
+                    if(a.y !== b.y) return a.y - b.y;
+                    return a.x - b.x;
+                })
+                .map((pixel) => {
+                    const { color, ...pix } = pixel;
 
-                colors.push(utils.translateHex(color));
-                return pix;
-            }));
+                    colors.push(utils.translateHex(color));
+                    return pix;
+                })
+            );
+        
         this._colors.set(colors.flat());
 
         return this._pixels;
@@ -58,7 +65,8 @@ export class CanvasManager extends BaseManager<MongoPixel> {
             return {
                 updateOne: {
                     filter: { x: pixel.x, y: pixel.y },
-                    update: { $set: { ...data, color: this.getColor({ x: pixel.x, y: pixel.y }) } }
+                    update: { $set: { ...data, color: this.getColor({ x: pixel.x, y: pixel.y }) } },
+                    hint: { x: 1, y: 1 }
                 }
             }
         });

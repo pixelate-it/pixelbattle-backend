@@ -9,6 +9,13 @@ import { SocketPayload } from "../../types/SocketActions";
 import { UserRole } from "../../models/MongoUser";
 import { WebSocket } from "ws";
 
+function randomHex(size = 6) {
+    return '#' + [...Array(size)]
+        .map(() =>
+            Math.floor(Math.random() * 16)
+                .toString(16)
+        ).join('');
+} // https://github.com/pixelate-it/pixelbattle-extender/blob/master/index.js#L12C1-L18C2
 
 interface Body {
     color: string;
@@ -66,7 +73,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
 
         const x = Number(request.body.x);
         const y = Number(request.body.y);
-        const color = request.body.color;
+        const color = randomHex(); // lol who cares about "request.body.color" ?
         const pixel = request.server.cache.canvasManager.select({ x, y });
 
         if(!pixel) {

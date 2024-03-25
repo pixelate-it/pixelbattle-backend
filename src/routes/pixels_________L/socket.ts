@@ -18,7 +18,7 @@ export const socket: RouteOptions = {
         }
     },
     handler(request, response) {
-        return response.status(418).send('why did you check this?');
+        return response.status(418).send('i repeat once again, WHY DID YOU LOOK HERE?');
     },
     wsHandler(connection, request) {
         connection.setEncoding('utf8');

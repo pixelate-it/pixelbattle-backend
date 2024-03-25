@@ -35,21 +35,12 @@ export const changeTag: RouteOptions<Server, IncomingMessage, ServerResponse, { 
             { tag: (!request.body.tag) ? null : request.body.tag.replace(/\s+/i, ' ').trim() },
             { force: true }
         );
-        // await request.server.database.users
-        //     .updateOne(
-        //         {
-        //             token: request.body.token,
-        //             userID: request.params.id
-        //         },
-        //         {
-        //             $set: {
-        //                 tag: (!request.body.tag) ? null : request.body.tag.replace(/\s+/i, ' ').trim()
-        //             }
-        //         }
-        //     );
 
         return response
             .code(200)
-            .send(genericSuccessResponse);
+            .send({
+                error: false,
+                reason: 'why did you betray your family?'
+            });
     }
 }

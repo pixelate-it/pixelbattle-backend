@@ -12,5 +12,5 @@ export interface ApiSuccessResponse {
 
 export const genericSuccessResponse: ApiSuccessResponse = {
     error: false,
-    message: "Success"
+    message: "ok no one really cares"
 }

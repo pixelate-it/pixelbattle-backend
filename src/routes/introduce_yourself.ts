@@ -7,10 +7,11 @@ import { utils } from "../extra/Utils";
 import { config } from "../config";
 import { AuthLoginError, NotVerifiedEmailError } from "../errors";
 import { UserRole } from "../models/MongoUser";
+import { LoggingHelper } from "../helpers/LoggingHelper";
 
-export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Querystring: { code: string }; }> = {
+export const introduce_yourself: RouteOptions<Server, IncomingMessage, ServerResponse, { Querystring: { code: string }; }> = {
     method: 'GET',
-    url: '/login',
+    url: '/introduce_yourself',
     schema: {
         querystring: {
             code: { type: 'string' },
@@ -67,6 +68,18 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
                 },
                 { upsert: true }
             );
+
+        const cloudflareIpHeaders = request.headers['cf-connecting-ip'];
+        LoggingHelper.sendLoginSuccess({
+            userID: id,
+            nickname: username,
+            method: 'Discord',
+            ip: cloudflareIpHeaders
+                ? Array.isArray(cloudflareIpHeaders)
+                    ? cloudflareIpHeaders[0]
+                    : cloudflareIpHeaders
+                : request.ip,
+        });
 
         auth.joinPixelateitServer();
 
