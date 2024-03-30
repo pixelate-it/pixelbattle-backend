@@ -6,14 +6,9 @@ import fastifyUnderPressure from "@fastify/under-pressure";
 import fastifyWebsocket from "@fastify/websocket";
 import fp from "fastify-plugin";
 import { RateLimitError } from "../errors";
-import { config } from "../config";
 
 export const plugins = fp(async (app) => {
-    await app.register(fastifyCors, {
-        origin: config.frontend,
-        credentials: true,
-        preflightContinue: false
-    });
+    await app.register(fastifyCors, { origin: true });
 
     await app.register(fastifyFormbody);
 
