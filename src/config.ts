@@ -21,6 +21,10 @@ export const config = {
         id: process.env.TWITCH_CLIENT_ID!,
         secret: process.env.TWITCH_CLIENT_SECRET!
     },
+    github: {
+        id: process.env.GITHUB_CLIENT_ID!,
+        secret: process.env.GITHUB_CLIENT_SECRET!
+    },
     game: {
         name: "Test",
         ended: false,

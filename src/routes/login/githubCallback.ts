@@ -1,15 +1,15 @@
-import { FastifyRequest, RouteOptions } from "fastify";
+import { RouteOptions, FastifyRequest } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { DiscordAuthHelper, cookieParameters } from "../../helpers/AuthHelper";
+import { GithubAuthHelper, cookieParameters } from "../../helpers/AuthHelper";
 import { AuthLoginError, NotVerifiedEmailError } from "../../apiErrors";
 import { MongoUser, UserRole } from "../../models/MongoUser";
 import { utils } from "../../extra/Utils";
 import { config } from "../../config";
 import { LoggingHelper } from "../../helpers/LoggingHelper";
 
-export const discordCallback: RouteOptions<Server, IncomingMessage, ServerResponse> = {
+export const githubCallback: RouteOptions<Server, IncomingMessage, ServerResponse> = {
     method: 'GET',
-    url: '/discord/callback',
+    url: '/github/callback',
     schema: {},
     config: {
         rateLimit: {
@@ -18,19 +18,18 @@ export const discordCallback: RouteOptions<Server, IncomingMessage, ServerRespon
         }
     },
     async handler(request, response) {
-        const { token: discordToken } = await request.server.discordOauth2.getAccessTokenFromAuthorizationCodeFlow(request as FastifyRequest)
+        const { token: githubToken } = await request.server.githubOauth2.getAccessTokenFromAuthorizationCodeFlow(request as FastifyRequest)
             .catch(() => { throw new AuthLoginError() });
-        if(!discordToken) throw new AuthLoginError();
 
-        const helper = new DiscordAuthHelper();
+        const helper = new GithubAuthHelper();
 
-        const { id, username, global_name, email, verified } = await helper.getUserInfo(discordToken)
-            .catch(() => { throw new AuthLoginError() });;
-        if(!email || !verified) throw new NotVerifiedEmailError();
+        const { login, name, email } = await helper.getUserInfo(githubToken)
+            .catch(() => { throw new AuthLoginError() });
+        if(!email) throw new NotVerifiedEmailError();
 
         const user: Omit<MongoUser, "_id"> | null = await request.server.database.users
             .findOne(
-                { $or: [{ connections: { discord: { id } } }, { email }] },
+                { $or: [{ connections: { github: { id: helper.userId } } }, { email }] },
                 { projection: { _id: 0 }, hint: { userID: 1 } }
             );
 
@@ -44,7 +43,7 @@ export const discordCallback: RouteOptions<Server, IncomingMessage, ServerRespon
                     $set: {
                         token,
                         email,
-                        username: user?.username ?? (global_name || username),
+                        username: user?.username ?? (name || login),
                         cooldown: user?.cooldown ?? 0,
                         tag: user?.tag ?? null,
                         badges: user?.badges ?? 0,
@@ -52,13 +51,13 @@ export const discordCallback: RouteOptions<Server, IncomingMessage, ServerRespon
                         role: user?.role ?? UserRole.User,
                         connections: {
                             twitch: user?.connections.twitch ?? null,
-                            discord: {
-                                visible: user?.connections.discord?.visible ?? true,
-                                username: global_name || username,
-                                id
+                            discord: user?.connections.discord ?? null,
+                            google: user?.connections.google ?? null,
+                            github: {
+                                visible: user?.connections.github?.visible ?? true,
+                                username: name || login,
+                                id: helper.userId
                             },
-                            github: user?.connections.github ?? null,
-                            google: user?.connections.google ?? null
                         }
                     }
                 },
@@ -68,16 +67,14 @@ export const discordCallback: RouteOptions<Server, IncomingMessage, ServerRespon
         const cloudflareIpHeaders = request.headers['cf-connecting-ip'];
         LoggingHelper.sendLoginSuccess({
             userID,
-            nickname: user?.username ?? (global_name || username),
-            method: 'Discord',
+            nickname: user?.username ?? (name || login),
+            method: 'Google',
             ip: cloudflareIpHeaders
                 ? Array.isArray(cloudflareIpHeaders)
                     ? cloudflareIpHeaders[0]
                     : cloudflareIpHeaders
                 : request.ip,
         });
-
-        helper.joinPixelateITServer(discordToken);
 
         return response
             .cookie('token', token, cookieParameters)

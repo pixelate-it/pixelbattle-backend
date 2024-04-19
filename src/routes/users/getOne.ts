@@ -1,6 +1,7 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { EntityNotFoundError } from "../../apiErrors";
+import { AuthInfo } from "../../models/MongoUser";
 
 
 export const getUser: RouteOptions<Server, IncomingMessage, ServerResponse, { Params: { id: string }; }> = {
@@ -24,7 +25,10 @@ export const getUser: RouteOptions<Server, IncomingMessage, ServerResponse, { Pa
             ...user.user,
             token: undefined,
             email: undefined,
-            connections: undefined
+            connections: Object.fromEntries(
+                Object.entries<AuthInfo | null>(user.user.connections as unknown as Record<keyof AuthInfo, AuthInfo | null>)
+                    .filter(([_, value]) => value && value.visible)
+            )
         });
     }
 }

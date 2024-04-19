@@ -57,7 +57,8 @@ export const twitchCallback: RouteOptions<Server, IncomingMessage, ServerRespons
                                 id
                             },
                             discord: user?.connections.discord ?? null,
-                            google: user?.connections.google ?? null
+                            google: user?.connections.google ?? null,
+                            github: user?.connections.github ?? null
                         }
                     }
                 },

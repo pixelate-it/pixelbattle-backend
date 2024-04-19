@@ -15,7 +15,7 @@ export const routes = fp(async (app: FastifyInstance) => {
     app.register(moderators, { prefix: "/moderators" });
     app.register(pixels, { prefix: "/pixels" });
     app.register(users, { prefix: "/users" });
-    app.register(login, { prefix: '/login' });
+    app.register(login, { prefix: "/login" });
 
     app.route(favicon);
     app.route(root);

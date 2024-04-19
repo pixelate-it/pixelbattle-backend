@@ -1,13 +1,15 @@
 export type BadgeIdentificatior =
     | 'DEVELOPER'
     | 'MODERATOR'
-    | 'SPONSOR';
+    | 'SPONSOR'
+    | 'ACTIVE';
 
 export class BadgesGenerator {
     public static readonly badges = new Map<BadgeIdentificatior, number>([
         ['DEVELOPER', 1],
         ['MODERATOR', 2],
-        ['SPONSOR', 4]
+        ['SPONSOR', 4],
+        ['ACTIVE', 8]
     ]);
 
     public static encodeUserBadges(userBadges: BadgeIdentificatior[]) {

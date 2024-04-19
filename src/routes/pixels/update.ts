@@ -55,8 +55,6 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
 
             throw new UserCooldownError(time);
         }
-
-        done();
     },
     async handler(request, response) {
         if(!request.user) {
@@ -73,58 +71,48 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
         }
 
         const cooldown = Date.now() + (request.user.role !== UserRole.User ? config.moderatorCooldown : request.server.game.cooldown);
+        const tag = request.user.role !== UserRole.User
+            ? null
+            : request.user.tag;
 
         await request.server.cache.usersManager.edit({ token: request.user.token }, { cooldown });
-        const cacheKey = `${request.user.userID}-${x}-${y}-${color}` as const;
+        request.server.cache.canvasManager.paint({
+            x,
+            y,
+            color,
+            tag,
+            author: request.user.username
+        });
 
-        if(!request.server.cache.set.has(cacheKey)) {
-            const tag = request.user.role !== UserRole.User
-                ? null
-                : request.user.tag;
+        request.server.websocketServer.clients.forEach((client) => {
+            if(client.readyState !== WebSocket.OPEN) return;
 
-
-            request.server.cache.canvasManager.paint({
+            const payload: SocketPayload<"PLACE"> = {
+                op: 'PLACE',
                 x,
                 y,
                 color,
+            }
+
+            client.send(JSON.stringify(payload));
+        });
+
+        const cloudflareIpHeaders = request.headers['cf-connecting-ip'];
+
+        LoggingHelper.sendPixelPlaced(
+            {
                 tag,
-                author: request.user.username
-            });
-
-            request.server.websocketServer.clients.forEach((client) => {
-                if(client.readyState !== WebSocket.OPEN) return;
-
-                const payload: SocketPayload<"PLACE"> = {
-                    op: 'PLACE',
-                    x,
-                    y,
-                    color,
-                }
-
-                client.send(JSON.stringify(payload));
-            });
-
-            const cloudflareIpHeaders = request.headers['cf-connecting-ip'];
-
-            LoggingHelper.sendPixelPlaced(
-                {
-                    tag,
-                    userID: request.user.userID,
-                    nickname: request.user.username,
-                    ip: cloudflareIpHeaders
-                        ? Array.isArray(cloudflareIpHeaders)
-                            ? cloudflareIpHeaders[0]
-                            : cloudflareIpHeaders
-                        : request.ip,
-                    x, y,
-                    color
-                }
-            );
-
-
-            request.server.cache.set.add(cacheKey);
-            setTimeout(() => request.server.cache.set.delete(cacheKey), 600); // CORS spam fix
-        }
+                userID: request.user.userID,
+                nickname: request.user.username,
+                ip: cloudflareIpHeaders
+                    ? Array.isArray(cloudflareIpHeaders)
+                        ? cloudflareIpHeaders[0]
+                        : cloudflareIpHeaders
+                    : request.ip,
+                x, y,
+                color
+            }
+        );
 
         return response
             .code(200)

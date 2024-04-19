@@ -1,5 +1,3 @@
-const cache = new Set<string>();
-
 type LoginMethod = 'Discord' | 'Twitch' | 'Google';
 interface PixelInfo {
     userID: string;
@@ -20,13 +18,6 @@ interface LoginInfo {
 
 export class LoggingHelper {
     static sendPixelPlaced({ userID, nickname, color, x, y, tag, ip }: PixelInfo) {
-        /*const hash = `${userID}-${x}-${y}-${color}`;
-
-        if(cache.has(hash))
-            return;
-        
-        cache.add(hash);*/
-
         console.log(
             `* [PIXEL] ${userID} - ${nickname}; ` +
             `Coordinates: X${x} Y${y}; ` +
@@ -34,8 +25,6 @@ export class LoggingHelper {
             `Tag: ${tag}; ` +
             `IP: ${ip}; `
         );
-
-        //setTimeout(() => cache.delete(hash), 750); // CORS spam fix
     }
 
     static sendLoginSuccess({ userID, nickname, method, ip }: LoginInfo) {

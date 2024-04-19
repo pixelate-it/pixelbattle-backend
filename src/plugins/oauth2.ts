@@ -7,6 +7,7 @@ declare module 'fastify' {
         discordOauth2: OAuth2Namespace;
         googleOauth2: OAuth2Namespace;
         twitchOauth2: OAuth2Namespace;
+        githubOauth2: OAuth2Namespace;
     }
 }
 
@@ -29,7 +30,7 @@ export const oauth2 = fp(async(app) => {
         callbackUri: config.redirectUri + '/login/discord/callback'
     });
 
-    /*if(config.google.id) app.register(fastifyOauth2, {
+    if(config.google.id) app.register(fastifyOauth2, {
         name: 'googleOauth2',
         scope: ['profile', 'email'],
         credentials: {
@@ -65,7 +66,24 @@ export const oauth2 = fp(async(app) => {
             client_id: config.twitch.id,
             client_secret: config.twitch.secret
         }
-    });*/
+    });
+
+    if(config.github.id) app.register(fastifyOauth2, {
+        name: 'githubOauth2',
+        scope: ['user:email'],
+        credentials: {
+            client: {
+                id: config.github.id,
+                secret: config.github.secret
+            },
+            auth: fastifyOauth2.GITHUB_CONFIGURATION
+        },
+        cookie: {
+            secure: true
+        },
+        startRedirectPath: '/login/github',
+        callbackUri: config.redirectUri + '/login/github/callback',
+    });
 
     return;
 });

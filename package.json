@@ -1,5 +1,6 @@
 {
   "name": "pixelbattle-backend",
+  "type": "commonjs",
   "version": "4.0.0",
   "description": "API for https://pixelbattle.fun/",
   "main": "./src/index.js",

@@ -12,8 +12,11 @@ export const plugins = fp(async (app) => {
     await app.register(fastifyCors, {
         origin: config.frontend,
         credentials: true,
+        methods: ['GET', 'PUT', 'POST', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
         preflightContinue: false,
-        hook: 'preParsing'
+        hideOptionsRoute: true,
+        hook: 'preHandler',
     });
 
     await app.register(fastifyFormbody);

@@ -37,6 +37,8 @@ export const googleCallback: RouteOptions<Server, IncomingMessage, ServerRespons
         const token = user?.token || utils.generateToken();
         const userID = user?.userID || utils.generateId();
 
+        const correctedName = name.split(' ')[0];
+
         await request.server.database.users
             .updateOne(
                 { userID },
@@ -44,7 +46,7 @@ export const googleCallback: RouteOptions<Server, IncomingMessage, ServerRespons
                     $set: {
                         token,
                         email,
-                        username: user?.username ?? name,
+                        username: user?.username ?? correctedName,
                         cooldown: user?.cooldown ?? 0,
                         tag: user?.tag ?? null,
                         badges: user?.badges ?? 0,
@@ -55,9 +57,10 @@ export const googleCallback: RouteOptions<Server, IncomingMessage, ServerRespons
                             discord: user?.connections.discord ?? null,
                             google: {
                                 visible: user?.connections.google?.visible ?? true,
-                                username: name,
+                                username: correctedName,
                                 id
-                            }
+                            },
+                            github: user?.connections.github ?? null
                         }
                     }
                 },

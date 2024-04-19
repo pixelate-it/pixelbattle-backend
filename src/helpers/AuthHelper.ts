@@ -4,7 +4,7 @@ import fetch from "node-fetch"
 import { config } from "../config";
 
 type TwitchType = 'admin' | 'global_mod' | 'staff' | '';
-type BroadcasterType = 'affiliate' | 'partner' | '';
+type TwitchBroadcasterType = 'affiliate' | 'partner' | '';
 
 interface DiscordUser {
     id:	string;
@@ -36,13 +36,48 @@ interface TwitchUser {
     login: string;
     display_name: string;
     type: TwitchType;
-    broadcaster_type: BroadcasterType;
+    broadcaster_type: TwitchBroadcasterType;
     description: string;
     profile_image_url: string;
     offline_image_url: string;
     view_count: number;
     email?: string;
     created_at: string;
+}
+
+interface GithubUser {
+    login: string,
+    id: number,
+    node_id: string,
+    avatar_url: string,
+    gravatar_id: string | null,
+    url: string,
+    html_url: string,
+    followers_url: string,
+    following_url: string,
+    gists_url: string,
+    starred_url: string,
+    subscriptions_url: string,
+    organizations_url: string,
+    repos_url: string,
+    events_url: string,
+    received_events_url: string,
+    type: string,
+    site_admin: boolean,
+    name: string | null,
+    company: string | null,
+    blog: string | null,
+    location: string | null,
+    email: string | null,
+    hireable: boolean | null,
+    bio: string | null,
+    twitter_username: string | null,
+    public_repos: number,
+    public_gists: number,
+    followers: number,
+    following: number,
+    created_at: string,
+    updated_at: string
 }
 
 export const cookieParameters: CookieSerializeOptions = {
@@ -127,5 +162,25 @@ export class TwitchAuthHelper {
 
         this.userId = data.data[0].id;
         return data.data[0];
+    }
+}
+
+export class GithubAuthHelper {
+    public userId!: string;
+    private static API_URL = "https://api.github.com";
+
+    async getUserInfo({ access_token, token_type }: Token) {
+        const data: GithubUser = await fetch(
+            `${GithubAuthHelper.API_URL}/user`,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `${token_type[0].toUpperCase() + token_type.slice(1)} ${access_token}`
+                }
+            }
+        ).then(res => res.json());
+
+        this.userId = String(data.id);
+        return data;
     }
 }
