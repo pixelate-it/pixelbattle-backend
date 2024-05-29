@@ -9,7 +9,7 @@ export const getAll: RouteOptions = ({
     config: {
         rateLimit: {
             max: 2,
-            timeWindow: '3s'
+            timeWindow: '5s'
         }
     },
     async handler(request, response) {

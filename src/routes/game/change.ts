@@ -1,7 +1,7 @@
 import { RouteOptions } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { EntityNotFoundError } from "../../apiErrors";
-import { SocketPayload } from "../../types/SocketActions";
+import { SocketServerPayload } from "../../types/SocketActions";
 import { genericSuccessResponse } from "../../types/ApiReponse";
 import { WebSocket } from "ws";
 
@@ -54,7 +54,7 @@ export const change: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
             request.server.websocketServer.clients.forEach((client) => {
                 if(client.readyState !== WebSocket.OPEN) return;
 
-                const payload: SocketPayload<"ENDED"> = {
+                const payload: SocketServerPayload<"ENDED"> = {
                     op: "ENDED",
                     value: game.ended
                 }

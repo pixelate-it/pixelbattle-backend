@@ -48,7 +48,7 @@ export const twitchCallback: RouteOptions<Server, IncomingMessage, ServerRespons
                         cooldown: user?.cooldown ?? 0,
                         tag: user?.tag ?? null,
                         badges: user?.badges ?? 0,
-                        points: user?.points ?? 0,
+                        points: user?.karma ?? 0,
                         role: user?.role ?? UserRole.User,
                         connections: {
                             twitch: {

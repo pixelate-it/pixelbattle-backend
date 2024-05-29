@@ -5,6 +5,12 @@ dotenvConfig({ path: join(__dirname, '../.env') });
 
 export const config = {
     database: process.env.DATABASE,
+    cloudflare: {
+        token: process.env.CLOUDFLARE_API_TOKEN!,
+        email: process.env.CLOUDFLARE_EMAIL!,
+        id: process.env.CLOUDFLARE_ACCOUNT_ID!,
+        list_id: process.env.CLOUDFLARE_LIST_ID!
+    },
     discord: {
         bot: {
             token: process.env.DISCORD_BOT_TOKEN!,

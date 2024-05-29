@@ -1,7 +1,9 @@
 import fastify from 'fastify';
 import { plugins } from './plugins/plugins';
 import { routes } from './plugins/routes';
+import { cloudflare } from "./plugins/cloudflare";
 import { database } from './plugins/db';
+import { ipReputation } from './plugins/ipReputation';
 import { errorHandler } from './plugins/errorHandler';
 import { cache } from './plugins/cache';
 import { game } from './plugins/game';
@@ -29,7 +31,9 @@ async function init() {
 
     await app.register(errorHandler);
     await app.register(plugins);
+    await app.register(cloudflare);
     await app.register(database);
+    await app.register(ipReputation);
     await app.register(game);
     await app.register(cache);
     await app.register(oauth2);

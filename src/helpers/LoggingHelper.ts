@@ -1,4 +1,5 @@
 type LoginMethod = 'Discord' | 'Twitch' | 'Google';
+
 interface PixelInfo {
     userID: string;
     nickname: string;

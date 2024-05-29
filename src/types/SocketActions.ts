@@ -15,17 +15,25 @@ export interface SocketServerActions {
         time: number;
         id: string;
     },
-    "INC_PIXEL": {}
+    "INC_PIXEL": {
+        id: string
+    },
+    "OP?" : {}
 }
 
-//export interface SocketClientActions {
-//    "PLACE": {
-//        x: number,
-//        y: number,
-//        color: number
-//    }
-//}
+export interface SocketClientActions {
+    "PLACE": {
+        id?: string,
+        x: number,
+        y: number,
+        color: string
+    }
+}
 
-export type SocketPayload<T extends keyof SocketServerActions> = {
+export type SocketServerPayload<T extends keyof SocketServerActions> = {
     op: T;
 } & SocketServerActions[T];
+
+export type SocketClientPayload<T extends keyof SocketClientActions> = {
+    op: T;
+} & SocketClientActions[T];

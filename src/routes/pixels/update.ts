@@ -4,7 +4,7 @@ import { LoggingHelper } from "../../helpers/LoggingHelper";
 import { config } from "../../config";
 import { TokenBannedError, UserCooldownError, EntityNotFoundError, EndedError, WrongTokenError } from "../../apiErrors";
 import { genericSuccessResponse } from "../../types/ApiReponse";
-import { SocketPayload } from "../../types/SocketActions";
+import { SocketServerPayload } from "../../types/SocketActions";
 import { UserRole } from "../../models/MongoUser";
 import { WebSocket } from "ws";
 
@@ -87,7 +87,7 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
         request.server.websocketServer.clients.forEach((client) => {
             if(client.readyState !== WebSocket.OPEN) return;
 
-            const payload: SocketPayload<"PLACE"> = {
+            const payload: SocketServerPayload<"PLACE"> = {
                 op: 'PLACE',
                 x,
                 y,

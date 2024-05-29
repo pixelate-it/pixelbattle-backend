@@ -34,7 +34,7 @@ export interface MongoUser {
     role: UserRole;
     token: string;
     badges: number;
-    points: number;
+    karma: number;
     banned: BanInfo | null;
     connections: UserAuth
 }

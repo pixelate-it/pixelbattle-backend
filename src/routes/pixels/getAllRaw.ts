@@ -1,6 +1,5 @@
 import { RouteOptions } from "fastify";
 import { Pixel } from "../../models/MongoPixel";
-import { utils } from "../../extra/Utils";
 
 
 export const getAllRaw: RouteOptions = ({

@@ -29,7 +29,7 @@ export const plugins = fp(async (app) => {
         },
         hook: 'preParsing',
         global: true,
-        errorResponseBuilder(req, context) {
+        errorResponseBuilder(_req, context) {
             return new RateLimitError(context.after);
         }
     });
@@ -43,7 +43,8 @@ export const plugins = fp(async (app) => {
 
     await app.register(fastifyWebsocket, {
         options: {
-            clientTracking: true
+            clientTracking: true,
+            maxPayload: 1024
         }
     });
 
