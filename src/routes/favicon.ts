@@ -1,20 +1,20 @@
-import { RouteOptions } from "fastify";
-import { readFile } from "fs/promises";
+import type { RouteOptions } from "fastify";
 
 export const favicon: RouteOptions = {
-    method: 'GET',
-    url: '/favicon.ico',
-    schema: {},
+    method: "GET",
+    url: "/favicon.ico",
     config: {
         rateLimit: {
-            max: 1,
-            timeWindow: '3s'
+            max: 5,
+            timeWindow: 3000
         }
     },
-    async handler(request, response) {
+    handler: (_request, response) => {
+        const icon = Bun.file("assets/favicon.ico");
+
         return response
-            .header('Content-Type', 'image/x-icon')
+            .header("Content-Type", "image/x-icon")
             .code(200)
-            .send(await readFile('./assets/favicon.ico'));
+            .send(icon.stream());
     }
-}
+};

@@ -1,4 +1,4 @@
-type LoginMethod = 'Discord' | 'Twitch' | 'Google';
+type LoginMethod = "Discord" | "Twitch" | "Google";
 
 interface PixelInfo {
     userID: string;
@@ -18,21 +18,29 @@ interface LoginInfo {
 }
 
 export class LoggingHelper {
-    static sendPixelPlaced({ userID, nickname, color, x, y, tag, ip }: PixelInfo) {
+    static sendPixelPlaced({
+        userID,
+        nickname,
+        color,
+        x,
+        y,
+        tag,
+        ip
+    }: PixelInfo) {
         console.log(
             `* [PIXEL] ${userID} - ${nickname}; ` +
-            `Coordinates: X${x} Y${y}; ` +
-            `Color: ${color}; ` +
-            `Tag: ${tag}; ` +
-            `IP: ${ip}; `
+                `Coordinates: X${x} Y${y}; ` +
+                `Color: ${color}; ` +
+                `Tag: ${tag}; ` +
+                `IP: ${ip}; `
         );
     }
 
     static sendLoginSuccess({ userID, nickname, method, ip }: LoginInfo) {
         console.log(
             `* [LOGIN] ${userID} - ${nickname}; ` +
-            `Method: ${method}; ` +
-            `IP: ${ip}`
+                `Method: ${method}; ` +
+                `IP: ${ip};`
         );
     }
 }

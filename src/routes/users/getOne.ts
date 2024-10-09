@@ -1,34 +1,50 @@
-import { RouteOptions } from "fastify";
-import { IncomingMessage, Server, ServerResponse } from "http";
-import { EntityNotFoundError } from "../../apiErrors";
-import { AuthInfo } from "../../models/MongoUser";
+import type { RouteOptions } from "fastify";
+import type { IncomingMessage, Server, ServerResponse } from "http";
+import type { AuthInfo } from "models/MongoUser";
+import { EntityNotFoundError } from "utils/templateHttpError";
 
+type PossibleConnectionData = AuthInfo | null;
 
-export const getUser: RouteOptions<Server, IncomingMessage, ServerResponse, { Params: { id: string }; }> = {
-    method: 'GET',
-    url: '/:id',
-    schema: {},
+export const getOne: RouteOptions<
+    Server,
+    IncomingMessage,
+    ServerResponse,
+    { Params: { id: string } }
+> = {
+    method: "GET",
+    url: "/:id",
     config: {
         rateLimit: {
             max: 3,
-            timeWindow: '1s'
+            timeWindow: 1000
         }
     },
-    async handler(request, response) {
-        const user = await request.server.cache.usersManager.get({ userID: request.params.id });
+    handler: async (request, response) => {
+        const user = await request.server.cache.usersManager.get({
+            userID: request.params.id
+        });
 
-        if(!user) {
+        if (!user) {
             throw new EntityNotFoundError("user");
         }
 
-        return response.send({
+        return response.code(200).send({
             ...user.user,
             token: undefined,
             email: undefined,
             connections: Object.fromEntries(
-                Object.entries<AuthInfo | null>(user.user.connections as unknown as Record<keyof AuthInfo, AuthInfo | null>)
-                    .filter(([_, value]) => value && value.visible)
+                Object.entries<PossibleConnectionData>(
+                    user.user.connections as unknown as Record<
+                        keyof AuthInfo,
+                        PossibleConnectionData
+                    >
+                ).filter(
+                    ([_, value]) =>
+                        value &&
+                        (request.user?.userID === user.user.userID ||
+                            value.visible)
+                )
             )
         });
     }
-}
+};

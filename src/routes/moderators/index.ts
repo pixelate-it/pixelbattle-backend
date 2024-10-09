@@ -1,15 +1,13 @@
-import { FastifyInstance } from "fastify";
-import { getAll } from "./getAll";
-import { bindUser } from "../../plugins/bindUser";
-import { minUserRole } from "../../plugins/minUserRole";
-import { edit } from "./edit";
-import { authRequired } from "../../plugins/authRequired";
+import type { FastifyInstance } from "fastify";
+import { bindUser, authRequired, minUserRole } from "plugins";
 import { UserRole } from "../../models/MongoUser";
+import { getAll } from "./getAll";
+import { edit } from "./edit";
 
 export function moderators(app: FastifyInstance, _: unknown, done: () => void) {
     app.route(getAll);
 
-    app.register(async (app, _, done) => {
+    app.register(async (app) => {
         await app.register(bindUser);
         await app.register(authRequired);
         await app.register(minUserRole, {
@@ -17,7 +15,6 @@ export function moderators(app: FastifyInstance, _: unknown, done: () => void) {
         });
 
         app.route(edit);
-        done();
     });
 
     done();

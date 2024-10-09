@@ -1,20 +1,19 @@
-import { Filter } from "mongodb";
-import { MongoUser } from "../models/MongoUser";
-import { UserDataCache } from "../extra/UserDataCache";
+import type { Filter } from "mongodb";
+import type { MongoUser } from "models/MongoUser";
+import { UserDataCache } from "models/UserDataCache";
 import { BaseManager } from "./BaseManager";
 
-export class UserManager extends BaseManager<MongoUser>{
-    private cache: UserDataCache[] = [];
+export class UserManager extends BaseManager<MongoUser> {
+    private readonly cache: UserDataCache[] = [];
 
     public async get(filter: Filter<MongoUser>) {
-        // Find the user in cache with same keys as argument passed
-        let cachedUser = this.cache
-            .find(u => (Object
-                .keys(filter) as (keyof MongoUser)[])
+        let cachedUser = this.cache.find((u) =>
+            (Object.keys(filter) as (keyof MongoUser)[])
                 .map((key) => u.user[key] === filter[key])
-                .reduce((acc, val) => acc && val));
+                .reduce((acc, val) => acc && val)
+        );
 
-        if(cachedUser) {
+        if (cachedUser) {
             cachedUser.breath();
 
             return cachedUser;
@@ -24,17 +23,15 @@ export class UserManager extends BaseManager<MongoUser>{
         const databaseUser = await this.collection.findOne(filter, {
             projection: { _id: 0 },
             hint: {
-                [
-                    keys.includes('userID') && keys.includes('token')
-                        ? 'userID'
-                        : keys.includes('token')
-                            ? 'token'
-                            : 'userID'
-                ]: 1
+                [keys.includes("userID")
+                    ? "userID"
+                    : keys.includes("token")
+                    ? "token"
+                    : "_id"]: 1
             }
         });
 
-        if(databaseUser) {
+        if (databaseUser) {
             cachedUser = new UserDataCache(databaseUser);
 
             this.cache.push(cachedUser);
@@ -43,50 +40,55 @@ export class UserManager extends BaseManager<MongoUser>{
         return cachedUser;
     }
 
-
-    public async edit(filter: Partial<MongoUser>, value: Partial<MongoUser>, options?: { force: boolean }) {
+    public async edit(
+        filter: Partial<MongoUser>,
+        value: Partial<MongoUser>,
+        options?: { force: boolean }
+    ) {
         const user = await this.get(filter);
 
-        if(!user) {
+        if (!user) {
             return null;
         }
 
-        // replace the cached user with value
         (Object.keys(value) as (keyof MongoUser)[])
-            .filter(key => value[key] !== undefined)
-            .map(key => user.set(key, value[key]!));
+            .filter((key) => value[key] !== undefined)
+            .map((key) => user.set(key, value[key]!));
 
         const keys = Object.keys(filter);
-        if(options?.force) {
-            await this.collection.updateOne(filter, { $set: value }, {
-                hint: {
-                    [
-                        keys.includes('userID') && keys.includes('token')
-                            ? 'userID'
-                            : keys.includes('token')
-                                ? 'token'
-                                : 'userID'
-                    ]: 1
+        if (options?.force) {
+            await this.collection.updateOne(
+                filter,
+                { $set: value },
+                {
+                    hint: {
+                        [keys.includes("userID")
+                            ? "userID"
+                            : keys.includes("token")
+                            ? "token"
+                            : "_id"]: 1
+                    }
                 }
-            });
+            );
         }
 
         return user;
     }
 
+    public handle(checkInterval = 5000) {
+        return setInterval(this.removeExpiredUsers.bind(this), checkInterval);
+    }
+
     private removeExpiredUsers() {
         this.cache.map((user) => {
-            if(user.expiresOn > Date.now()) {
+            if (user.expiresOn > Date.now()) {
                 return;
             }
 
-            const expiredUserIndex = this.cache.findIndex(u => u.user.userID === user.user.userID);
-            this.cache.splice(expiredUserIndex, 1); // remove expired user from cache
+            const expiredUserIndex = this.cache.findIndex(
+                (u) => u.user.userID === user.user.userID
+            );
+            this.cache.splice(expiredUserIndex, 1);
         });
-    }
-
-
-    public handle(checkInterval = 5000) {
-        return setInterval(this.removeExpiredUsers.bind(this), checkInterval);
     }
 }

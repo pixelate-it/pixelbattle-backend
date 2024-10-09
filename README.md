@@ -1,7 +1,15 @@
-# Pixel Battle API v3
+# pixelbattle-backend
 
+To install dependencies:
 
-## How to launch?
-1. Create `.env` file (see example `.env.example`)
-2. To run in dev version - `npm run dev`. To run in prod - `npm run prod`
+```bash
+bun install
+```
 
+To run:
+
+```bash
+bun run src/index.ts
+```
+
+This project was created using `bun init` in bun v1.1.29. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.

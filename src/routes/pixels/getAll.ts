@@ -1,14 +1,13 @@
-import { RouteOptions } from "fastify";
+import type { RouteOptions } from "fastify";
 import { encode } from "fast-png";
 
-export const getAll: RouteOptions = ({
-    method: 'GET',
-    url: '.png',
-    schema: {},
+export const getAll: RouteOptions = {
+    method: "GET",
+    url: ".png",
     config: {
         rateLimit: {
             max: 3,
-            timeWindow: '2s'
+            timeWindow: 2000
         }
     },
     handler: async function handler(request, response) {
@@ -16,12 +15,12 @@ export const getAll: RouteOptions = ({
             width: request.server.game.width,
             height: request.server.game.height,
             channels: 3,
-            data: request.server.cache.canvasManager.colors,
+            data: request.server.cache.canvasManager.colors
         });
 
         return response
-            .header('Content-Type', 'image/png')
+            .header("Content-Type", "image/png")
             .code(200)
             .send(image);
     }
-});
+};

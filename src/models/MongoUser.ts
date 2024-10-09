@@ -18,23 +18,21 @@ export interface AuthInfo {
     id: string;
 }
 
-export interface UserAuth {
-    discord: AuthInfo | null;
-    google: AuthInfo | null;
-    twitch: AuthInfo | null;
-    github: AuthInfo | null;
-}
+export type UserAuthKey = "discord" | "google" | "twitch" | "github";
+
+export type UserAuth = {
+    [key in UserAuthKey]: AuthInfo | null;
+};
 
 export interface MongoUser {
     email: string;
     username: string;
     tag: string | null;
     userID: InternalUserId;
-    cooldown: number;
     role: UserRole;
     token: string;
     badges: number;
     karma: number;
     banned: BanInfo | null;
-    connections: UserAuth
+    connections: UserAuth;
 }

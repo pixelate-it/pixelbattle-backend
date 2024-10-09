@@ -1,13 +1,8 @@
-import { NotAuthorizedError } from "../apiErrors";
 import fp from "fastify-plugin";
+import { NotAuthorizedError } from "utils/templateHttpError";
 
-
-
-export const authRequired = fp(async (app) => {
-    app.addHook("preHandler", async (req) => {
-        if(!req.user)
-            throw new NotAuthorizedError();
+export const authRequired = fp(async function authRequired(app) {
+    app.addHook("preHandler", async (request) => {
+        if (!request.user) throw new NotAuthorizedError();
     });
-
-    return;
 });

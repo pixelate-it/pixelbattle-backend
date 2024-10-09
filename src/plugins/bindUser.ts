@@ -1,39 +1,27 @@
-import {  FastifyRequest } from "fastify";
-import { MongoUser } from "../models/MongoUser";
 import fp from "fastify-plugin";
-import { NotAuthorizedError } from "../apiErrors";
+import type { MongoUser } from "models/MongoUser";
 
-declare module 'fastify' {
+declare module "fastify" {
     interface FastifyRequest {
         user: MongoUser | null;
     }
 }
 
-export type RequestCookie = {
-    token?: string;
-    userid?: string;
-}
-
-export const bindUser = fp(async (app) => {
+export const bindUser = fp(async function bindUser(app) {
     app.decorateRequest("user", null);
 
-    app.addHook("preHandler", async (req: FastifyRequest<{ Headers: { Authorization?: `Bearer ${string}` } }>, _) => {
-        const cookies: RequestCookie = req.cookies;
+    app.addHook("preHandler", async (request) => {
+        const cookies: RequestCookie = request.cookies;
 
-        if(!cookies.token && !req.headers.authorization)
-            throw new NotAuthorizedError();
+        if (!cookies.token && !cookies.userid) return;
 
-        const userCache = await req.server.cache.usersManager.get({
-            token: cookies.token
-                ? cookies.token
-                : req.headers.authorization?.slice("Bearer ".length)
+        const userCache = await request.server.cache.usersManager.get({
+            token: cookies.token,
+            userID: cookies.userid
         });
 
-        if(!userCache)
-            throw new NotAuthorizedError();
+        if (!userCache) return;
 
-        req.user = userCache.user;
+        request.user = userCache.user;
     });
-
-    return;
 });

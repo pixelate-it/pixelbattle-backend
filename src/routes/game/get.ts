@@ -1,9 +1,7 @@
-import { RouteOptions } from "fastify";
-import { IncomingMessage, Server, ServerResponse } from "http";
-import { EntityNotFoundError } from "../../apiErrors";
-import { SocketConnection } from "../../helpers/SocketHelper";
+import type { RouteOptions } from "fastify";
+import { getOnline } from "utils/getOnline";
 
-interface ApiInfo {
+interface GameInformation {
     name: string;
     cooldown: number;
     ended: boolean;
@@ -14,39 +12,30 @@ interface ApiInfo {
     online: number;
 }
 
-export const get: RouteOptions<Server, IncomingMessage, ServerResponse> = {
-    method: 'GET',
-    url: '/',
-    schema: {},
+export const get: RouteOptions = {
+    method: "GET",
+    url: "/",
     config: {
         rateLimit: {
             max: 3,
-            timeWindow: '1s'
+            timeWindow: 1000
         }
     },
-    async handler(request, response) {
-        const online = new Set();
-        request.server.websocketServer.clients.forEach(v => online.add((v as SocketConnection["socket"]).requestIp));
-
+    handler: (request, response) => {
         const { game } = request.server;
+        const online = getOnline(request.server);
 
-        if(!game) {
-            throw new EntityNotFoundError("games");
-        }
-
-        const info: ApiInfo = {
+        const info: GameInformation = {
             name: game.name,
             cooldown: game.cooldown,
             ended: game.ended,
             canvas: {
-                height: game.height,
-                width: game.width
+                width: game.width,
+                height: game.height
             },
-            online: online.size
-        }
+            online
+        };
 
-        return response
-            .code(200)
-            .send(info);
+        return response.code(200).send(info);
     }
-}
+};

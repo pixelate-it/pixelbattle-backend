@@ -1,28 +1,28 @@
-import { FastifyInstance } from "fastify";
-import { getUser } from "./getOne";
+import type { FastifyInstance } from "fastify";
+import { authRequired, bindUser, minUserRole } from "plugins";
+import { UserRole } from "models/MongoUser";
+import { getOne } from "./getOne";
 import { changeTag } from "./changeTag";
 import { changeUsername } from "./changeUsername";
-import { bindUser } from "../../plugins/bindUser";
-import { authRequired } from "../../plugins/authRequired";
-import { minUserRole } from "../../plugins/minUserRole";
 import { ban } from "./ban";
 import { unban } from "./unban";
-import { UserRole } from "../../models/MongoUser";
 
 export function users(app: FastifyInstance, _: unknown, done: () => void) {
-    app.route(getUser);
+    app.register(async (app) => {
+        await app.register(bindUser);
 
-    app.register(async (app, _, done) => {
+        app.route(getOne);
+    });
+
+    app.register(async (app) => {
         await app.register(bindUser);
         await app.register(authRequired);
 
-        app.route(changeUsername);
         app.route(changeTag);
-
-        done();
+        app.route(changeUsername);
     });
 
-    app.register(async (app, _, done) => {
+    app.register(async (app) => {
         await app.register(bindUser);
         await app.register(authRequired);
         await app.register(minUserRole, {
@@ -31,8 +31,6 @@ export function users(app: FastifyInstance, _: unknown, done: () => void) {
 
         app.route(ban);
         app.route(unban);
-
-        done();
     });
 
     done();

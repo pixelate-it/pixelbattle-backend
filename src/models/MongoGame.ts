@@ -2,7 +2,7 @@ export interface MongoGame {
     id: number;
     name: string;
     cooldown: number;
-    ended: boolean
+    ended: boolean;
     height: number;
     width: number;
 }

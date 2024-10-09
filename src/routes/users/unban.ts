@@ -1,15 +1,19 @@
-import { RouteOptions } from "fastify";
-import { IncomingMessage, Server, ServerResponse } from "http";
-import { EntityNotFoundError } from "../../apiErrors";
-import { genericSuccessResponse } from "../../types/ApiReponse";
+import type { RouteOptions } from "fastify";
+import type { IncomingMessage, Server, ServerResponse } from "http";
+import { EntityNotFoundError } from "utils/templateHttpError";
+import { genericSuccessResponse } from "types/ApiResponse";
 
-
-export const unban: RouteOptions<Server, IncomingMessage, ServerResponse, { Params: { id: string }; }> = {
-    method: 'POST',
-    url: '/:id/unban',
+export const unban: RouteOptions<
+    Server,
+    IncomingMessage,
+    ServerResponse,
+    { Params: { id: string } }
+> = {
+    method: "POST",
+    url: "/:id/unban",
     schema: {
         body: {
-            type: 'object',
+            type: "object",
             required: [],
             properties: {
                 reason: { type: "string" }
@@ -19,7 +23,7 @@ export const unban: RouteOptions<Server, IncomingMessage, ServerResponse, { Para
     config: {
         rateLimit: {
             max: 3,
-            timeWindow: '1s'
+            timeWindow: 1000
         }
     },
     async handler(request, response) {
@@ -29,12 +33,10 @@ export const unban: RouteOptions<Server, IncomingMessage, ServerResponse, { Para
             { force: true }
         );
 
-        if(!user) {
+        if (!user) {
             throw new EntityNotFoundError("user");
         }
 
-        return response
-            .status(200)
-            .send(genericSuccessResponse);
+        return response.status(200).send(genericSuccessResponse);
     }
-}
+};
