@@ -29,10 +29,9 @@ export class HandlerManager {
 
     handleUnsupportedOperation(op?: string) {
         const message: UnsupportedOperationMessage = {
-            reason: "UnsupportedOperation"
+            reason: "UnsupportedOperation",
+            ...(op && { data: { op } })
         };
-
-        if (op) message["data"] = { op };
 
         this.socket.close(1003, JSON.stringify(message));
     }
@@ -40,8 +39,8 @@ export class HandlerManager {
     handle(message: RawData) {
         const json = HandlerManager.supressParseJSON(message.toString("utf-8"));
 
-        if (!json) this.handleUnsupportedOperation();
-        if (!("op" in json)) return;
+        if (!json || typeof json.op !== "string")
+            return this.handleUnsupportedOperation();
 
         if (Object.keys(this.handlers).includes(json.op))
             this.handlers[
@@ -51,6 +50,6 @@ export class HandlerManager {
             ](json, this.socket, this.request).catch((error) =>
                 websocketErrorHandler(this.socket, error)
             );
-        else this.handleUnsupportedOperation(json.op);
+        else return this.handleUnsupportedOperation(json.op);
     }
 }

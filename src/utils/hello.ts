@@ -6,6 +6,6 @@ export default [
     " | |      | |  >  <  |  __/ | | | (_| | | |_  |  __/    _| |_  | |_  |_|",
     " |_|      |_| /_/\\_\\  \\___| |_|  \\__,_|  \\__|  \\___|   |_____|  \\__| (_)",
     "                                                                        ",
-    " by mirdukkkkk & Pixelate It Team                                       ",
+    " by REIKKA (mirdukkkkk) & Pixelate It Team                                       ",
     "                                                                        "
 ].map((str) => console.log(str));

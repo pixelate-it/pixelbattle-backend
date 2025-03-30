@@ -3,7 +3,7 @@ import type { IncomingMessage, Server, ServerResponse } from "http";
 import { cookieParameters, GoogleAuthHelper } from "helpers/AuthHelper";
 import { AuthLoginError, NotVerifiedEmailError } from "utils/templateHttpError";
 import { type MongoUser, UserRole } from "models/MongoUser";
-import * as generator from "utils/generator";
+import * as generator from "utils/generate";
 import { getIpAddress } from "utils/getIpAddress";
 import { config } from "config";
 import { LoggingHelper } from "helpers/LoggingHelper";

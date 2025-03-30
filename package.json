@@ -1,8 +1,8 @@
 {
     "name": "pixelbattle-backend",
     "module": "src/index.ts",
-    "version": "4.0.0",
-    "description": "API for https://pixelbattle.fun/",
+    "version": "5.0.0",
+    "description": "Server side of https://pixelbattle.fun/",
     "author": "pixelate-it",
     "scripts": {
         "production": "bun run dist/index.js",
