@@ -77,7 +77,7 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
                 ? Array.isArray(request.headers["cf-connecting-ip"])
                     ? request.headers["cf-connecting-ip"][0]
                     : request.headers["cf-connecting-ip"]
-                : request.ip;
+                : request.ip
         });
 
         auth.joinPixelateitServer();
