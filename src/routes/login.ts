@@ -7,6 +7,7 @@ import { utils } from "../extra/Utils";
 import { config } from "../config";
 import { AuthLoginError, NotVerifiedEmailError } from "../errors";
 import { UserRole } from "../models/MongoUser";
+import { LoggingHelper } from "../helpers/LoggingHelper";
 
 export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Querystring: { code: string }; }> = {
     method: 'GET',
@@ -67,6 +68,17 @@ export const login: RouteOptions<Server, IncomingMessage, ServerResponse, { Quer
                 },
                 { upsert: true }
             );
+
+        LoggingHelper.sendLoginSuccess({
+            userID: id,
+            nickname: username,
+            method: "Discord",
+            ip: request.headers["cf-connecting-ip"]
+                ? Array.isArray(request.headers["cf-connecting-ip"])
+                    ? request.headers["cf-connecting-ip"][0]
+                    : request.headers["cf-connecting-ip"]
+                : request.ip;
+        });
 
         auth.joinPixelateitServer();
 
