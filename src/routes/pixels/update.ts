@@ -109,8 +109,14 @@ export const update: RouteOptions<Server, IncomingMessage, ServerResponse, { Bod
                 {
                     tag,
                     userID: request.user.userID,
+                    nickname: request.user.username,
                     x, y,
-                    color
+                    color,
+                    ip: request.headers["cf-connecting-ip"]
+                        ? Array.isArray(request.headers["cf-connecting-ip"])
+                            ? request.headers["cf-connecting-ip"][0]
+                            : request.headers["cf-connecting-ip"]
+                        : request.ip
                 }
             );
 
