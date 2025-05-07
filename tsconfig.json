@@ -24,7 +24,14 @@
         "noPropertyAccessFromIndexSignature": false,
 
         "baseUrl": "./src",
-        "types": ["bun", "node", "ws"]
+        "types": ["bun", "node", "ws", "uuid"],
+
+        "paths": {
+            "@core/*": ["core/*"],
+            "@models": ["models"],
+            "@modules/*": ["modules/*"],
+            "@utils": ["utils"]
+        }
     },
     "include": ["src/types/**/*.d.ts", "src/**/*.ts"],
     "exclude": ["node_modules"]

@@ -1,4 +1,4 @@
-export function translateHex(hex: string) {
+export function hexadecimal(hex: string): number[] {
     const R = parseInt(hex.slice(1, 3), 16);
     const G = parseInt(hex.slice(3, 5), 16);
     const B = parseInt(hex.slice(5, 7), 16);
@@ -6,7 +6,7 @@ export function translateHex(hex: string) {
     return [R, G, B];
 }
 
-export function translateRGB(rgb: Uint8ClampedArray | number[]) {
+export function RGB(rgb: Uint8ClampedArray | number[]): string {
     return (
         "#" +
         [...rgb]
