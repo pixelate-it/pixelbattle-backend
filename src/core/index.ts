@@ -1,9 +1,16 @@
 import fastify from "fastify";
 import { konsole } from "utils";
-import { database, game, cache } from "@core/extensions";
+import {
+    database,
+    repository,
+    game,
+    cache,
+    errorHandler
+} from "@core/extensions";
 import { plugins, routes } from "@core/app";
 
 import "./hello";
+import { oauth2 } from "./extensions/oauth2";
 
 const app = fastify({
     logger: process.env.NODE_ENV === "development",
@@ -11,7 +18,16 @@ const app = fastify({
 });
 
 (async () => {
-    for (const decorator of [plugins, database, game, cache, routes]) {
+    for (const decorator of [
+        plugins,
+        database,
+        repository,
+        game,
+        cache,
+        errorHandler,
+        oauth2,
+        routes
+    ]) {
         konsole.write(`Loading "${decorator.name}" plugin...`);
         await app.register(decorator);
         konsole.clearLine();

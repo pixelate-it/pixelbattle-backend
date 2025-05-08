@@ -2,7 +2,7 @@ import { BaseRepository } from "@core/database";
 import type { MongoPixel } from "@models";
 
 export class CanvasRepository extends BaseRepository<MongoPixel> {
-    async init() {
+    async fetch() {
         const indexes = await this.collection.indexes();
 
         if (!indexes.some((i) => i.key?.x === 1 && i.key?.y === 1)) {

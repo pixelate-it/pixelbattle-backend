@@ -9,7 +9,7 @@ export class UserService {
 
     constructor(
         private repository: UserRepository,
-        private TTL = 5 * 60 * 1000
+        private TTL = 5 * 60 * 1000 // 5 minutes
     ) {}
 
     async get(filter: UserFilter) {

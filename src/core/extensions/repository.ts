@@ -1,6 +1,6 @@
 import fp from "fastify-plugin";
 import { CanvasRepository } from "@modules/canvas";
-import { UserRepository } from "@modules/user";
+import { UserRepository } from "@modules/users";
 
 declare module "fastify" {
     interface FastifyInstance {
@@ -11,9 +11,12 @@ declare module "fastify" {
     }
 }
 
-export const repository = fp(async (app) => {
-    app.decorate("repository", {
-        canvas: new CanvasRepository(app.database.pixels),
-        users: new UserRepository(app.database.users)
-    });
-});
+export const repository = fp(
+    async (app) => {
+        app.decorate("repository", {
+            canvas: new CanvasRepository(app.database.pixels),
+            users: new UserRepository(app.database.users)
+        });
+    },
+    { name: "repository", dependencies: ["database"] }
+);

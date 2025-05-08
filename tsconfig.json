@@ -29,6 +29,7 @@
         "paths": {
             "@core/*": ["core/*"],
             "@models": ["models"],
+            "@types": ["types"],
             "@modules/*": ["modules/*"],
             "@utils": ["utils"]
         }

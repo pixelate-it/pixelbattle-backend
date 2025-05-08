@@ -5,8 +5,8 @@ import { translate } from "@utils";
 
 export class CanvasService {
     private changes: Point[] = [];
-    private pixels: MongoPixel[];
-    private colors: Uint8ClampedArray;
+    public pixels: Omit<MongoPixel, "color">[];
+    public colors: Uint8ClampedArray;
 
     constructor(
         private repository: CanvasRepository,
@@ -19,19 +19,24 @@ export class CanvasService {
     }
 
     public async init() {
-        this.pixels = await this.repository.init();
+        const pixels = await this.repository.fetch();
 
-        if (this.pixels.length !== this.width * this.height) {
+        if (pixels.length !== this.width * this.height) {
             throw new Error(
                 `Canvas size mismatch. Expected ${this.width * this.height} pixels, got ${this.pixels.length}`
             );
         }
 
-        const buffer = this.pixels
-            .map((pixels) => translate.hexadecimal(pixels.color))
-            .flat();
+        pixels.forEach(({ color, ...pixel }, index) => {
+            const [R, G, B] = translate.hexadecimal(color);
+            const from = index * this.bitPP;
 
-        this.colors.set(buffer);
+            this.colors[from] = R;
+            this.colors[from + 1] = G;
+            this.colors[from + 2] = B;
+            this.pixels[index] = pixel;
+        });
+
         return this.pixels;
     }
 
@@ -55,6 +60,25 @@ export class CanvasService {
             tag: pixel.tag,
             color: this.getColor({ x, y })
         };
+    }
+
+    public setPixel(pixel: MongoPixel) {
+        const point: Point = { x: pixel.x, y: pixel.y };
+        const data = this.getPixel(point);
+
+        if (!data) return;
+
+        this.setColor(point, pixel.color);
+        data.author = pixel.author;
+        data.tag = pixel.tag;
+
+        this.changes.push(point);
+
+        return pixel;
+    }
+
+    public getPixel({ x, y }: Point) {
+        return this.pixels.find((pixel) => pixel.x === x && pixel.y === y);
     }
 
     public setColor(point: Point, color: string) {
