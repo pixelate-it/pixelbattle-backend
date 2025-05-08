@@ -30,6 +30,6 @@ export const cache = fp(
     },
     {
         name: "cache",
-        dependencies: ["database", "repository"]
+        dependencies: ["database", "repository", "game"]
     }
 );

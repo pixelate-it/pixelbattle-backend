@@ -6,10 +6,23 @@ import { userRoutes } from "@modules/users";
 import { moderatorsRoutes } from "@modules/moderators";
 import { loginRoutes } from "@modules/login";
 
-export const routes = fp(async function routes(app: FastifyInstance) {
-    app.register(rootRoutes);
-    app.register(canvasRoutes, { prefix: "/pixels" });
-    app.register(loginRoutes, { prefix: `/login` });
-    app.register(userRoutes, { prefix: "/users" });
-    app.register(moderatorsRoutes, { prefix: "/moderators" });
-});
+export const routes = fp(
+    async function routes(app: FastifyInstance) {
+        app.register(rootRoutes);
+        app.register(canvasRoutes, { prefix: "/pixels" });
+        app.register(loginRoutes, { prefix: `/login` });
+        app.register(userRoutes, { prefix: "/users" });
+        app.register(moderatorsRoutes, { prefix: "/moderators" });
+    },
+    {
+        name: "routes",
+        dependencies: [
+            "plugins",
+            "database",
+            "repository",
+            "cache",
+            "errorHandler",
+            "oauth2"
+        ]
+    }
+);

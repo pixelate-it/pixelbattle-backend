@@ -8,27 +8,30 @@ import { getIpAddress } from "@utils";
 import { RateLimitError } from "@core/errors";
 import { config } from "@core/config";
 
-export const plugins = fp(async function plugins(app: FastifyInstance) {
-    await app.register(fastifyCors, {
-        origin: config.frontend,
-        credentials: true,
-        methods: ["GET", "PUT", "POST", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-        preflightContinue: false,
-        hideOptionsRoute: true,
-        hook: "preHandler"
-    });
+export const plugins = fp(
+    async function plugins(app: FastifyInstance) {
+        await app.register(fastifyCors, {
+            origin: config.frontend,
+            credentials: true,
+            methods: ["GET", "PUT", "POST", "OPTIONS"],
+            allowedHeaders: ["Content-Type", "Authorization"],
+            preflightContinue: false,
+            hideOptionsRoute: true,
+            hook: "preHandler"
+        });
 
-    await app.register(fastifyFormbody);
+        await app.register(fastifyFormbody);
 
-    await app.register(fastifyRateLimit, {
-        keyGenerator: (request) => getIpAddress(request),
-        hook: "preParsing",
-        global: true,
-        errorResponseBuilder(_req, context) {
-            return new RateLimitError(context.after);
-        }
-    });
+        await app.register(fastifyRateLimit, {
+            keyGenerator: (request) => getIpAddress(request),
+            hook: "preParsing",
+            global: true,
+            errorResponseBuilder(_req, context) {
+                return new RateLimitError(context.after);
+            }
+        });
 
-    await app.register(fastifyCookie);
-});
+        await app.register(fastifyCookie);
+    },
+    { name: "plugins", dependencies: [] }
+);
