@@ -1,9 +1,12 @@
 {
     "name": "pixelbattle-backend",
+    "author": "pixelate-it",
+    "license": "GPL-3.0-only",
     "module": "src/core/index.ts",
     "version": "5.0.0",
     "description": "Server side of https://pixelbattle.fun/",
-    "author": "pixelate-it",
+    "type": "module",
+    "private": true,
     "scripts": {
         "production": "bun run dist/index.js",
         "build": "bun build src/core/index.ts --outdir ./dist --target bun",
@@ -18,10 +21,8 @@
         "protobufjs-cli": "^1.1.3"
     },
     "peerDependencies": {
-        "typescript": "^5.0.0"
+        "typescript": "^5"
     },
-    "license": "GPL-3.0-only",
-    "type": "module",
     "dependencies": {
         "@fastify/cookie": "^10.0.1",
         "@fastify/cors": "^10.1.0",

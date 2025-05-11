@@ -1,3 +1,6 @@
-[submodule "src/proto"]
+[submodule "protobuf"]
 	path = src/proto
 	url = https://github.com/pixelate-it/pixelbattle-protobuf.git
+[submodule "anticheat"]
+	path = src/anticheat
+	url = https://github.com/pixelate-it/pixelbattle-anticheat.git

@@ -1,16 +1,16 @@
 import fastify from "fastify";
 import { konsole } from "utils";
+import { plugins, routes } from "@core/app";
 import {
     database,
     repository,
     game,
     cache,
-    errorHandler
+    errorHandler,
+    oauth2
 } from "@core/extensions";
-import { plugins, routes } from "@core/app";
 
 import "./hello";
-import { oauth2 } from "./extensions/oauth2";
 
 const app = fastify({
     logger: process.env.NODE_ENV === "development",

@@ -4,7 +4,12 @@ import type { UserFilter } from "./types";
 
 export class UserRepository extends BaseRepository<MongoUser> {
     async findOne(filter: UserFilter) {
-        return this.collection.findOne(filter, { projection: { _id: 0 } });
+        const keys = Object.keys(filter);
+
+        return this.collection.findOne(filter, {
+            hint: this.getIndexHint(keys),
+            projection: { _id: 0 }
+        });
     }
 
     async updateOne(

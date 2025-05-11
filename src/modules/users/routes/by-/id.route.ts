@@ -4,18 +4,18 @@ import type { AuthInfo } from "@models";
 import type { PossibleConnectionData } from "./types";
 import { EntityNotFoundError } from "@core/errors";
 
-export const getOne: RouteOptions<
+export const getById: RouteOptions<
     Server,
     IncomingMessage,
     ServerResponse,
     { Params: { id: string } }
 > = {
     method: "GET",
-    url: "/:id",
+    url: "id/:id",
     schema: {},
     config: {
         rateLimit: {
-            max: 3,
+            max: 5,
             timeWindow: "1s"
         }
     },
